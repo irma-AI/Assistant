@@ -7,3 +7,5 @@ guards/
 rulesets/
 docs/
 src/routeTree.gen.ts
+Dockerfile
+.dockerignore

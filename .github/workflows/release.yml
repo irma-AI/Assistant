@@ -1,0 +1,40 @@
+name: release
+# Every push to main ships one image, tagged with its commit (a tag that never moves) and attested.
+on:
+  push:
+    branches: [main]
+permissions: {}
+concurrency: release
+jobs:
+  image:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    permissions:
+      contents: read
+      packages: write
+      id-token: write
+      attestations: write
+    env:
+      IMAGE: ghcr.io/irma-ai/assistant
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - name: Build and push
+        id: build
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          echo "$GH_TOKEN" | docker login ghcr.io -u "$GITHUB_ACTOR" --password-stdin
+          docker build -t "$IMAGE:$GITHUB_SHA" --build-arg APP_VERSION="$GITHUB_SHA" .
+          docker push -q "$IMAGE:$GITHUB_SHA"
+          echo "digest=$(docker inspect --format '{{index .RepoDigests 0}}' "$IMAGE:$GITHUB_SHA" | cut -d@ -f2)" >> "$GITHUB_OUTPUT"
+      - uses: actions/attest-build-provenance@4d101475d8b20a2381f78447822ac1eab6504dd8 # v4.2.2
+        with:
+          subject-name: ${{ env.IMAGE }}
+          subject-digest: ${{ steps.build.outputs.digest }}
+          push-to-registry: true
+      - name: Verify the attestation
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh attestation verify "oci://$IMAGE:$GITHUB_SHA" --repo "$GITHUB_REPOSITORY"
