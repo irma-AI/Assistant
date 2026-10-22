@@ -1,0 +1,3 @@
+#!/bin/sh
+# Stage 1: fast checks on what is about to be committed.
+exec make check-staged

@@ -1,0 +1,3 @@
+#!/bin/sh
+# Stage 2: everything that fits in about two minutes, before code leaves the machine.
+exec make check-push
