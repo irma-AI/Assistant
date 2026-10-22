@@ -10,6 +10,11 @@ gh api -X PATCH "repos/$repo" --silent \
   -F allow_auto_merge=true -F delete_branch_on_merge=true \
   -f squash_merge_commit_title=PR_TITLE -f squash_merge_commit_message=PR_BODY
 
+# GitHub's secret scanning with push protection, free on public repositories.
+gh api -X PATCH "repos/$repo" --silent --input - <<'EOF'
+{"security_and_analysis": {"secret_scanning": {"status": "enabled"}, "secret_scanning_push_protection": {"status": "enabled"}}}
+EOF
+
 # Secrets live in "checks", which only main may deploy to.
 gh api -X PUT "repos/$repo/environments/checks" --silent --input - <<'EOF'
 {"deployment_branch_policy": {"protected_branches": false, "custom_branch_policies": true}}
