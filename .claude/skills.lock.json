@@ -1,0 +1,50 @@
+{
+  "code-review": {
+    "source": "mattpocock/skills",
+    "commit": "5beb35b040e3de97e54fa9e386d7e42d15c295c2",
+    "path": "skills/engineering/code-review",
+    "sha256": "959cb5e0eff2fa5e2eda8b298f1d41be80db077844f703517502264568cf28a3"
+  },
+  "diagnosing-bugs": {
+    "source": "mattpocock/skills",
+    "commit": "5beb35b040e3de97e54fa9e386d7e42d15c295c2",
+    "path": "skills/engineering/diagnosing-bugs",
+    "sha256": "f91c8c48e5c09d1cb4470a8ba58005f97fc2613a3072d8fec66c7d1b465ebb4e"
+  },
+  "grilling": {
+    "source": "mattpocock/skills",
+    "commit": "5beb35b040e3de97e54fa9e386d7e42d15c295c2",
+    "path": "skills/productivity/grilling",
+    "sha256": "32855f2c6029748b91ef85d16a58b7c6e01780b7919e3e143769443eeda348e9"
+  },
+  "pr": {
+    "source": "mattpocock/skills",
+    "commit": "5beb35b040e3de97e54fa9e386d7e42d15c295c2",
+    "path": "skills/engineering/pr",
+    "sha256": "dee4820959490638c7d3adc5609203dfa0b320a453eb6ca146a29c1bfee5e2f9"
+  },
+  "research": {
+    "source": "mattpocock/skills",
+    "commit": "5beb35b040e3de97e54fa9e386d7e42d15c295c2",
+    "path": "skills/engineering/research",
+    "sha256": "e45255278d5affc53e4b7e84955cd5fc749a8f4a805f47fa0bb5fefbfcac09a2"
+  },
+  "to-tickets": {
+    "source": "mattpocock/skills",
+    "commit": "5beb35b040e3de97e54fa9e386d7e42d15c295c2",
+    "path": "skills/engineering/to-tickets",
+    "sha256": "c42718a6114c5bd458a3be6af08c9d5e10910705072fddb6c0d03b5ca5035869"
+  },
+  "writing-for-agents": {
+    "source": "mattpocock/skills",
+    "commit": "5beb35b040e3de97e54fa9e386d7e42d15c295c2",
+    "path": "skills/productivity/writing-for-agents",
+    "sha256": "c547369028f139f3c2380d32d07e5d8b29861bb8f665d07c3be9b029cbac33a9"
+  },
+  "ponytail-review": {
+    "source": "DietrichGebert/ponytail",
+    "commit": "09c434ab73ca43761c5d8b0c5d341926c2fba710",
+    "path": "skills/ponytail-review",
+    "sha256": "363f12117c84d2b876155241cdfd1ef916c9ae05af37ecf00ab1c70e9b492c47"
+  }
+}

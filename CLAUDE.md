@@ -9,6 +9,10 @@ Agents build this repository end to end; nobody reviews code by hand. CI on GitH
 - Open the PR, then turn on auto-merge. The merge queue retests and merges it.
 - When a decision is the owner's to make (wording users read, a new vendor, a product call, an issue that reads two ways), comment the question on the Linear issue and move it to Needs input, then pick up other work.
 
+## Agent skills
+
+Issues live in Linear, team IRM, with type labels `feature`, `bug`, `ui`, `chore` and `docs`. See `docs/agents/issue-tracker.md`.
+
 ## Rules
 
 - The PR title is a conventional commit, `type(scope): summary`, because it becomes the squash commit's subject. [enforced: guard:pr-title]
@@ -18,3 +22,4 @@ Agents build this repository end to end; nobody reviews code by hand. CI on GitH
 - A change to a protected path (CI, guards, hooks, rulesets, `Makefile`, `.claude/`, this file) needs an issue that carried the `ci-change` label when it reached Ready. [enforced: path:.github/scripts/protected-paths.sh]
 - Changes reach `main` only through a PR in the merge queue, with `ci` and `policy` green. [enforced: path:rulesets/main.json]
 - Every rule in this file names an existing check, and this file stays under 4000 characters. [enforced: guard:docs]
+- Skills copied from other repositories match the commit pinned in `.claude/skills.lock.json`. [enforced: path:.github/scripts/skills.sh]
