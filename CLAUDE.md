@@ -1,0 +1,20 @@
+# Assistant
+
+Agents build this repository end to end; nobody reviews code by hand. CI on GitHub is the authority, and every rule below names the check that enforces it.
+
+## Workflow
+
+- Work starts from one Linear issue in the IRM team.
+- Run `make check` before you open a PR. The git hooks run it too once `make setup` (or the SessionStart hook) has pointed git at `.githooks/`.
+- Open the PR, then turn on auto-merge. The merge queue retests and merges it.
+- When a decision is the owner's to make (wording users read, a new vendor, a product call, an issue that reads two ways), comment the question on the Linear issue and move it to Needs input, then pick up other work.
+
+## Rules
+
+- The PR title is a conventional commit, `type(scope): summary`, because it becomes the squash commit's subject. [enforced: guard:pr-title]
+- The PR description has a `## First principles` section answering why the problem happened, what could be removed instead and which alternative was rejected, plus a `## Not live yet` section ("Nothing" when nothing is). [enforced: guard:pr-sections]
+- The PR description closes exactly one Linear issue, as `Closes IRM-12`. [enforced: guard:pr-issue]
+- Every commit is authored by `Claude <noreply@anthropic.com>`. [enforced: guard:commit-identity]
+- A change to a protected path (CI, guards, hooks, rulesets, `Makefile`, `.claude/`, this file) needs an issue that carried the `ci-change` label when it reached Ready. [enforced: path:.github/scripts/protected-paths.sh]
+- Changes reach `main` only through a PR in the merge queue, with `ci` and `policy` green. [enforced: path:rulesets/main.json]
+- Every rule in this file names an existing check, and this file stays under 4000 characters. [enforced: guard:docs]
