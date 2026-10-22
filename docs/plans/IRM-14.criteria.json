@@ -1,0 +1,18 @@
+[
+  {
+    "criterion": "mise.toml pins Node 24 and pnpm; ci installs them with mise and dependencies from the lockfile only.",
+    "passes": true
+  },
+  {
+    "criterion": "make check runs prettier, tsc --noEmit, eslint and the production build, and passes.",
+    "passes": true
+  },
+  {
+    "criterion": "GET /version returns {\"version\": APP_VERSION or \"dev\"}.",
+    "passes": true
+  },
+  {
+    "criterion": "The TypeScript, ESLint, Vite and pnpm configuration are protected paths.",
+    "passes": true
+  }
+]

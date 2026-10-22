@@ -1,9 +1,12 @@
 REPO ?= irma-AI/Assistant
 
-.PHONY: check check-staged check-push setup skills github
+.PHONY: check check-repo check-app check-staged check-push install dev setup skills github
 
 # Everything CI runs.
-check:
+check: check-repo check-app
+
+# Guards, skills and repository rules.
+check-repo:
 	.github/scripts/ci-change.test.sh
 	guards/run.sh --self-test
 	guards/docs.test.sh
@@ -11,8 +14,24 @@ check:
 	.github/scripts/skills.sh check
 	jq empty rulesets/*.json
 
-# git hooks. shortcut: both run all of check while it takes about a second; split by stage once it doesn't.
-check-staged: check
+# The app: format, type check before the build, lint with size limits, production build.
+check-app:
+	pnpm exec prettier --check .
+	pnpm exec tsc --noEmit
+	pnpm exec eslint .
+	pnpm build
+
+# The pinned Node and pnpm, then the dependencies from the lockfile only.
+install:
+	mise install
+	pnpm install --frozen-lockfile
+
+# The app on http://localhost:3000.
+dev:
+	pnpm dev
+
+# git hooks. shortcut: pre-commit runs the repository checks and pre-push everything; lint only staged files once check-app outgrows 10 s.
+check-staged: check-repo
 check-push: check
 
 # Points git at the repository's hooks. Cloud sessions do this in the SessionStart hook.

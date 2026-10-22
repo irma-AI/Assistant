@@ -29,7 +29,7 @@ Takes one issue ID and runs it to an open PR with auto-merge on. The session kee
 
 No type label, or two: ask (step 4).
 
-The issue needs a protected path (CI, guards, hooks, rulesets, `Makefile`, `.claude/`, `CLAUDE.md`) and has no `ci-change`: ask (step 4). The label only counts when the issue had it at Ready, so adding it now would fail `policy`.
+The issue needs a protected path (the list in `CLAUDE.md`) and has no `ci-change`: ask (step 4). The label only counts when the issue had it at Ready, so adding it now would fail `policy`.
 
 ## 3. Finish
 
