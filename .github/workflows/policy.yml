@@ -1,7 +1,7 @@
 name: policy
 # Runs the default branch's copy of this workflow and scripts, so a PR can't rewrite its own judge.
 on:
-  pull_request_target:
+  pull_request_target: # zizmor: ignore[dangerous-triggers] runs the default branch's copy and reads the PR as data only
     types: [opened, synchronize, reopened, edited]
   merge_group:
 permissions: {}

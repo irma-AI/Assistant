@@ -1,0 +1,14 @@
+[
+  {
+    "criterion": "A staged secret fails pre-commit, and gitleaks over the full history passes in make check and ci.",
+    "passes": true
+  },
+  {
+    "criterion": "zizmor reports no findings on .github/workflows, with the deliberate pull_request_target in policy.yml ignored inline with its reason.",
+    "passes": true
+  },
+  {
+    "criterion": "gitleaks and zizmor are pinned in mise.toml.",
+    "passes": true
+  }
+]
