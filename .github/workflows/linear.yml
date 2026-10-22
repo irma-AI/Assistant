@@ -1,0 +1,29 @@
+name: linear
+# Quota keeper: Linear Free stops creating issues at 250 unarchived, so every merge
+# archives the team's closed issues. Their text is already in the repository by then.
+on:
+  push:
+    branches: [main]
+permissions: {}
+concurrency: linear
+jobs:
+  archive:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    environment: checks
+    env:
+      LINEAR_API_TOKEN: ${{ secrets.LINEAR_API_TOKEN }}
+      LINEAR_TEAM: IRM
+    steps:
+      - name: Archive closed issues
+        run: |
+          gql() { curl -sSf https://api.linear.app/graphql -H "Authorization: $LINEAR_API_TOKEN" -H 'Content-Type: application/json' -d @-; }
+          # shortcut: one page of 100 per merge, enough while merges outnumber closed issues.
+          answer=$(jq -n --arg k "$LINEAR_TEAM" '{query:"query($k:String!){issues(first:100,filter:{team:{key:{eq:$k}},state:{type:{in:[\"completed\",\"canceled\",\"duplicate\"]}}}){nodes{id identifier}}}",variables:{k:$k}}' | gql)
+          ids=$(jq -er '.data.issues.nodes | map("\(.id) \(.identifier)") | join("\n")' <<<"$answer")
+          [ -n "$ids" ] || { echo "nothing to archive"; exit 0; }
+          while read -r id identifier; do
+            jq -n --arg id "$id" '{query:"mutation($id:String!){issueArchive(id:$id){success}}",variables:{id:$id}}' \
+              | gql | jq -e '.data.issueArchive.success' > /dev/null
+            echo "archived $identifier"
+          done <<<"$ids"
