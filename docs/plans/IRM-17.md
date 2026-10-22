@@ -16,7 +16,7 @@ Acceptance criteria:
 ## Decisions
 
 - .ts and .tsx both parse as TSX through `languageGlobs`, so each rule exists once instead of twice.
-- The docs guard read `process.env` in the new CLAUDE.md rule as a file path; it now treats a backticked word as a path only with a slash or a file extension, with a test for the case.
+- The CLAUDE.md rule names environment variables in prose, so the docs guard stays as it is (the review on the first push found the narrowed path check out of scope).
 - The server-function login guard waits for the login middleware.
 
 ## Next step

@@ -25,4 +25,4 @@ Issues live in Linear, team IRM, with type labels `feature`, `bug`, `ui`, `chore
 - Every rule in this file names an existing check, and this file stays under 4000 characters. [enforced: guard:docs]
 - Skills copied from other repositories match the commit pinned in `.claude/skills.lock.json`. [enforced: path:.github/scripts/skills.sh]
 - A PR that adds or changes a file in `migrations/` also changes a test that exercises it against the real database. [enforced: guard:pr-migration-test]
-- Routes and server code use TanStack Start (`createServerFn` from `@tanstack/react-start`, routes in `src/routes/`), and server code reads `process.env` inside the function that needs it, never at module scope. [enforced: guard:stack]
+- Routes and server code use TanStack Start (`createServerFn` from `@tanstack/react-start`, routes in `src/routes/`), and server code reads environment variables inside the function that needs them. [enforced: guard:stack]
