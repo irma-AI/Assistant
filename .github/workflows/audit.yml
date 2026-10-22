@@ -1,0 +1,53 @@
+name: audit
+# After every merge: the protected-path rule again, and the ruleset still in force.
+# Any problem opens a Linear issue and fails this run.
+on:
+  push:
+    branches: [main]
+permissions: {}
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    environment: checks
+    permissions:
+      contents: read
+    env:
+      LINEAR_API_TOKEN: ${{ secrets.LINEAR_API_TOKEN }}
+      LINEAR_TEAM: IRM
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 2
+          persist-credentials: false
+      - name: Protected paths need ci-change before Ready
+        id: paths
+        continue-on-error: true
+        run: |
+          git diff-tree --root --no-commit-id --name-only -r HEAD > files.txt
+          MESSAGE=$(git log -1 --format=%B) .github/scripts/protected-paths.sh files.txt
+      - name: The ruleset still requires ci and policy from GitHub Actions
+        id: ruleset
+        continue-on-error: true
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          checks=$(gh api "repos/$GITHUB_REPOSITORY/rules/branches/main" \
+            --jq '[.[] | select(.type=="required_status_checks") | .parameters.required_status_checks[] | select(.integration_id==15368) | .context]')
+          echo "required checks: $checks"
+          echo "$checks" | jq -e 'index("ci") and index("policy")' > /dev/null \
+            || { echo "::error::The main ruleset is inactive or no longer requires ci and policy. Fix: make github"; exit 1; }
+      - name: Open a Linear issue
+        if: steps.paths.outcome != 'success' || steps.ruleset.outcome != 'success'
+        env:
+          PATHS: ${{ steps.paths.outcome }}
+          RULESET: ${{ steps.ruleset.outcome }}
+          RUN: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+        run: |
+          gql() { curl -sSf https://api.linear.app/graphql -H "Authorization: $LINEAR_API_TOKEN" -H 'Content-Type: application/json' -d @-; }
+          team=$(jq -n --arg k "$LINEAR_TEAM" '{query:"query($k:String!){teams(filter:{key:{eq:$k}}){nodes{id}}}",variables:{k:$k}}' | gql | jq -er '.data.teams.nodes[0].id')
+          body=$(printf 'Commit %s on main failed the audit (%s).\n\n- Protected paths: %s\n- Ruleset: %s\n' "$GITHUB_SHA" "$RUN" "$PATHS" "$RULESET")
+          jq -n --arg t "$team" --arg title "Audit failed on main at ${GITHUB_SHA::7}" --arg d "$body" \
+            '{query:"mutation($i:IssueCreateInput!){issueCreate(input:$i){success issue{identifier url}}}",variables:{i:{teamId:$t,title:$title,description:$d}}}' \
+            | gql | jq -e '.data.issueCreate.success' > /dev/null
+          exit 1

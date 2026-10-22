@@ -1,0 +1,35 @@
+name: policy
+# Runs the default branch's copy of this workflow and scripts, so a PR can't rewrite its own judge.
+on:
+  pull_request_target:
+    types: [opened, synchronize, reopened, edited]
+  merge_group:
+permissions: {}
+jobs:
+  policy:
+    name: policy
+    # Skipped on merge_group: a skipped job counts as passed, so the queue gets its check without a second judgement.
+    if: github.event_name != 'merge_group'
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    environment: checks
+    permissions:
+      contents: read
+      pull-requests: read
+    steps:
+      - name: Check out the default branch (trusted)
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - name: Collect the changed files
+        env:
+          GH_TOKEN: ${{ github.token }}
+          PR: ${{ github.event.pull_request.number }}
+        run: |
+          mkdir -p review
+          gh pr diff "$PR" --repo "$GITHUB_REPOSITORY" --name-only > review/files.txt
+      - name: Protected paths need ci-change before Ready
+        env:
+          LINEAR_API_TOKEN: ${{ secrets.LINEAR_API_TOKEN }}
+          MESSAGE: ${{ github.event.pull_request.body }}
+        run: .github/scripts/protected-paths.sh review/files.txt
