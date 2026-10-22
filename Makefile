@@ -12,6 +12,8 @@ check-repo:
 	guards/docs.test.sh
 	guards/docs.sh
 	guards/stack.sh
+	zizmor --offline --no-progress .github/workflows
+	gitleaks git --redact --no-banner
 	.github/scripts/skills.sh check
 	jq empty rulesets/*.json
 
@@ -55,6 +57,7 @@ dev:
 
 # git hooks. shortcut: pre-commit runs the repository checks and pre-push everything; lint only staged files once check-app outgrows 10 s.
 check-staged: check-repo
+	gitleaks git --pre-commit --staged --redact --no-banner
 check-push: check
 
 # Points git at the repository's hooks. Cloud sessions do this in the SessionStart hook.

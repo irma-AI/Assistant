@@ -26,3 +26,4 @@ Issues live in Linear, team IRM, with type labels `feature`, `bug`, `ui`, `chore
 - Skills copied from other repositories match the commit pinned in `.claude/skills.lock.json`. [enforced: path:.github/scripts/skills.sh]
 - A PR that adds or changes a file in `migrations/` also changes a test that exercises it against the real database. [enforced: guard:pr-migration-test]
 - Routes and server code use TanStack Start (`createServerFn` from `@tanstack/react-start`, routes in `src/routes/`), and server code reads environment variables inside the function that needs them. [enforced: guard:stack]
+- No secret is committed, and workflows pass zizmor's security audit; a deliberate exception carries a `zizmor: ignore[...]` comment with the reason. [enforced: make:check-repo]
