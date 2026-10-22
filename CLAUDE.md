@@ -4,7 +4,7 @@ Agents build this repository end to end; nobody reviews code by hand. CI on GitH
 
 ## Workflow
 
-- Work starts from one Linear issue in the IRM team.
+- Work starts from one Linear issue in the IRM team. Run it with the `next-step` skill (`.claude/skills/next-step/SKILL.md`), which keeps the issue's plan in `docs/plans/` on the branch.
 - Run `make check` before you open a PR. The git hooks run it too once `make setup` (or the SessionStart hook) has pointed git at `.githooks/`.
 - Open the PR, then turn on auto-merge. The merge queue retests and merges it.
 - When a decision is the owner's to make (wording users read, a new vendor, a product call, an issue that reads two ways), comment the question on the Linear issue and move it to Needs input, then pick up other work.

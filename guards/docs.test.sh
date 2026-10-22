@@ -28,4 +28,10 @@ expect "backticked path missing" $'See `scripts/gone.sh`.\n\n## Rules\n\n- One. 
 expect "over budget" "$good"$'\n'"$(printf 'x%.0s' $(seq 1 4001))" fail
 expect "nothing to scan" '# Empty' fail
 
+d=$(repo "$good") || exit 1
+mkdir -p "$d/.claude/skills/next-step"; printf 'x%.0s' $(seq 1 6001) > "$d/.claude/skills/next-step/SKILL.md"
+if "$guard" "$d" > /dev/null 2>&1; then echo "FAIL  next-step over budget: passed"; fail=1; else echo "ok    next-step over budget"; fi
+printf 'See `gone/x.md`.\n' > "$d/.claude/skills/next-step/SKILL.md"
+if "$guard" "$d" > /dev/null 2>&1; then echo "FAIL  next-step names a missing path: passed"; fail=1; else echo "ok    next-step names a missing path"; fi
+
 exit $fail

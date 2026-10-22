@@ -1,0 +1,14 @@
+[
+  {
+    "criterion": "next-step creates or resumes docs/plans/<ID>.md and <ID>.criteria.json, and only flips passes after running the proving command.",
+    "passes": true
+  },
+  {
+    "criterion": "The flow table covers feature, bug, deploy-failure, ui, chore and docs.",
+    "passes": true
+  },
+  {
+    "criterion": "The docs guard covers next-step with a 6000-character budget.",
+    "passes": true
+  }
+]
