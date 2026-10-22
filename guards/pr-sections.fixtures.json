@@ -1,0 +1,13 @@
+{
+  "pass": [
+    {"body": "Closes IRM-1\n\n## First principles\n\n1. Why: x\n2. Removed: y\n3. Rejected: z\n\n## Not live yet\n\nNothing\n"},
+    {"body": "## First principles\r\nA reason.\r\n## Not live yet  \r\nRun the migration.\r\n"}
+  ],
+  "fail": [
+    {"body": "Closes IRM-1\n\nNo sections at all."},
+    {"body": "## First principles\n\n## Not live yet\nNothing"},
+    {"body": "## First principles\n<!-- Why did the problem happen? -->\n## Not live yet\nNothing"},
+    {"body": "## First principles\nA reason."},
+    {}
+  ]
+}
