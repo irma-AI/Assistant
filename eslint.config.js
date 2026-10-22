@@ -40,6 +40,7 @@ export default [
       'eslint.config.js',
       'prettier.config.js',
       'src/routeTree.gen.ts',
+      'src/server/db.gen.ts',
       '.output/**',
     ],
   },

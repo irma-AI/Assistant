@@ -14,12 +14,30 @@ check-repo:
 	.github/scripts/skills.sh check
 	jq empty rulesets/*.json
 
-# The app: format, type check before the build, lint with size limits, production build.
-check-app:
+# The app: generated files and the production build, format, type check, lint with size limits, tests.
+# Needs DATABASE_URL pointing at a PostgreSQL 16 database the checks may migrate.
+check-app: generate-check
 	pnpm exec prettier --check .
 	pnpm exec tsc --noEmit
 	pnpm exec eslint .
+	pnpm exec vitest run
+
+test:
+	pnpm exec vitest run
+
+migrate:
+	node scripts/migrate.ts
+
+GENERATED = src/server/db.gen.ts src/routeTree.gen.ts
+
+# Rebuilds every generated file: the database types from the migrated schema, and the route tree,
+# which only the production build writes with TanStack Start's types.
+generate: migrate
+	pnpm exec kysely-codegen --dialect postgres --url "$$DATABASE_URL" --out-file src/server/db.gen.ts --exclude-pattern 'kysely_migration*'
 	pnpm build
+
+generate-check: generate
+	@{ git diff --name-only -- $(GENERATED); git ls-files --others --exclude-standard -- $(GENERATED); } | grep . && { echo "::error::Generated files are out of date. Fix: make generate, then commit them."; exit 1; } || echo "generated files up to date"
 
 # The pinned Node and pnpm, then the dependencies from the lockfile only.
 install:

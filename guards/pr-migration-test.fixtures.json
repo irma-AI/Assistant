@@ -1,0 +1,10 @@
+{
+  "pass": [
+    {"files": ["src/routes/index.tsx"]},
+    {"files": ["migrations/0002_status.sql", "src/server/status.server.test.ts"]}
+  ],
+  "fail": [
+    {"files": ["migrations/0002_status.sql", "src/server/status.server.ts"]},
+    {"files": []}
+  ]
+}
