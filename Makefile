@@ -6,6 +6,8 @@ REPO ?= irma-AI/Assistant
 check:
 	.github/scripts/ci-change.test.sh
 	guards/run.sh --self-test
+	guards/docs.test.sh
+	guards/docs.sh
 	jq empty rulesets/*.json
 
 # git hooks. shortcut: both run all of check while it takes about a second; split by stage once it doesn't.
