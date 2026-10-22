@@ -1,0 +1,12 @@
+{
+  "pass": [
+    {"body": "Closes IRM-12"},
+    {"body": "fixes irm-12, and closes IRM-12 again"}
+  ],
+  "fail": [
+    {"body": "Refs IRM-12"},
+    {"body": "Closes IRM-12\nCloses IRM-13"},
+    {"body": ""},
+    {}
+  ]
+}

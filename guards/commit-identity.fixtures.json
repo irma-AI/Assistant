@@ -1,0 +1,12 @@
+{
+  "pass": [
+    {"commits": [{"sha": "aaaaaaa1", "author": "noreply@anthropic.com", "committer": "noreply@anthropic.com"}]},
+    {"commits": [{"sha": "aaaaaaa2", "author": "noreply@anthropic.com", "committer": "noreply@github.com"}]}
+  ],
+  "fail": [
+    {"commits": [{"sha": "bbbbbbb1", "author": "someone@example.com", "committer": "noreply@anthropic.com"}]},
+    {"commits": [{"sha": "bbbbbbb2", "author": "noreply@anthropic.com", "committer": "someone@example.com"}]},
+    {"commits": [{"sha": "bbbbbbb3", "author": "noreply@anthropic.com", "committer": "noreply@anthropic.com"}, {"sha": "bbbbbbb4", "author": "1+owner@users.noreply.github.com", "committer": "noreply@github.com"}]},
+    {"commits": []}
+  ]
+}

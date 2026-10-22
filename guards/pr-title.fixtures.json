@@ -1,0 +1,14 @@
+{
+  "pass": [
+    {"title": "feat: add autosave"},
+    {"title": "fix(db): keep the advisory lock"},
+    {"title": "feat(api)!: drop the v1 routes"}
+  ],
+  "fail": [
+    {"title": "Add autosave"},
+    {"title": "feature: add autosave"},
+    {"title": "feat:add autosave"},
+    {"title": ""},
+    {}
+  ]
+}
