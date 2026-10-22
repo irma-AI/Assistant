@@ -1,6 +1,6 @@
 REPO ?= irma-AI/Assistant
 
-.PHONY: check check-repo check-app check-staged check-push install dev setup skills github
+.PHONY: check check-repo check-app check-staged check-push install dev image-check setup skills github
 
 # Everything CI runs.
 check: check-repo check-app
@@ -25,6 +25,10 @@ check-app:
 install:
 	mise install
 	pnpm install --frozen-lockfile
+
+# The release image builds and serves VERSION on /version (needs Docker).
+image-check:
+	.github/scripts/image-check.sh $(VERSION)
 
 # The app on http://localhost:3000.
 dev:
