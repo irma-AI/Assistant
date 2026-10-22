@@ -38,6 +38,7 @@ export default [
   {
     ignores: [
       'eslint.config.js',
+      '.dependency-cruiser.cjs',
       'prettier.config.js',
       'src/routeTree.gen.ts',
       'src/server/db.gen.ts',

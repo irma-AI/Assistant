@@ -1,0 +1,14 @@
+[
+  {
+    "criterion": "A component or route importing *.server.ts fails the layers guard.",
+    "passes": true
+  },
+  {
+    "criterion": "Circular imports fail, except the generated route tree's type-only import of the router.",
+    "passes": true
+  },
+  {
+    "criterion": "The guard runs in make check, and .dependency-cruiser.cjs is a protected path.",
+    "passes": true
+  }
+]

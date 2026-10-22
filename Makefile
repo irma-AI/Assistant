@@ -23,6 +23,7 @@ check-app: generate-check
 	pnpm exec prettier --check .
 	pnpm exec tsc --noEmit
 	pnpm exec eslint .
+	guards/layers.sh
 	pnpm exec vitest run
 
 test:
