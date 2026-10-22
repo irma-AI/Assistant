@@ -27,7 +27,6 @@ case ${1:-} in
     ;;
   vendor)
     tmp=$(mktemp -d "${TMPDIR:-/tmp}/skills.XXXXXX")
-    trap 'rm -rf "$tmp"' EXIT
     for name in $(jq -r 'to_entries[] | select(.value.source != "local") | .key' "$lock"); do
       read -r source commit path < <(jq -r --arg n "$name" '.[$n] | "\(.source) \(.commit) \(.path)"' "$lock")
       src="$tmp/$(tr / _ <<<"$source")-$commit"
