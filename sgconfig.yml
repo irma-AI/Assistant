@@ -1,0 +1,6 @@
+ruleDirs: [guards/ast-grep/rules]
+testConfigs:
+  - testDir: guards/ast-grep/tests
+# One rule set for .ts and .tsx: both parse as TSX, which also rejects the <T>x casts the linter bans.
+languageGlobs:
+  tsx: ['*.ts', '*.tsx']

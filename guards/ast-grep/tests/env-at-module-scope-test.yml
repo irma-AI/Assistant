@@ -1,0 +1,8 @@
+id: env-at-module-scope
+valid:
+  - "export const handler = () => process.env.DATABASE_URL"
+  - "function url() { return process.env.DATABASE_URL }"
+  - "const route = { GET: () => Response.json({ v: process.env.APP_VERSION }) }"
+invalid:
+  - "const url = process.env.DATABASE_URL"
+  - "export const pool = new Pool({ connectionString: process.env.DATABASE_URL })"

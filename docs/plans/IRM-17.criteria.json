@@ -1,0 +1,18 @@
+[
+  {
+    "criterion": "wrong-framework fails on imports from next/*, react-router-dom or @tanstack/start, createServerFn from @tanstack/react-router, \"use server\" and getServerSideProps, and on src/pages or app/layout.tsx.",
+    "passes": true
+  },
+  {
+    "criterion": "env-at-module-scope fails on process.env read outside a function in src/ (tests excluded).",
+    "passes": true
+  },
+  {
+    "criterion": "secret-in-vite-env fails on a VITE_ variable named like a secret.",
+    "passes": true
+  },
+  {
+    "criterion": "ast-grep is pinned in mise.toml, and sgconfig.yml is a protected path.",
+    "passes": true
+  }
+]
