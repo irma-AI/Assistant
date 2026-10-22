@@ -46,5 +46,8 @@
     "commit": "09c434ab73ca43761c5d8b0c5d341926c2fba710",
     "path": "skills/ponytail-review",
     "sha256": "363f12117c84d2b876155241cdfd1ef916c9ae05af37ecf00ab1c70e9b492c47"
+  },
+  "next-step": {
+    "source": "local"
   }
 }
