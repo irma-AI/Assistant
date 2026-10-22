@@ -11,6 +11,7 @@ check-repo:
 	guards/run.sh --self-test
 	guards/docs.test.sh
 	guards/docs.sh
+	guards/stack.sh
 	.github/scripts/skills.sh check
 	jq empty rulesets/*.json
 

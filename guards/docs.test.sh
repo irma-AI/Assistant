@@ -24,6 +24,7 @@ expect "missing path" $'## Rules\n\n- One. [enforced: path:scripts/nope.sh]' fai
 expect "missing make target" $'## Rules\n\n- One. [enforced: make:nope]' fail
 expect "unknown kind" $'## Rules\n\n- One. [enforced: hope:g]' fail
 expect "backticked make target missing" $'Run `make nope`.\n\n## Rules\n\n- One. [enforced: guard:g]' fail
+expect "code that looks like a file name" $'Read `process.env` here.\n\n## Rules\n\n- One. [enforced: guard:g]' pass
 expect "backticked path missing" $'See `scripts/gone.sh`.\n\n## Rules\n\n- One. [enforced: guard:g]' fail
 expect "over budget" "$good"$'\n'"$(printf 'x%.0s' $(seq 1 4001))" fail
 expect "nothing to scan" '# Empty' fail

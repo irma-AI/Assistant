@@ -42,7 +42,7 @@ for t in $(cat "${files[@]}" | grep -oE '`make [a-z-]+`' | tr -d '`' | awk '{pri
   scanned=$((scanned + 1))
   grep -qE "^$t:" Makefile || bad "\`make $t\` is not a make target. Fix: name an existing target."
 done
-for p in $(cat "${files[@]}" | grep -oE '`[A-Za-z0-9._/-]+`' | tr -d '`' | grep -E '/|\.[a-z]+$' || true); do
+for p in $(cat "${files[@]}" | grep -oE '`[A-Za-z0-9._/-]+`' | tr -d '`' | grep -E '/|\.(md|json|sh|ya?ml|tsx?|js|sql|toml)$' || true); do
   scanned=$((scanned + 1))
   [ -e "${p%/}" ] || bad "\`$p\` does not exist. Fix: correct the path or drop it."
 done

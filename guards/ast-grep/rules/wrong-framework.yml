@@ -1,0 +1,18 @@
+id: wrong-framework
+language: tsx
+severity: error
+message: 'This is Next.js or React Router code; the app is TanStack Start. Fix: use @tanstack/react-router for routing and createServerFn from @tanstack/react-start for server code.'
+rule:
+  any:
+    - kind: string
+      regex: ^['"](next(/.*)?|react-router-dom|@tanstack/start)['"]$
+      inside: { kind: import_statement }
+    - kind: string
+      regex: ^['"]use server['"]$
+      inside: { kind: expression_statement }
+    - kind: identifier
+      regex: ^getServerSideProps$
+    - kind: import_statement
+      all:
+        - has: { kind: string, regex: "@tanstack/react-router", stopBy: end }
+        - has: { kind: identifier, regex: ^createServerFn$, stopBy: end }

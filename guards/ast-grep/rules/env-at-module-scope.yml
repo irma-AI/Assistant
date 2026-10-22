@@ -1,0 +1,16 @@
+id: env-at-module-scope
+language: tsx
+severity: error
+message: 'process.env read at module scope can end up in the browser bundle. Fix: read it inside the server function or handler that needs it.'
+files: ['src/**']
+ignores: ['src/**/*.test.ts', 'src/**/*.test.tsx']
+rule:
+  pattern: process.env
+  not:
+    inside:
+      any:
+        - kind: function_declaration
+        - kind: function_expression
+        - kind: arrow_function
+        - kind: method_definition
+      stopBy: end
