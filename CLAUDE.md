@@ -4,7 +4,7 @@ Agents build this repository end to end; nobody reviews code by hand. CI on GitH
 
 ## Workflow
 
-- The app is TanStack Start (React) on Node, with pnpm; `make install` sets up the pinned tools and dependencies, and `make dev` serves it.
+- The app is TanStack Start (React) on Node, with pnpm; `make install` sets up the pinned tools and dependencies, and `make dev` serves it. `make check` needs `DATABASE_URL` pointing at a PostgreSQL 16 database it may migrate.
 - Work starts from one Linear issue in the IRM team. Run it with the `next-step` skill (`.claude/skills/next-step/SKILL.md`), which keeps the issue's plan in `docs/plans/` on the branch.
 - Run `make check` before you open a PR. The git hooks run it too once `make setup` (or the SessionStart hook) has pointed git at `.githooks/`.
 - Open the PR, then turn on auto-merge. The merge queue retests and merges it.
@@ -24,3 +24,4 @@ Issues live in Linear, team IRM, with type labels `feature`, `bug`, `ui`, `chore
 - Changes reach `main` only through a PR in the merge queue, with `ci` and `policy` green. [enforced: path:rulesets/main.json]
 - Every rule in this file names an existing check, and this file stays under 4000 characters. [enforced: guard:docs]
 - Skills copied from other repositories match the commit pinned in `.claude/skills.lock.json`. [enforced: path:.github/scripts/skills.sh]
+- A PR that adds or changes a file in `migrations/` also changes a test that exercises it against the real database. [enforced: guard:pr-migration-test]

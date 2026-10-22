@@ -1,11 +1,13 @@
 package-lock.json
 pnpm-lock.yaml
-yarn.lock*.md
+yarn.lock
+*.md
 .claude/
 .github/
 guards/
 rulesets/
 docs/
 src/routeTree.gen.ts
+src/server/db.gen.ts
 Dockerfile
 .dockerignore

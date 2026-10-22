@@ -1,0 +1,18 @@
+[
+  {
+    "criterion": "The provider applies migrations in name order with several statements per file, and a failing migration applies none of the pending ones; both are tested against a real PostgreSQL.",
+    "passes": true
+  },
+  {
+    "criterion": "make generate rebuilds db.gen.ts and the route tree; generate-check fails when a committed copy is stale.",
+    "passes": true
+  },
+  {
+    "criterion": "ci runs the tests against a PostgreSQL 16 service pinned by digest.",
+    "passes": true
+  },
+  {
+    "criterion": "A PR that changes migrations/ without a test fails the pr-migration-test guard.",
+    "passes": true
+  }
+]
