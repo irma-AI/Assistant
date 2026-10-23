@@ -11,7 +11,7 @@ files=$1
 # reads as configuration stays protected too: dotfiles and dot folders, package manifests,
 # *.config.* files, tsconfigs, makefiles, CLAUDE*.md, and the migration provider.
 free='^(src/|e2e/|migrations/|docs/plans/)'
-risky='(^|/)\.|(^|/)(package\.(json|ya?ml)|[^/]*\.config\.[^/]+|tsconfig[^/]*\.json|GNUmakefile|[Mm]akefile|CLAUDE[^/]*\.md)$|^src/server/migrate\.server\.ts$'
+risky='(^|/)\.|(^|/)(package\.(json|ya?ml)|[^/]*\.config\.[^/]+|tsconfig[^/]*\.json|GNUmakefile|[Mm]akefile|CLAUDE[^/]*\.md)$|^src/server/(migrate|synthetic)\.server\.ts$'
 hits=$( { grep -vE "$free" "$files"; grep -E "$risky" "$files"; } | grep . | sort -u || true)
 if [ -z "$hits" ]; then
   echo "scanned $(grep -c . "$files" || true) files, none protected"

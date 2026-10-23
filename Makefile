@@ -19,6 +19,8 @@ check-repo:
 	gitleaks git --redact --no-banner
 	.github/scripts/skills.sh check
 	jq empty rulesets/*.json
+	guards/synthetic-data.test.sh
+	guards/synthetic-data.sh
 
 # The app: generated files and the production build, format, type check, lint with size limits,
 # unit and real-database tests.

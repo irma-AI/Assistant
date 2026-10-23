@@ -1,0 +1,14 @@
+[
+  {
+    "criterion": "guardrails 2.1 no longer claims seed data.",
+    "passes": true
+  },
+  {
+    "criterion": "A check in `make check-repo` fails when a migration names a personal-data column (email, phone, name, address, personal number and the like) or creates a table of people while `src/server/synthetic.server.ts` doesn't exist or is a stub, with a fix message pointing at guardrails 2.8; its test has passing and failing cases. The generator's file is a protected path, so a stub can't land without an issue the owner readied.",
+    "passes": true
+  },
+  {
+    "criterion": "guardrails 2.8 says what the generator must do (example domains per RFC 2606, phone numbers in a reserved fiction range, deterministic people for tests, seeds and screenshots) and that the check holds it to the first such migration.",
+    "passes": true
+  }
+]
