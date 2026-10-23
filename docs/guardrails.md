@@ -96,7 +96,7 @@ Size limits here count characters or words, and are enforced.
 
 ### 2.1 One command interface
 
-**What it is.** Agents, git hooks, CI jobs and scheduled jobs call named task-runner targets, never the underlying command. One exception: ci's `e2e` job runs `pnpm e2e` directly, because Playwright's image has no make; `make e2e` runs the same script.
+**What it is.** Agents, git hooks, CI jobs and scheduled jobs call named task-runner targets, never the underlying command. The exceptions are setup and platform calls the workflows make themselves (`pnpm install`, mise, `gh attestation verify`), and the browser tests in ci's `e2e` job and the production smoke test, which run through `pnpm` because Playwright's image has no make; `make e2e` runs the same script.
 
 - Core targets: `check` (everything CI runs), `fix`, `generate`, `generate-check`, and `dev`, which boots the app with seed data so agents and the verification job ([2.13](#213-done-means-seen-working)) can exercise it.
 - Hook targets such as `check-staged` (pre-commit) and `check-push` (pre-push).
@@ -231,7 +231,7 @@ Size limits here count characters or words, and are enforced.
 
 ### 2.9 Generated artifacts
 
-**What it is.** `generate` rebuilds every file a tool produces: the route tree (`routeTree.gen.ts`), the Kysely database types and the TanStack skills ([section 3](#3-skills)). `make generate` rewrites them in place, and `generate-check` runs it and fails, printing the fix command, if a committed copy changed.
+**What it is.** `generate` rebuilds every file a tool produces from the code: the route tree (`routeTree.gen.ts`) and the Kysely database types. The TanStack skills ([section 3](#3-skills)) are copied by `make skills` and checked by `node scripts/tanstack-skills.ts --check` in `make check-app`. `make generate` rewrites them in place, and `generate-check` runs it and fails, printing the fix command, if a committed copy changed.
 
 - The database types come from kysely-codegen against the migrated schema, written into the repository and checked by `make generate-check`, which fails when a committed copy differs. Two runs give identical output.
 - Route generation is proven by a production build, because TanStack's own guidance says "a typecheck alone does not prove route generation".
@@ -356,7 +356,7 @@ Size limits here count characters or words, and are enforced.
 - The platform's own Stop hook is reported to steer commits toward `noreply@anthropic.com`, so that address avoids fighting the platform.
 - The old allow-list's first version forgot the squash committer and turned the default branch red ([2.3](#23-guard-framework)).
 - Cloud sessions get their commit identity from the platform, and the old identity leak came from a local session, so a CI check is enough.
-- Session links stay out of commits and PRs: the repository is public, and a session holds the whole conversation, so a link would be one sharing setting away from exposing it. The PR, its Linear issue and the release notes are the provenance record.
+- Session links stay out of commits and PRs (the owner's decision, 2026-10-23): the repository is public, and a session holds the whole conversation, so a link would be one sharing setting away from exposing it. The PR, its Linear issue and the release notes are the provenance record.
 
 ### 2.16 Decision records for memory, bounded
 
@@ -544,7 +544,7 @@ A skill is a Markdown file of instructions that Claude Code loads when it is cal
 - A routine prompt names a skill's file by path, and the routine reads it as plain instructions ([2.28](#228-routine-prompts-point-into-the-repository)).
 - The AI review in CI reads its lens files by path from the default branch, so a PR cannot change the lenses that judge it ([2.11](#211-ai-review-and-task-fit-judge-run-by-ci-on-the-subscription)).
 - Interactive cloud sessions load the skills directly, for example `/next-step ABC-12`. Intake runs in a cloud session on the repository too, so it uses the same copies and can read the code.
-- TanStack's skills ship inside its npm packages, so `make skills` copies the allowlisted ones into `.claude/skills/tanstack-<package>-<skill>/`, rewriting their names and relative links, and generate-check ([2.9](#29-generated-artifacts)) keeps the copy equal to the installed version. The lockfile pins them, and `intent hooks install` is never run, because it edits `.claude/settings.json`.
+- TanStack's skills ship inside its npm packages, so `make skills` copies the allowlisted ones into `.claude/skills/tanstack-<skill>/`, rewriting their names and relative links, and `scripts/tanstack-skills.ts --check` in `make check-app` keeps the copy equal to the installed version. The lockfile pins them, and `intent hooks install` is never run, because it edits `.claude/settings.json`.
 - No skill installs hooks, and a claude.ai plugin that duplicates a repository skill should be turned off in the owner's claude.ai settings, so each skill loads once.
 
 | Skill | Source | Used in | Role |
@@ -601,7 +601,7 @@ Each stage has a rough time budget, so the fast checks run early and nothing slo
 | 4 | Merge queue | CI again, on top of the latest default branch |
 | 5 | After merge | Audit, deploy, verify, release, archive |
 
-Stages 1 and 2 run inside the cloud VM too; in a routine run they are *not checked* yet ([2.2](#22-layered-enforcement-pipeline)). Every check also runs in CI; a dot marks the earlier stages where it runs as well.
+Stages 1 and 2 run inside the cloud VM too; in a routine run they are *not checked* yet ([2.2](#22-layered-enforcement-pipeline)). Every check also runs in CI, and pre-push runs all of `make check`, so everything from stage 1 runs again at stage 2 on the whole repository; a dot marks the earliest stages where a check runs.
 
 | Check | 0 | 1 | 2 | Later |
 |---|---|---|---|---|
@@ -613,7 +613,8 @@ Stages 1 and 2 run inside the cloud VM too; in a routine run they are *not check
 | Generated files up to date | | | ● | |
 | Type check (`tsc --noEmit`), lint with size limits, and a production build | | | ● | |
 | Unit tests and pure-function tests | | | ● | |
-| Guard self-tests, stack guards and layer rules | | ● | ● | |
+| Guard self-tests and stack guards | | ● | ● | |
+| Layer rules | | | ● | |
 | Real-store tests | | | ● | |
 | PR title format, PR description sections, one closed issue, commit identity, a test change for every migration | | | | Stage 3 (`policy`) |
 | Build every shipped configuration | | | | Stage 3 (`ci`) |
