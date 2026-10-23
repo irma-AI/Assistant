@@ -10,7 +10,7 @@ This learns from the scaffolding around that code: instructions for the agents (
 
 ## What this assumes
 
-**The people.** One owner works with Linear only through Claude and checks production from time to time. Nobody files issues by hand, reviews code, approves a merge or commits: every commit and every change in Linear comes from Claude.
+**The people.** One owner works with Linear only through Claude and checks production from time to time. Nobody files issues by hand, reviews code, approves a merge or commits: every commit in a PR and every change in Linear comes from Claude, and each squash commit on the default branch carries Claude as co-author.
 
 **The agent.** Claude Code is the only agent harness. Building happens in cloud sessions and in routines (scheduled cloud agents), almost never on a local machine.
 
@@ -96,7 +96,7 @@ Size limits here count characters or words, and are enforced.
 
 ### 2.1 One command interface
 
-**What it is.** Agents, git hooks, CI jobs and scheduled jobs call named task-runner targets, never the underlying command.
+**What it is.** Agents, git hooks, CI jobs and scheduled jobs call named task-runner targets, never the underlying command. One exception: ci's `e2e` job runs `pnpm e2e` directly, because Playwright's image has no make; `make e2e` runs the same script.
 
 - Core targets: `check` (everything CI runs), `fix`, `generate`, `generate-check`, and `dev`, which boots the app with seed data so agents and the verification job ([2.13](#213-done-means-seen-working)) can exercise it.
 - Hook targets such as `check-staged` (pre-commit) and `check-push` (pre-push).
@@ -214,7 +214,7 @@ Size limits here count characters or words, and are enforced.
 
 **What it is.** A test seam is where tests attach to the system and observe real behaviour.
 
-- There are three: server functions tested with Vitest against a real PostgreSQL, pure functions tested on stored sample records, and the browser tested through Playwright. `CLAUDE.md` states them, and the AI review ([2.11](#211-ai-review-and-task-fit-judge-run-by-ci-on-the-subscription)) fails a PR that adds code outside them.
+- There are three: server functions tested with Vitest against a real PostgreSQL, pure functions tested on stored sample records, and the browser tested through Playwright. `CLAUDE.md` states them.
 - Tests don't mock the project's own modules, and small local servers that behave like external services, such as an AI model's API, may stand in for them.
 - Sweep tests check every member of a set, so a new member is tested automatically: every server function requires login or sits on an explicit public list ([2.3](#23-guard-framework)), and every value of a closed set is handled. Parity tests read both copies of any fact stored in two places and fail if they differ. *Not built yet.*
 - A Playwright test with two browser contexts shows an edit in one appear in the other without a reload, and a write the database refuses roll back visibly ([2.29](#229-one-write-path-with-live-updates)). *Not built yet.*
@@ -227,11 +227,11 @@ Size limits here count characters or words, and are enforced.
 - Its one production outage came from code no seam covered. Three untested PRs changed one browser page's JavaScript within 33 minutes, and the second broke that page on every iPhone. The maintainer noticed by testing on a phone, which nobody does here.
 - Login is swept on server functions, where the data is. TanStack's own guidance says a route's `beforeLoad` "is UX, not the data boundary".
 
-**Tools.** [Vitest](https://vitest.dev/) for server and pure functions, and [Playwright](https://playwright.dev/) for the browser seam and the PR screenshots (`make screenshots`), run on WebKit with iPhone device profiles. WebKit on Linux is close to, but not the same as, iOS Safari.
+**Tools.** [Vitest](https://vitest.dev/) for server and pure functions, and [Playwright](https://playwright.dev/) for the browser seam and for before and after screenshots in the PR, run on WebKit with iPhone device profiles. WebKit on Linux is close to, but not the same as, iOS Safari.
 
 ### 2.9 Generated artifacts
 
-**What it is.** `generate` rebuilds every file a tool produces: the route tree (`routeTree.gen.ts`), the Kysely database types and the TanStack skills ([section 3](#3-skills)). `generate-check` rebuilds them in a scratch space and fails, printing the fix command, if a committed copy is out of date.
+**What it is.** `generate` rebuilds every file a tool produces: the route tree (`routeTree.gen.ts`), the Kysely database types and the TanStack skills ([section 3](#3-skills)). `make generate` rewrites them in place, and `generate-check` runs it and fails, printing the fix command, if a committed copy changed.
 
 - The database types come from kysely-codegen against the migrated schema, written into the repository and checked by `make generate-check`, which fails when a committed copy differs. Two runs give identical output.
 - Route generation is proven by a production build, because TanStack's own guidance says "a typecheck alone does not prove route generation".
@@ -315,7 +315,8 @@ Size limits here count characters or words, and are enforced.
 - CI builds a Docker image of the Nitro Node server, attests it with [`actions/attest-build-provenance`](https://github.com/actions/attest-build-provenance), and pushes it to GitHub's container registry tagged with its commit hash, a tag that never moves.
 - The deploy job verifies the attestation (`gh attestation verify`), pins the tag in Dokploy (`application.saveDockerProvider`, then `application.deploy`) and polls the app's `/version` route, because Dokploy's deploy call returns before the deploy finishes.
 - Dokploy marks a deploy done before traffic moves, and reports a Swarm rollback as done while keeping the broken image, so `/version` alone decides. If it never shows the new commit, the job pins the previous tag again.
-- A smoke job then runs the Playwright suite from [2.8](#28-declared-test-seams-swept) against production. If it fails, a rollback job pins the previous tag again. Each failure opens a Linear issue labelled `deploy-failure` that says what happened, which [`next-step`](#3-skills) starts with [`diagnosing-bugs`](#3-skills).
+- A smoke job then runs the Playwright suite from [2.8](#28-declared-test-seams-swept) against production. If it fails, a rollback job pins the previous tag again. Each failure opens a Linear issue labelled `deploy-failure` that says what happened, which [`next-step`](#3-skills) starts with [`diagnosing-bugs`](#3-skills). *Not checked:* neither rollback path, after a bad image or after a failed smoke test, has run in production yet.
+- The home page's `<h1>Assistant</h1>` heading is part of the deploy contract: `deploy.sh` checks it after `/version`, so changing it means changing the check too.
 - The image applies pending migrations before it starts serving, so a failed migration keeps the container from turning healthy and the deploy rolls back. Because the new container migrates while the old one still serves, migrations stay compatible with the previous release.
 - Dokploy's health check keeps the old container serving until the new one is healthy and rolls back if it never is, which CI sees on `/version` as a failed deploy.
 - The release job ([2.18](#218-conventional-commits-semantic-versions-and-release-notes)) runs only after verification passes.
@@ -335,7 +336,7 @@ Size limits here count characters or words, and are enforced.
 - One known exception is still open: Claude's GitHub connection acts with the connected account's full rights. If that account owns the organization, the agent's GitHub tools can do anything it can, including turning off the ruleset or changing repository settings. The owner chose not to test a writer-only account (2026-10-23), so this stays a known risk: the ruleset check in the audit on every merge ([2.12](#212-ci-as-the-authority)) is the only defence, and it catches a change afterwards.
 - Cloud environments use a Custom network allow-list no broader than the work needs, including Playwright's browser downloads (`cdn.playwright.dev`, `playwright.download.prss.microsoft.com`).
 - Secrets live only as network secrets, which the proxy adds to requests leaving the VM, so the agent never sees them. Environment variables hold none, because the agent can read them.
-- A guard, GitHub's secret scanning with push protection (free on public repositories) and a pre-commit secret scan catch committed secrets, and a stack guard ([2.3](#23-guard-framework)) keeps secrets out of the browser bundle.
+- gitleaks (over the whole history in `make check-repo`, and over the staged changes at pre-commit) and GitHub's secret scanning with push protection (free on public repositories) catch committed secrets, and a stack guard ([2.3](#23-guard-framework)) keeps secrets out of the browser bundle.
 
 **Why.**
 
@@ -347,7 +348,7 @@ Size limits here count characters or words, and are enforced.
 
 ### 2.15 Commit identity
 
-**What it is.** Every commit in a PR comes from Claude: the `commit-identity` guard requires the author `noreply@anthropic.com` and a committer that is Claude or GitHub. The squash commit on the default branch is authored by the account that turned on auto-merge, with Claude kept as a `Co-authored-by:` trailer, so the guard covers the PR's commits only. Locally, the repository's git and `gh` credentials are pinned to the owner's personal account, never the company one. The `Claude-Session:` trailer on commits and the session link in PR bodies stay switched on.
+**What it is.** Every commit in a PR comes from Claude: the `commit-identity` guard requires the author `noreply@anthropic.com` and a committer that is Claude or GitHub. The squash commit on the default branch is authored by the account that turned on auto-merge, with Claude kept as a `Co-authored-by:` trailer, so the guard covers the PR's commits only. Locally, the git and `gh` credentials are pinned to the owner's personal account, never the company one; that is a setting on the owner's machine (`.claude/settings.local.json` and the checkout's git config), not something in the repository.
 
 **Why.**
 
@@ -355,7 +356,7 @@ Size limits here count characters or words, and are enforced.
 - The platform's own Stop hook is reported to steer commits toward `noreply@anthropic.com`, so that address avoids fighting the platform.
 - The old allow-list's first version forgot the squash committer and turned the default branch red ([2.3](#23-guard-framework)).
 - Cloud sessions get their commit identity from the platform, and the old identity leak came from a local session, so a CI check is enough.
-- The trailer is the provenance record, taking the owner from a release straight to the session that wrote it. The old repository switched it off.
+- Session links stay out of commits and PRs: the repository is public, and a session holds the whole conversation, so a link would be one sharing setting away from exposing it. The PR, its Linear issue and the release notes are the provenance record.
 
 ### 2.16 Decision records for memory, bounded
 
@@ -422,8 +423,8 @@ Size limits here count characters or words, and are enforced.
 **What it is.** Work enters only through Linear, picked up by a routine that polls it.
 
 - The owner files issues and moves them to Ready by asking Claude in a cloud session on the repository. Claude interviews the owner with [`grilling`](#3-skills) and files the issues with [`to-tickets`](#3-skills), each with a type label and acceptance criteria.
-- A routine runs every hour, the shortest interval routines allow, takes one Ready issue at a time and follows [`next-step`](#3-skills) for it. It does not check who created or readied the issue ([section 7](#7-open-risks)).
-- It strips hidden characters and HTML comments from the issue text before the agent reads it.
+- A routine runs every hour, the shortest interval routines allow, takes one Ready issue at a time and follows [`next-step`](#3-skills) for it. It does not check who created or readied the issue ([section 7](#7-open-risks)). *Not checked:* no routine has run yet.
+- `next-step` tells the agent to drop zero-width characters and HTML comments from the issue text before reading it. Nothing strips them in code, because routines read Linear through the connector, where a script can't step in.
 
 **Why.**
 
@@ -443,7 +444,7 @@ Size limits here count characters or words, and are enforced.
 
 **What it is.** When an agent hits a decision it shouldn't make alone, it asks, and never in chat.
 
-- A routine posts the question as a comment on the Linear issue, moves the issue to "Needs input" and picks up other work. An interactive cloud session asks with the Ask tool.
+- A routine posts the question as a comment on the Linear issue, moves the issue to "Needs input" and picks up other work. An interactive cloud session asks with the Ask tool. *Not checked* from a routine yet.
 - The owner asks Claude which issues need input and answers through Claude, which posts the answer as a comment.
 - `CLAUDE.md` words its ask-first rules as "comment on the issue and move it to Needs input".
 - Typical questions: wording users will read, a new vendor, a product call, or an issue that can be read two ways.
@@ -478,7 +479,7 @@ Size limits here count characters or words, and are enforced.
 
 ### 2.25 Linear quota keeper
 
-**What it is.** When a PR merges, a workflow archives its issue through Linear's API, together with every other issue already Done or Canceled, which keeps the count well under the Free plan's 250 unarchived issues. The issue's text is in the repository by then ([2.23](#223-issue-linkage-with-the-issue-copied-into-the-repository)). The team's auto-archive setting stays on as a backstop.
+**What it is.** When a PR merges, a workflow archives its issue through Linear's API, together with every other issue already Done or Canceled, which keeps the count well under the Free plan's 250 unarchived issues. The issue's text is in the repository by then ([2.23](#223-issue-linkage-with-the-issue-copied-into-the-repository)). The team's auto-archive setting stays on as a backstop. The first run archived three Done issues.
 
 **Why.**
 
@@ -498,7 +499,7 @@ Size limits here count characters or words, and are enforced.
 
 ### 2.27 Weekly claim sweep
 
-**What it is.** A weekly routine follows [`claim-sweep`](#3-skills) to compare what the agent documents say with the code, and opens a PR that fixes stale claims. The PR merges through the same gates as everything else.
+**What it is.** A weekly routine follows [`claim-sweep`](#3-skills) to compare what the agent documents say with the code, and opens a PR that fixes stale claims. The PR merges through the same gates as everything else. *Not checked:* the routine hasn't run yet.
 
 **Why.**
 
@@ -544,7 +545,7 @@ A skill is a Markdown file of instructions that Claude Code loads when it is cal
 - The AI review in CI reads its lens files by path from the default branch, so a PR cannot change the lenses that judge it ([2.11](#211-ai-review-and-task-fit-judge-run-by-ci-on-the-subscription)).
 - Interactive cloud sessions load the skills directly, for example `/next-step ABC-12`. Intake runs in a cloud session on the repository too, so it uses the same copies and can read the code.
 - TanStack's skills ship inside its npm packages, so `make skills` copies the allowlisted ones into `.claude/skills/tanstack-<package>-<skill>/`, rewriting their names and relative links, and generate-check ([2.9](#29-generated-artifacts)) keeps the copy equal to the installed version. The lockfile pins them, and `intent hooks install` is never run, because it edits `.claude/settings.json`.
-- No skill installs hooks, and a claude.ai plugin that duplicates a repository skill is turned off in `enabledPlugins`, so each skill loads once.
+- No skill installs hooks, and a claude.ai plugin that duplicates a repository skill should be turned off in the owner's claude.ai settings, so each skill loads once.
 
 | Skill | Source | Used in | Role |
 |---|---|---|---|
@@ -573,7 +574,7 @@ A skill is a Markdown file of instructions that Claude Code loads when it is cal
   | `feature` | Tests at a declared seam ([2.8](#28-declared-test-seams-swept)), then the code |
   | `bug` | `diagnosing-bugs`, a failing regression test, the fix, and one line on the wider class of bug |
   | `deploy-failure` (opened by [2.13](#213-done-means-seen-working)) | `diagnosing-bugs` first, then as `bug` |
-  | `ui` | `impeccable`, with `make screenshots` in the PR |
+  | `ui` | `impeccable`, with before and after screenshots in the PR |
   | `chore`, `docs` | Straight to the end |
 
 - It ends with `make check`, a description written with `pr`, the PR opened with auto-merge on ([2.19](#219-merging-and-deploying-on-githubs-side)), and up to three rounds of CI fixes ([2.11](#211-ai-review-and-task-fit-judge-run-by-ci-on-the-subscription)).
@@ -605,16 +606,16 @@ Stages 1 and 2 run inside the cloud VM too; in a routine run they are *not check
 | Check | 0 | 1 | 2 | Later |
 |---|---|---|---|---|
 | Format each file right after the agent edits it | ● | | | |
-| Refuse edits to generated files (regenerate instead) | ● | ● | | |
+| Refuse edits to generated files (regenerate instead) | ● | | | |
 | Format and lint the staged files | | ● | | |
 | Scan the staged changes for secrets | | ● | | |
 | Agent-document references and the `CLAUDE.md` budget | | ● | | |
-| Generated files up to date (fast ones at stage 1, the rest at stage 2) | | ● | ● | |
+| Generated files up to date | | | ● | |
 | Type check (`tsc --noEmit`), lint with size limits, and a production build | | | ● | |
 | Unit tests and pure-function tests | | | ● | |
-| Guard self-tests, then guards and layer rules on the branch's changes | | | ● | |
-| Real-store tests, and a test change for every migration | | | ● | |
-| PR title format, PR description sections, one closed issue, commit identity | | | | Stage 3 (`policy`) |
+| Guard self-tests, stack guards and layer rules | | ● | ● | |
+| Real-store tests | | | ● | |
+| PR title format, PR description sections, one closed issue, commit identity, a test change for every migration | | | | Stage 3 (`policy`) |
 | Build every shipped configuration | | | | Stage 3 (`ci`) |
 | Guards and protected-path check, loaded from the target branch | | | | Stage 3 (`policy`) |
 | AI review and task-fit judge | | | | Stage 3 (`policy`) |
