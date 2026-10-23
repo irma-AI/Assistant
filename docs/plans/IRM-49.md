@@ -2,9 +2,10 @@
 
 From the guardrails audit at fcad227 (2026-10-23). `protected-paths.sh` protected `Makefile` but not `package.json` (whose `e2e` script ci runs), the Vitest, Playwright and TanStack Router configuration, `scripts/`, the migration provider or `docs/agents/`, so an agent with a failing test job could switch the tests off without touching a protected path.
 
-Acceptance criteria:
-- make check-repo runs protected-paths.test.sh and it passes.
-- CLAUDE.md, guardrails 2.12 and 2.28 name the same paths as the regex.
+Acceptance criteria (as updated in the issue after the owner's decision on 2026-10-23):
+- make check-repo runs protected-paths.test.sh, covering every bypass the skeptic pass found and ordinary free paths, and it passes.
+- CLAUDE.md, guardrails 2.12 and 2.28 describe the allowlist the script implements.
+- A renamed protected file counts as a change to a protected path.
 
 ## Progress
 
