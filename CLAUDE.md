@@ -29,3 +29,4 @@ Issues live in Linear, team IRM, with type labels `feature`, `bug`, `ui`, `chore
 - Routes and server code use TanStack Start (`createServerFn` from `@tanstack/react-start`, routes in `src/routes/`), and server code reads environment variables inside the function that needs them. [enforced: guard:stack]
 - No secret is committed, and workflows pass zizmor's security audit; a deliberate exception carries a `zizmor: ignore[...]` comment with the reason. [enforced: make:check-repo]
 - Server-only code lives in `*.server.ts` files that only `src/server/` imports; routes and components reach the server through `*.functions.ts` files of `createServerFn` wrappers. [enforced: guard:layers]
+- Types are inferred, never cast, and a lint or type-check suppression names its rule and gives the reason. [enforced: make:check-app]
