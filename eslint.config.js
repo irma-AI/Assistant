@@ -49,8 +49,9 @@ export default [
       'src/routeTree.gen.ts',
       'src/server/db.gen.ts',
       '.output/**',
-      // impeccable's vendored scripts are held to their upstream by the skills lock, not linted.
+      // Vendored scripts are held to their upstream by the skills lock, not linted.
       '.claude/skills/impeccable/**',
+      '.claude/hooks/ponytail-*.js',
     ],
   },
 ]
