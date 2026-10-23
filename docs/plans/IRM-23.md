@@ -13,6 +13,8 @@ Acceptance criteria:
 - `.claude/hooks/cloud-session.sh` exits at once without `CLAUDE_CODE_REMOTE=true`; run with it locally, it wrote the PATH line and the tools resolved from it.
 - `mise lock --platform linux-x64,macos-arm64` wrote 12 entries; a fresh install into an empty data directory installed all six tools from them.
 
+- A cloud session on this branch (2026-10-23) found ast-grep, pnpm and node in `/root/.local/share/mise/shims` at the pinned versions (Node 24.22.1, pnpm 12.15.0), `pg_isready` and `psql "$DATABASE_URL" -c 'select 1'` succeeding, and `make check` passing in 18.2 s, with nobody running a command first.
+
 ## Decisions
 
 - `locked` stays out of `mise.toml`, because it also refuses tools from a developer's global mise config; the hook runs `mise install` with `MISE_LOCKED=1` instead, so cloud installs use only the lock.
@@ -21,4 +23,4 @@ Acceptance criteria:
 
 ## Next step
 
-Confirm the first criterion in a cloud session on this branch (its SessionStart hook runs from the branch), then flip it.
+Merge.

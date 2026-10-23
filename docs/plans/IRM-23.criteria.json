@@ -1,7 +1,7 @@
 [
   {
     "criterion": "In a cloud session, ast-grep, pnpm and node from mise.toml are on PATH, and PostgreSQL accepts connections at DATABASE_URL, without anyone running a command.",
-    "passes": false
+    "passes": true
   },
   {
     "criterion": "The hook does nothing outside the cloud.",
