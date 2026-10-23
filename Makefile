@@ -8,6 +8,7 @@ check: check-repo check-app e2e
 # Guards, skills and repository rules.
 check-repo:
 	.github/scripts/ci-change.test.sh
+	.github/scripts/protected-paths.test.sh
 	guards/run.sh --self-test
 	guards/docs.test.sh
 	guards/docs.sh
