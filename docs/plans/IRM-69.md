@@ -17,10 +17,17 @@ Acceptance criteria:
 
 ## Progress
 
-- Plan written.
+- `docs/agents/intake.md`: checks the payload, the daily backstop's pick, the claim (blocked or already-closed issues stop before it), the state rules, then `next-step` by path. 905 characters.
+- `docs/agents/routines.md`: Intake's API trigger and prompt, the weekly ponytail audit on Monday 09:00, the local time zone, and where the trigger's URL and token live.
+- `docs/guardrails.md`: 2.20, 2.26, 2.28, 6.3 and 6.4, with the new pieces marked not checked.
+- `guards/docs.sh` passes (scanned 67); `make check` passes against PostgreSQL 16.
 
 ## Decisions
 
+- The claim checks blockers and open PRs first, so an issue fired by hand while blocked isn't left In Progress, where `next-step` would end without changing it.
+- Without automatic resume, a dead session leaves its issue In Progress and the dispatcher fires nothing until the owner acts. Recorded in 2.20 as the visible failure, rather than letting work run twice.
+- Claim sweep at 08:00 and the audit at 09:00 local are today's 06:00 and 07:00 UTC in Stockholm summer time.
+
 ## Next step
 
-Write `docs/agents/intake.md`.
+Open the PR.

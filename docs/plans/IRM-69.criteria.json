@@ -1,18 +1,18 @@
 [
   {
     "criterion": "docs/agents/intake.md exists within the docs guard's budget and covers the payload check, the backstop, the claim step and the state rules above.",
-    "passes": false
+    "passes": true
   },
   {
     "criterion": "routines.md shows the Intake trigger and prompt, the weekly ponytail audit and the time-zone note.",
-    "passes": false
+    "passes": true
   },
   {
     "criterion": "guardrails 2.20, 2.26, 2.28, 6.3 and 6.4 say the above, with the new pieces marked not checked.",
-    "passes": false
+    "passes": true
   },
   {
     "criterion": "make check passes.",
-    "passes": false
+    "passes": true
   }
 ]
