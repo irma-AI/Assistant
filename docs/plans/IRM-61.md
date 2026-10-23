@@ -11,7 +11,7 @@ Acceptance criteria:
 
 ## Progress
 
-- `docs/agents/routines.md` lists "Ponytail audit", monthly on the first Monday at 07:00 UTC, an hour after the claim sweep so they don't share a usage window. Its prompt names `.claude/skills/ponytail-audit/SKILL.md` and `.claude/skills/ponytail-debt/SKILL.md` by path, changes nothing, and files one Backlog issue per finding that no open issue covers. The docs guard (`make check-repo`) finds both paths.
+- `docs/agents/routines.md` lists "Ponytail audit", monthly on the first Monday at 07:00 UTC, an hour after the claim sweep so they don't share a usage window. Its prompt names `.claude/skills/ponytail-audit/SKILL.md` and `.claude/skills/ponytail-debt/SKILL.md` by path, changes nothing, and files one Backlog issue per finding that no open issue covers. Both files exist (`ls`); the docs guard passes, though it scans only `CLAUDE.md`, `next-step` and rule files, not `routines.md`.
 
 ## Decisions
 
