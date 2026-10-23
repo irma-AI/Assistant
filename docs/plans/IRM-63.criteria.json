@@ -1,0 +1,14 @@
+[
+  {
+    "criterion": "`audit.yml` also runs daily; the ruleset check runs on schedule and on push, the protected-path check only on push.",
+    "passes": true
+  },
+  {
+    "criterion": "A scheduled run that finds drift opens one Linear issue titled \"The main ruleset drifted\", and files none while one with that title is open.",
+    "passes": true
+  },
+  {
+    "criterion": "zizmor and `make check` pass.",
+    "passes": true
+  }
+]

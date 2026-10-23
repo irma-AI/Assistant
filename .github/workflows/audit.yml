@@ -1,9 +1,12 @@
 name: audit
-# After every merge: the protected-path rule again, and the ruleset still in force.
+# After every merge: the protected-path rule again, and the ruleset still in force. Daily, the ruleset
+# alone, so a change made in GitHub's settings shows up without waiting for a merge.
 # Any problem opens a Linear issue and fails this run.
 on:
   push:
     branches: [main]
+  schedule:
+    - cron: "17 6 * * *"
 permissions: {}
 jobs:
   audit:
@@ -22,6 +25,7 @@ jobs:
           persist-credentials: false
       - name: Protected paths need ci-change before Ready
         id: paths
+        if: github.event_name == 'push'
         continue-on-error: true
         run: |
           git diff-tree --root --no-commit-id --name-only -r HEAD > files.txt
@@ -38,7 +42,7 @@ jobs:
           echo "$checks" | jq -e 'index("ci") and index("policy")' > /dev/null \
             || { echo "::error::The main ruleset is inactive or no longer requires ci and policy. Fix: make github"; exit 1; }
       - name: Open a Linear issue
-        if: steps.paths.outcome != 'success' || steps.ruleset.outcome != 'success'
+        if: steps.paths.outcome == 'failure' || steps.ruleset.outcome == 'failure'
         env:
           PATHS: ${{ steps.paths.outcome }}
           RULESET: ${{ steps.ruleset.outcome }}
@@ -47,7 +51,16 @@ jobs:
           gql() { curl -sSf https://api.linear.app/graphql -H "Authorization: $LINEAR_API_TOKEN" -H 'Content-Type: application/json' -d @-; }
           team=$(jq -n --arg k "$LINEAR_TEAM" '{query:"query($k:String!){teams(filter:{key:{eq:$k}}){nodes{id}}}",variables:{k:$k}}' | gql | jq -er '.data.teams.nodes[0].id')
           body=$(printf 'Commit %s on main failed the audit (%s).\n\n- Protected paths: %s\n- Ruleset: %s\n' "$GITHUB_SHA" "$RUN" "$PATHS" "$RULESET")
-          jq -n --arg t "$team" --arg title "Audit failed on main at ${GITHUB_SHA::7}" --arg d "$body" \
+          title="Audit failed on main at ${GITHUB_SHA::7}"
+          if [ "$GITHUB_EVENT_NAME" = schedule ]; then
+            title="The main ruleset drifted"
+            body=$(printf 'The daily check found the main ruleset inactive or no longer requiring ci and policy (%s). Fix: make github\n' "$RUN")
+            # One issue for a drift that lasts, not one a day.
+            open=$(jq -n --arg k "$LINEAR_TEAM" --arg t "$title" '{query:"query($k:String!,$t:String!){issues(filter:{team:{key:{eq:$k}},title:{eq:$t},state:{type:{nin:[\"completed\",\"canceled\",\"duplicate\"]}}}){nodes{identifier}}}",variables:{k:$k,t:$t}}' | gql | jq -er '(.data.issues.nodes // error("Linear returned no issues")) | length')
+            # Still red every day until the ruleset is fixed, but filed once.
+            [ "$open" -eq 0 ] || { echo "::error::The ruleset still drifts; an issue is already open."; exit 1; }
+          fi
+          jq -n --arg t "$team" --arg title "$title" --arg d "$body" \
             '{query:"mutation($i:IssueCreateInput!){issueCreate(input:$i){success issue{identifier url}}}",variables:{i:{teamId:$t,title:$title,description:$d}}}' \
             | gql | jq -e '.data.issueCreate.success' > /dev/null
           exit 1
