@@ -8,6 +8,16 @@
             "command": "git config core.hooksPath >/dev/null || git config core.hooksPath .githooks"
           }
         ]
+      },
+      {
+        "matcher": "startup|resume",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash \"$CLAUDE_PROJECT_DIR\"/.claude/hooks/cloud-session.sh",
+            "timeout": 300
+          }
+        ]
       }
     ]
   }
