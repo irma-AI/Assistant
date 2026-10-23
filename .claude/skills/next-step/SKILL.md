@@ -33,8 +33,8 @@ No type label, or two: ask (step 4).
 
 **UI steps.**
 1. No DESIGN.md or PRODUCT.md at the repository root: ask (step 4), because the look is the owner's call.
-2. Follow `.claude/skills/impeccable/SKILL.md` inside the world DESIGN.md sets. Skip its new-work flow and its interviews; a design choice the brief doesn't settle is a question (step 4).
-3. Before the PR, run `impeccable audit` on the changed surface and fix what it finds.
+2. Follow `.claude/skills/impeccable/SKILL.md` inside the world DESIGN.md sets. Skip its new-work flow and its interviews; a design choice the brief doesn't settle is a question (step 4). DESIGN.md and impeccable's craft floor (`.claude/skills/impeccable/reference/craft-floor.md`) set how complete the design must be; ponytail governs the code's structure only.
+3. Before the PR, run `impeccable audit` on the changed surface. Fix each P0 and P1 finding with the command it recommends, then run `impeccable polish`. A recommended command that changes the look or the words (`bolder`, `quieter`, `colorize`, `animate`, `delight`, `overdrive`, `clarify`, `distill`, `onboard`) is a question (step 4).
 4. Take before and after screenshots with Playwright at 390 and 1280 px wide, of made-up data only, because the repository is public, and put them in the PR.
 
 **Whatever the label:**

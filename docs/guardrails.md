@@ -575,7 +575,7 @@ A skill is a Markdown file of instructions that Claude Code loads when it is cal
   | `feature` | Tests at a declared seam ([2.8](#28-declared-test-seams-swept)), then the code |
   | `bug` | `diagnosing-bugs`, a failing regression test, the fix, and one line on the wider class of bug |
   | `deploy-failure` (opened by [2.13](#213-done-means-seen-working)) | `diagnosing-bugs` first, then as `bug` |
-  | `ui` | As `feature`, then `impeccable` inside the world DESIGN.md sets and an `impeccable audit` of the changed surface, with before and after screenshots of made-up data in the PR; a `feature` that adds or changes a page takes the same steps |
+  | `ui` | As `feature`, then `impeccable` inside the world DESIGN.md sets, an `impeccable audit` of the changed surface, its P0 and P1 findings fixed with the commands it recommends (one that changes the look or the words goes to the owner) and `impeccable polish`, with before and after screenshots of made-up data in the PR; a `feature` that adds or changes a page takes the same steps |
   | `chore`, `docs` | Straight to the end |
 
 - It names each skill by file path, because routines read files, not skill names ([2.28](#228-routine-prompts-point-into-the-repository)). Whatever the label, a change to an agent document follows [`writing-for-agents`](#3-skills), and an unchecked outside fact gets [`research`](#3-skills) notes in the plan folder.

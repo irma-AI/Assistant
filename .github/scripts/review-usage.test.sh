@@ -9,7 +9,7 @@ fail=0
 # expect NAME EXECUTION_FILE VERDICT STRUCTURED_OUTPUT LINE: the rendered comment contains LINE.
 expect() {
   "$here/review-usage.sh" "$2" claude-opus-5-5 "$3" 7ee3f2a0123 "$4" > "$tmp/usage.json"
-  if "$here/review-usage-comment.sh" "$tmp/usage.json" https://example.com/run | grep -qxF -- "$5"; then
+  if "$here/review-usage-comment.sh" "$tmp/usage.json" https://example.com/run | grep -xF -- "$5" > /dev/null; then
     echo "ok    $1"
   else
     echo "FAIL  $1: no line '$5'"; fail=1

@@ -1,0 +1,18 @@
+[
+  {
+    "criterion": "`next-step`'s UI steps run audit, the recommended fix commands with the listed exceptions as questions, then polish, and carry the ponytail and impeccable split.",
+    "passes": true
+  },
+  {
+    "criterion": "The intake prompt in `docs/agents/routines.md` stops when no issue qualifies.",
+    "passes": true
+  },
+  {
+    "criterion": "Each criterion of IRM-50, IRM-55 and IRM-56 that a run has proven reads true with that run, and each plan says what the others still need.",
+    "passes": true
+  },
+  {
+    "criterion": "`review-usage.test.sh` passes 30 runs in a row.",
+    "passes": true
+  }
+]
