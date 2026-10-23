@@ -39,5 +39,6 @@ eng="XDG_CACHE_HOME=$cfg CLAUDE_ENV_FILE=$env IMPECCABLE_ENGINE_URL=file://$junk
 check "an engine off its pin is refused" "$eng" "does not match its pin; refused"
 check "and is not installed" "find $cfg/impeccable-pinned -type f" ""
 check "the launcher is told not to download" "cat $env" "IMPECCABLE_DOWNLOAD_BASE=https://engine-download.invalid"
+check "and the agent's calls get a failing engine" "cat $env" "IMPECCABLE_BIN=/.*bin/false"
 rm -rf "$cfg"
 exit $fail

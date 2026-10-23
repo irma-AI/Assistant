@@ -3,11 +3,15 @@
 # downloads it from an upstream release that can be replaced, checked only against that release's own sidecar.
 # Usage: impeccable-engine.sh [ARGS...]   runs the launcher with ARGS on the pinned engine; at session start it
 #        also exports IMPECCABLE_BIN to CLAUDE_ENV_FILE, so the agent's own launcher calls use the same engine.
-# A missing pin, platform or download skips the engine (exit 0), so a hook never blocks the session.
+# A missing pin, platform or download skips the engine (exit 0), so a hook never blocks the session; the agent's
+# calls then get a binary that always fails, never one of the launcher's unchecked fallbacks.
 set -uo pipefail
 root=${CLAUDE_PROJECT_DIR:-$(cd "$(dirname "$0")/../.." && pwd)}
 launcher="$root/.claude/skills/impeccable/scripts/impeccable"
 version=$(cat "$root/.claude/skills/impeccable/scripts/VERSION")
+nobin=$([ -x /usr/bin/false ] && echo /usr/bin/false || echo /bin/false)
+use() { [ -n "${CLAUDE_ENV_FILE:-}" ] && printf 'export IMPECCABLE_BIN=%q\n' "$1" >> "$CLAUDE_ENV_FILE"; return 0; }
+skip() { echo "impeccable-engine: $1" >&2; use "$nobin"; exit 0; }
 # The launcher must never fetch an engine itself.
 [ -n "${CLAUDE_ENV_FILE:-}" ] && echo "export IMPECCABLE_DOWNLOAD_BASE=https://engine-download.invalid" >> "$CLAUDE_ENV_FILE"
 case "$(uname -s)-$(uname -m)" in
@@ -15,19 +19,19 @@ case "$(uname -s)-$(uname -m)" in
   Darwin-x86_64) p=darwin-x64 ;;
   Linux-x86_64) p=linux-x64 ;;
   Linux-aarch64 | Linux-arm64) p=linux-arm64 ;;
-  *) echo "impeccable-engine: no pinned engine for $(uname -sm)" >&2; exit 0 ;;
+  *) skip "no pinned engine for $(uname -sm)" ;;
 esac
 want=$(jq -er --arg v "$version" --arg p "$p" '.impeccable.engine | select(.version == $v) | .sha256[$p]' "$root/.claude/skills.lock.json") \
-  || { echo "impeccable-engine: the skills lock pins no engine $version for $p" >&2; exit 0; }
+  || skip "the skills lock pins no engine $version for $p"
 sum() { if command -v sha256sum > /dev/null; then sha256sum "$1"; else shasum -a 256 "$1"; fi 2> /dev/null | cut -d' ' -f1; }
 bin="${XDG_CACHE_HOME:-$HOME/.cache}/impeccable-pinned/$version/impeccable"
 if [ "$(sum "$bin")" != "$want" ]; then
   mkdir -p "$(dirname "$bin")" && tmp="$bin.part.$$"
   url=${IMPECCABLE_ENGINE_URL:-https://github.com/pbakaus/impeccable/releases/download/engine-v$version/impeccable-$p}
-  if ! curl -fsSL --retry 2 -o "$tmp" "$url"; then rm -f "$tmp"; echo "impeccable-engine: could not download $url" >&2; exit 0; fi
-  if [ "$(sum "$tmp")" != "$want" ]; then rm -f "$tmp"; echo "impeccable-engine: $url does not match its pin; refused" >&2; exit 0; fi
+  curl -fsSL --retry 2 -o "$tmp" "$url" || { rm -f "$tmp"; skip "could not download $url"; }
+  [ "$(sum "$tmp")" = "$want" ] || { rm -f "$tmp"; skip "$url does not match its pin; refused"; }
   chmod +x "$tmp" && mv "$tmp" "$bin"
 fi
-[ -n "${CLAUDE_ENV_FILE:-}" ] && echo "export IMPECCABLE_BIN=$bin" >> "$CLAUDE_ENV_FILE"
+use "$bin"
 [ $# -eq 0 ] && exit 0
 IMPECCABLE_BIN=$bin exec "$launcher" "$@"
