@@ -1,0 +1,10 @@
+[
+  {
+    "criterion": "Each claim is marked holds, stale or unverifiable in the PR description with its evidence.",
+    "passes": true
+  },
+  {
+    "criterion": "guards/docs.sh passes, and CLAUDE.md stays under 4000 characters.",
+    "passes": true
+  }
+]
