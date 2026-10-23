@@ -1,0 +1,14 @@
+[
+  {
+    "criterion": "make check runs the Playwright tests in WebKit on iPhone 15 and iPhone SE profiles against the production server.",
+    "passes": true
+  },
+  {
+    "criterion": "ci installs WebKit with its system dependencies and runs them.",
+    "passes": true
+  },
+  {
+    "criterion": "CLAUDE.md names the three test seams.",
+    "passes": true
+  }
+]

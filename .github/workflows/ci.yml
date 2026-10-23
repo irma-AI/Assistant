@@ -7,7 +7,7 @@ permissions:
 jobs:
   ci:
     name: ci
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04 # Playwright supports it; ubuntu-latest moved to 26.04, where its apt dependencies stalled
     timeout-minutes: 20
     services:
       postgres:
@@ -25,5 +25,6 @@ jobs:
           persist-credentials: false
       - uses: jdx/mise-action@8418fedb1110381a0d3ba51a7a415d7c1b884550 # v5.2.2
       - run: pnpm install --frozen-lockfile
+      - run: pnpm exec playwright install --with-deps webkit
       - run: make check
       - run: make image-check VERSION=${{ github.sha }}
