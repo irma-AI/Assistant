@@ -1,0 +1,18 @@
+[
+  {
+    "criterion": "next-step's watch no longer treats auto-merge going off as a drop, handles a queue-removal notice like a failed check, and names Auto-fix as the subscription in routines, within its 6,000-character budget.",
+    "passes": false
+  },
+  {
+    "criterion": "routines.md lists Auto-fix pull requests among every routine's settings.",
+    "passes": false
+  },
+  {
+    "criterion": "guardrails 2.19 matches next-step and records the PR 58 observation.",
+    "passes": false
+  },
+  {
+    "criterion": "make check passes.",
+    "passes": false
+  }
+]
