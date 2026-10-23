@@ -1,0 +1,10 @@
+[
+  {
+    "criterion": "A staged file that prettier or ESLint rejects fails the commit.",
+    "passes": true
+  },
+  {
+    "criterion": "Only staged files are linted, and a commit with no TypeScript files skips ESLint.",
+    "passes": true
+  }
+]
