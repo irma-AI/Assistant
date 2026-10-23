@@ -1,0 +1,5 @@
+[
+  {"criterion": "The home page renders only the h1 \"Assistant\" inside main, with no starter paragraph.", "passes": true},
+  {"criterion": "The e2e smoke test still passes.", "passes": true},
+  {"criterion": "make check passes.", "passes": true}
+]
