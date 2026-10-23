@@ -1,0 +1,14 @@
+[
+  {
+    "criterion": "An Edit or Write to src/routeTree.gen.ts or src/server/db.gen.ts is refused with \"run make generate\".",
+    "passes": true
+  },
+  {
+    "criterion": "A file the agent edits is formatted with prettier right after the edit, following .prettierignore.",
+    "passes": true
+  },
+  {
+    "criterion": "Both hooks fail open on their own errors, because CI repeats the checks.",
+    "passes": true
+  }
+]
