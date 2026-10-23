@@ -1,0 +1,14 @@
+[
+  {
+    "criterion": "A check in `make check-repo` fails on a `shortcut:` comment in `src/`, `e2e/`, `scripts/` or `migrations/` that doesn't read `shortcut: <the limit>, <when to upgrade>`, and its test has a passing and a failing case.",
+    "passes": true
+  },
+  {
+    "criterion": "The monthly ponytail audit routine files one Backlog issue to pay down the oldest five shortcuts once there are more than 10, unless such an issue is open.",
+    "passes": true
+  },
+  {
+    "criterion": "guardrails section 5's shortcut row moves into the plan with what it now does.",
+    "passes": true
+  }
+]

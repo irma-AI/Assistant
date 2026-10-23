@@ -13,6 +13,8 @@ check-repo:
 	guards/run.sh --self-test
 	guards/docs.test.sh
 	guards/docs.sh
+	guards/shortcuts.test.sh
+	guards/shortcuts.sh
 	guards/stack.sh
 	bash .claude/hooks/test.sh
 	zizmor --offline --no-progress .github/workflows

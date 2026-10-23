@@ -494,10 +494,14 @@ Size limits here count characters or words, and are enforced.
 
 **What it is.** ESLint's `max-lines`, `max-lines-per-function` and `complexity` rules limit files and functions, and its configuration is a protected path ([2.12](#212-ci-as-the-authority)).
 
+- A deliberate shortcut is marked `shortcut: <the limit>, <when to upgrade>`, as ponytail asks ([section 3](#3-skills)), and `guards/shortcuts.sh` fails one in `src/`, `e2e/`, `scripts/` or `migrations/` that names no limit or upgrade.
+- The monthly ponytail audit routine lists them with `ponytail-debt` and, past 10, files one issue to pay down the oldest five ([2.28](#228-routine-prompts-point-into-the-repository)).
+
 **Why.**
 
 - In the old repository a view file reached 1,009 lines, and a locking mechanism "grew patch by patch" until the maintainer stepped in. Nobody will step in here.
 - OpenAI enforces file-size limits as invariants for the same reason.
+- In the old repository `shortcut:` comments went from 2 to 42 in nine days, with about 5 paid down and the ledger never run. A check that fails when the count grows would block the first honest shortcut and teach agents to leave the comment out, so the count gets an owner instead: the routine.
 
 ### 2.27 Weekly claim sweep
 
@@ -655,7 +659,6 @@ These depend on what the new repository turns out to contain, or on a live test.
 | Piece | Include when | How it works here |
 |---|---|---|
 | Behaviour evaluations for an AI model, with receipts | The product calls a model | Hash exactly what the model is sent: prompt, tool definitions, model ID and library versions. CI runs the evaluations itself through Claude Code's GitHub Action, with several samples and a pass-rate threshold, and writes the receipt with the run ID. No hand-copied receipts, and no rerunning a failed evaluation until it passes. |
-| `shortcut: <the limit>, <when to upgrade>` comments marking deliberate shortcuts | Shortcuts are allowed at all | A CI check fails when their count grows, unless the same PR pays one down. In the old repository the count went from 2 to 42 in nine days, with about 5 paid down. |
 | A contract for scripts that change production data: dry run by default, the target must match the environment, an audit line with IDs only | Scripts touch shared or production data | Without the old "reviewed digest" step, because the agent that runs the dry run would supply the digest. |
 | A design-token parity test that holds the design document's colours equal to the stylesheet | There is a user interface with a design document | As in the old repository, where it worked. |
 | Research notes that cite primary sources with the date each was read | Decisions depend on outside facts, such as law or vendor terms | As in the old repository, where they worked well. [`research`](#3-skills) writes them. |
