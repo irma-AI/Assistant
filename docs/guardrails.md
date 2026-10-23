@@ -423,17 +423,21 @@ Size limits here count characters or words, and are enforced.
 
 ### 2.20 Intake from Linear
 
-**What it is.** Work enters only through Linear, picked up by a routine that polls it.
+**What it is.** Work enters only through Linear. A GitHub Actions workflow polls Linear and starts the Intake routine through its API trigger when there is work.
 
 - The owner files issues and moves them to Ready by asking Claude in a cloud session on the repository. Claude interviews the owner with [`grilling`](#3-skills) and files the issues with [`to-tickets`](#3-skills), each with a type label and acceptance criteria.
-- A routine runs every hour, the shortest interval routines allow, takes one Ready issue at a time that nothing unfinished blocks, and follows [`next-step`](#3-skills) for it. It does not check who created or readied the issue ([section 7](#7-open-risks)). *Not checked:* no routine has run yet.
+- Every 10 minutes, on each merge and on demand, the workflow counts the issues In Progress. With none, it fires the routine once with the oldest Ready issue that no open PR closes and nothing unfinished blocks. The routine follows `docs/agents/intake.md`, which checks the ID, claims the issue by moving it to In Progress and follows [`next-step`](#3-skills) for it. A daily run with no ID is the backstop. Nothing checks who created or readied the issue ([section 7](#7-open-risks)). *Not checked:* neither the workflow nor the routine has run yet.
+- A session that dies leaves its issue In Progress, and the workflow then fires nothing until the owner resumes it (Run now with the ID) or moves it back to Ready. *Not checked.*
 - `next-step` tells the agent to drop zero-width characters and HTML comments from the issue text before reading it. Nothing strips them in code, because routines read Linear through the connector, where a script can't step in.
 
 **Why.**
 
-- Neither Linear nor GitHub issue events can start a routine, and Linear webhooks can't add the token a routine's trigger needs.
+- An hourly routine started a full cloud session even when nothing was Ready, waited up to an hour after a merge unblocked an issue, and started a second issue while the first was still building. The workflow spends Actions minutes, free on a public repository, instead of subscription usage.
+- Linear events can't start a routine, and Linear webhooks can't add the token the API trigger needs. Routines' own GitHub triggers cover pull requests and releases, not issues.
+- The fire endpoint has no idempotency key, so the workflow never retries a call: a retry could start two sessions.
+- Resuming a dead session automatically needs `next-step` to push after every commit, so the workflow can tell a quiet session from a dead one. Until then a stuck issue halts intake visibly instead of running twice.
 - Issue text is the most direct way to inject instructions into the agent. OpenAI's docs use a hidden instruction in a GitHub issue as their example, and GitHub strips hidden characters for its own coding agent.
-- One issue at a time keeps sessions from competing for the same usage window.
+- One issue at a time keeps sessions from competing for the same usage window. The workflow counts by the state's name, because Needs input and In Review share In Progress's state type.
 
 ### 2.21 Linear access
 
@@ -497,7 +501,7 @@ Size limits here count characters or words, and are enforced.
 **What it is.** ESLint's `max-lines`, `max-lines-per-function` and `complexity` rules limit files and functions, and its configuration is a protected path ([2.12](#212-ci-as-the-authority)).
 
 - A deliberate shortcut is marked `shortcut: <the limit>, <when to upgrade>`, as ponytail asks ([section 3](#3-skills)), and `guards/shortcuts.sh` fails one in `src/`, `e2e/`, `scripts/` or `migrations/` that names no limit or upgrade.
-- The monthly ponytail audit routine lists them with `ponytail-debt` and, past 10, files one issue to pay down the oldest five ([2.28](#228-routine-prompts-point-into-the-repository)).
+- The weekly ponytail audit routine lists them with `ponytail-debt` and, past 10, files one issue to pay down the oldest five ([2.28](#228-routine-prompts-point-into-the-repository)).
 
 **Why.**
 
@@ -521,7 +525,7 @@ Size limits here count characters or words, and are enforced.
 **Why.**
 
 - Routine prompts are configured on claude.ai, outside version control, where nothing diffs or checks them.
-- Repository skills are reported not to load in routines, so the routine reads the named file as plain instructions.
+- The routines docs say runs load the repository's skills (read 2026-10-23), but no run has shown it, and a path keeps each run on the reviewed copy either way. *Not checked.*
 
 ### 2.29 One write path, with live updates
 
@@ -720,7 +724,7 @@ These depend on what the new repository turns out to contain, or on a live test.
 | Claude Code Review | Claude Team or Enterprise only, and its check never fails anyway. |
 | A closed permission mode (`dontAsk` or bypass) in cloud | Cloud sessions offer Accept edits, Plan and Auto, and routines don't let you pick a mode. |
 | The Ask tool in routines | Reported missing, so routines ask through Linear ([2.22](#222-asking-the-owner)). |
-| Starting routines from Linear or GitHub issue events | Not supported, so intake polls ([2.20](#220-intake-from-linear)). |
+| Starting routines from Linear or GitHub issue events | Routines' GitHub triggers cover pull requests and releases, and Linear has none, so a GitHub Actions workflow polls Linear and starts Intake through its API trigger ([2.20](#220-intake-from-linear)). |
 | Routines publishing a check result to GitHub | Only GitHub Apps can create check runs, and Claude's app can only read commit statuses, so the AI checks run as a GitHub Action ([2.11](#211-ai-review-and-task-fit-judge-run-by-ci-on-the-subscription)). |
 | A separate network phase for the setup script | The setup script runs at the same network level as the session. |
 | Archiving by hand in Linear's app, or auto-archive under six months | Neither is offered, so archiving goes through the API ([2.25](#225-linear-quota-keeper)). |
@@ -732,7 +736,7 @@ These depend on what the new repository turns out to contain, or on a live test.
 | Instruction files for other agent tools, and an `AGENTS.md` pointer | Claude Code is the only harness. |
 | A GitHub bot identity or machine account | Cloud commits use the GitHub user connected to the Claude account, and the consumer terms bar sharing account credentials. Claude's identity and the session trailer cover provenance ([2.15](#215-commit-identity)). |
 | Reviewers that learn from PR comments | The author agent could teach the reviewer to stop flagging things ([2.11](#211-ai-review-and-task-fit-judge-run-by-ci-on-the-subscription)). |
-| Relying on the skill loader inside routines | It is reported not to load repository skills there, so routines read skill files by path ([2.28](#228-routine-prompts-point-into-the-repository)). |
+| Relying on the skill loader inside routines | The docs say it loads repository skills there, but no run has shown it, so routines read skill files by path ([2.28](#228-routine-prompts-point-into-the-repository)). |
 | Docker in the cloud VM as a requirement | Unproven there. CI is where it has to work. |
 | Dokploy's preview deployments | Dokploy builds them from the PR with the app's settings, which on a public repository would skip the attested image and the green default branch ([2.13](#213-done-means-seen-working)). |
 | Factory's agent-readiness score, "prefer boring tech", and a quality score per area of the code | Too vague to turn into a check. |
