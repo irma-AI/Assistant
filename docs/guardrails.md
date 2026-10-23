@@ -168,6 +168,7 @@ Size limits here count characters or words, and are enforced.
 - `CLAUDE.md` has a character budget, held by a guard.
 - A rule file scoped to `src/routes/**` holds TanStack's route conventions (`$id` parameters, optional segments, splat routes, `__root.tsx`) and says to quote paths containing `$` in shell commands.
 - Edits to `CLAUDE.md`, rule files and skills follow [`writing-for-agents`](#3-skills).
+- Ponytail's rules reach every session and every subagent through its hooks ([section 3](#3-skills)), outside `CLAUDE.md`'s budget. They are ponytail's own text, pinned like a skill, so `CLAUDE.md` carries no arbitration lines for them.
 
 **Why.**
 
@@ -540,13 +541,19 @@ A skill is a Markdown file of instructions that Claude Code loads when it is cal
 
 **How they load.**
 
-- They live in one place, `.claude/skills/` in the repository. Skills from other repositories are copied in at a pinned commit and recorded with a hash in a lock file.
+- They live in one place, `.claude/skills/` in the repository. Skills from other repositories are copied in at a pinned commit and recorded with a hash in a lock file, and so are the hook scripts and agents that come with them (`.claude/hooks/ponytail-*.js`, `.claude/agents/impeccable-*.md`).
 - `.claude/` is a protected path ([2.12](#212-ci-as-the-authority)), so adding or updating a skill needs a `ci-change` issue and goes through the AI review.
 - A routine prompt names a skill's file by path, and the routine reads it as plain instructions ([2.28](#228-routine-prompts-point-into-the-repository)).
 - The AI review in CI reads its lens files by path from the default branch, so a PR cannot change the lenses that judge it ([2.11](#211-ai-review-and-task-fit-judge-run-by-ci-on-the-subscription)).
 - Interactive cloud sessions load the skills directly, for example `/next-step ABC-12`. Intake runs in a cloud session on the repository too, so it uses the same copies and can read the code.
 - TanStack's skills ship inside its npm packages, so `make skills` copies the allowlisted ones into `.claude/skills/tanstack-<skill>/`, rewriting their names and relative links, and `scripts/tanstack-skills.ts --check` in `make check-app` keeps the copy equal to the installed version. The lockfile pins them, and `intent hooks install` is never run, because it edits `.claude/settings.json`.
-- No skill installs hooks, and a claude.ai plugin that duplicates a repository skill should be turned off in the owner's claude.ai settings, so each skill loads once.
+- Two vendored packs run hooks, by the owner's decision of 2026-10-23, set in `.claude/settings.json`:
+  - ponytail puts its rules in every session at start, tracks level changes, and puts them in every subagent except impeccable's (`PONYTAIL_SUBAGENT_MATCHER='^(?!impeccable-)'`);
+  - impeccable runs its design detector at session start, after each edit and at stop;
+  - `.claude/hooks/impeccable-scope.sh` tells an impeccable task that DESIGN.md and impeccable's craft floor set design completeness, and that ponytail governs code structure only.
+
+  `.claude/hooks/test.sh` runs each on sample events. *Not checked:* that cloud sessions have `node` on the path for ponytail's hooks, and that impeccable's launcher can download its binary there.
+- A claude.ai plugin that duplicates a repository skill is turned off in the owner's claude.ai settings, so each skill and hook loads once. The owner removes them.
 
 | Skill | Source | Used in | Role |
 |---|---|---|---|
@@ -560,7 +567,8 @@ A skill is a Markdown file of instructions that Claude Code loads when it is cal
 | `pr` | [mattpocock/skills](https://github.com/mattpocock/skills) | [2.17](#217-pr-description-contract) | Writes the PR description sections |
 | `diagnosing-bugs` | [mattpocock/skills](https://github.com/mattpocock/skills) | [2.13](#213-done-means-seen-working) | Builds a feedback loop before any fix, for bugs and failed deploys |
 | `claim-sweep` | The old repository | [2.27](#227-weekly-claim-sweep) | Checks what the agent documents claim against the code |
-| `impeccable` | [pbakaus/impeccable](https://github.com/pbakaus/impeccable) | `ui` flow | Design guidance for UI work |
+| `impeccable`, with its four agents | [pbakaus/impeccable](https://github.com/pbakaus/impeccable) | `ui` flow | Design guidance for UI work; the agents serve its new-work flow in sessions with the owner |
+| `ponytail`, `ponytail-audit`, `ponytail-debt`, `ponytail-help`, `ponytail-gain`, with ponytail's hooks | [DietrichGebert/ponytail](https://github.com/DietrichGebert/ponytail) | Every session | Always-on mode for the smallest complete change, a whole-repository audit, and the `shortcut:` debt ledger |
 | `research` | [mattpocock/skills](https://github.com/mattpocock/skills) | [Section 5](#5-maybe) | Writes research notes that cite primary sources |
 | `writing-for-agents` | [mattpocock/skills](https://github.com/mattpocock/skills) | [2.5](#25-instruction-layering-with-size-budgets) | Rules for editing `CLAUDE.md`, rule files and skills |
 | TanStack's skills for Start, Router and DB | Inside the TanStack npm packages ([TanStack Intent](https://tanstack.com/intent)) | [2.6](#26-strict-static-checks-from-the-first-commit), [2.10](#210-architecture-layers-enforced), [2.11](#211-ai-review-and-task-fit-judge-run-by-ci-on-the-subscription), [2.29](#229-one-write-path-with-live-updates) | TanStack's own rules: code runs on server and browser by default, server-only logic goes in `createServerFn`, types are inferred and never cast, and Next.js patterns are wrong here |
@@ -588,6 +596,7 @@ A skill is a Markdown file of instructions that Claude Code loads when it is cal
 - In the old repository the skeptic pass found the most real defects, the code-review lenses fixed smaller gaps on 13 tickets, and the ponytail review caught over-engineering that review fixes had added.
 - The old router went wrong where a hook forced it on every session, it guessed the flow, and it stopped for approval. A label set at intake removes the guess, and Linear and CI hold the gates.
 - An audit of the old repository advised keeping impeccable's audit as the review and skipping its full new-work flow, and found the old screenshot rule rarely followed.
+- The owner keeps ponytail always on (2026-10-23). The old repository's audit found no measurable effect from the always-on mode, because it had no baseline, and two costs: arbitration with impeccable and a double injection when a plugin copy loaded too. Here the subagent matcher and the scope hook carry the arbitration, and the owner removes the plugin copies.
 - Copying skills from the tip of upstream changed them under the old repository twice, once renaming a file and once removing a skill. A pinned copy changes only through a reviewed PR.
 
 ---

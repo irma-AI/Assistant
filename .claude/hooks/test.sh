@@ -19,4 +19,20 @@ printf 'export const x = { a:1 }\n' > "$tmp"
 call "$tmp" | CLAUDE_PROJECT_DIR=$PWD bash "$here/format.sh"
 if grep -q '{ a: 1 }' "$tmp"; then echo "ok    an edited file is formatted"; else echo "FAIL  an edited file is formatted: $(cat "$tmp")"; fail=1; fi
 rm -f "$tmp"
+
+# check NAME COMMAND PATTERN: COMMAND's output matches PATTERN, or is empty when PATTERN is "".
+check() {
+  out=$(eval "$2" 2>&1)
+  if { [ -z "$3" ] && [ -z "$out" ]; } || { [ -n "$3" ] && grep -q -- "$3" <<<"$out"; }; then echo "ok    $1"
+  else echo "FAIL  $1: got '${out:0:120}'"; fail=1; fi
+}
+cfg=$(mktemp -d "${TMPDIR:-/tmp}/ponytail.XXXXXX")
+pt="CLAUDE_CONFIG_DIR=$cfg PONYTAIL_SUBAGENT_MATCHER='^(?!impeccable-)' node $here"
+check "a session starts with ponytail's rules" "echo '{}' | CLAUDE_CONFIG_DIR=$cfg node $here/ponytail-activate.js" "PONYTAIL MODE ACTIVE"
+check "a subagent gets ponytail's rules" "echo '{\"agent_type\":\"general-purpose\"}' | $pt/ponytail-subagent.js" "PONYTAIL MODE ACTIVE"
+check "an impeccable agent does not" "echo '{\"agent_type\":\"impeccable-finish-reviewer\"}' | $pt/ponytail-subagent.js" ""
+check "an impeccable task gets the scope" "echo '{\"hook_event_name\":\"PostToolUse\",\"tool_input\":{\"skill\":\"impeccable\"}}' | bash $here/impeccable-scope.sh" "governs code structure only"
+check "a typed /impeccable gets the scope" "echo '{\"hook_event_name\":\"UserPromptSubmit\",\"prompt\":\"/impeccable audit\"}' | bash $here/impeccable-scope.sh" "governs code structure only"
+check "another skill does not" "echo '{\"hook_event_name\":\"PostToolUse\",\"tool_input\":{\"skill\":\"pr\"}}' | bash $here/impeccable-scope.sh" ""
+rm -rf "$cfg"
 exit $fail

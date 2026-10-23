@@ -32,8 +32,54 @@
     "path": ".claude/skills/impeccable",
     "sha256": "45ddbe4b2efb54be607b589941fb69d53a1d4647ee7a75903c238199aefed0b1"
   },
+  "impeccable-agents": {
+    "source": "pbakaus/impeccable",
+    "commit": "5cb95eea9c96479f57afe0732a45470d30183326",
+    "path": ".claude/agents",
+    "dest": ".claude/agents",
+    "files": "impeccable-*.md",
+    "sha256": "b29da158145d175b1b479128ae6fba3a84861a4e6fc6a3a3d9d19e435638c36b"
+  },
   "next-step": {
     "source": "local"
+  },
+  "ponytail": {
+    "source": "DietrichGebert/ponytail",
+    "commit": "09c434ab73ca43761c5d8b0c5d341926c2fba710",
+    "path": "skills/ponytail",
+    "sha256": "3a96a04ce22c45a6665ba73ea7a1b55adfb97d779f8332ec3cd33c82ec2ea8a1"
+  },
+  "ponytail-audit": {
+    "source": "DietrichGebert/ponytail",
+    "commit": "09c434ab73ca43761c5d8b0c5d341926c2fba710",
+    "path": "skills/ponytail-audit",
+    "sha256": "cfff58c2928b4482dbbfab6fcaba1ce51b998f700c5bac845bad5f32fb344d2d"
+  },
+  "ponytail-debt": {
+    "source": "DietrichGebert/ponytail",
+    "commit": "09c434ab73ca43761c5d8b0c5d341926c2fba710",
+    "path": "skills/ponytail-debt",
+    "sha256": "b9351e7c9561ea59440782dd6c042f0a9a8b938b7858a3d502e73670287c4b48"
+  },
+  "ponytail-gain": {
+    "source": "DietrichGebert/ponytail",
+    "commit": "09c434ab73ca43761c5d8b0c5d341926c2fba710",
+    "path": "skills/ponytail-gain",
+    "sha256": "0df789e2cdf03dfd50adf2e341c8d92895b463aa4f40ff7f3478c48a7d47d630"
+  },
+  "ponytail-help": {
+    "source": "DietrichGebert/ponytail",
+    "commit": "09c434ab73ca43761c5d8b0c5d341926c2fba710",
+    "path": "skills/ponytail-help",
+    "sha256": "ac8c24d1a347621f80425534aa698295f7d01ad3ecd9f6704a6f3d63d9a24de1"
+  },
+  "ponytail-hooks": {
+    "source": "DietrichGebert/ponytail",
+    "commit": "09c434ab73ca43761c5d8b0c5d341926c2fba710",
+    "path": "hooks",
+    "dest": ".claude/hooks",
+    "files": "ponytail-*.js",
+    "sha256": "67a9b8bf4c020cbf6678a18175f6711f42a4f2320715efadebcad0e37aae15e0"
   },
   "ponytail-review": {
     "source": "DietrichGebert/ponytail",

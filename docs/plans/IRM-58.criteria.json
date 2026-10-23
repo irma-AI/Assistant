@@ -1,0 +1,18 @@
+[
+  {
+    "criterion": "The five ponytail skills, the ponytail hook scripts and the four impeccable agents are vendored at their pinned commits, and `skills.sh check` fails when any of them differs from its pin.",
+    "passes": true
+  },
+  {
+    "criterion": "`.claude/settings.json` runs ponytail's three hooks and impeccable's detector hook, and ponytail's subagent hook skips agents whose type starts with `impeccable-`.",
+    "passes": true
+  },
+  {
+    "criterion": "A session started in the repository gets the ponytail rules at start, and an impeccable task gets the scope message.",
+    "passes": true
+  },
+  {
+    "criterion": "guardrails section 3 and 2.5 record the decision and its costs.",
+    "passes": true
+  }
+]

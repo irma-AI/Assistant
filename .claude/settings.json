@@ -18,6 +18,51 @@
             "timeout": 300
           }
         ]
+      },
+      {
+        "matcher": "startup|resume|clear|compact",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node \"$CLAUDE_PROJECT_DIR\"/.claude/hooks/ponytail-activate.js",
+            "timeout": 15
+          }
+        ]
+      },
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "[ ! -f \"$CLAUDE_PROJECT_DIR/.claude/skills/impeccable/scripts/impeccable\" ] || \"$CLAUDE_PROJECT_DIR/.claude/skills/impeccable/scripts/impeccable\" hook",
+            "timeout": 5
+          }
+        ]
+      }
+    ],
+    "UserPromptSubmit": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node \"$CLAUDE_PROJECT_DIR\"/.claude/hooks/ponytail-mode-tracker.js",
+            "timeout": 15
+          },
+          {
+            "type": "command",
+            "command": "bash \"$CLAUDE_PROJECT_DIR\"/.claude/hooks/impeccable-scope.sh"
+          }
+        ]
+      }
+    ],
+    "SubagentStart": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "PONYTAIL_SUBAGENT_MATCHER='^(?!impeccable-)' node \"$CLAUDE_PROJECT_DIR\"/.claude/hooks/ponytail-subagent.js",
+            "timeout": 15
+          }
+        ]
       }
     ],
     "PreToolUse": [
@@ -38,6 +83,36 @@
           {
             "type": "command",
             "command": "bash \"$CLAUDE_PROJECT_DIR\"/.claude/hooks/format.sh",
+            "timeout": 30
+          }
+        ]
+      },
+      {
+        "matcher": "Edit|Write",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "[ ! -f \"$CLAUDE_PROJECT_DIR/.claude/skills/impeccable/scripts/impeccable\" ] || \"$CLAUDE_PROJECT_DIR/.claude/skills/impeccable/scripts/impeccable\" hook",
+            "timeout": 5
+          }
+        ]
+      },
+      {
+        "matcher": "Skill",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash \"$CLAUDE_PROJECT_DIR\"/.claude/hooks/impeccable-scope.sh"
+          }
+        ]
+      }
+    ],
+    "Stop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "[ ! -f \"$CLAUDE_PROJECT_DIR/.claude/skills/impeccable/scripts/impeccable\" ] || \"$CLAUDE_PROJECT_DIR/.claude/skills/impeccable/scripts/impeccable\" hook",
             "timeout": 30
           }
         ]
