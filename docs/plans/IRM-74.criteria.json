@@ -1,0 +1,14 @@
+[
+  {
+    "criterion": "next-step's watch ends after two hours with the PR open and green, asking through section 4, within its 6,000-character budget.",
+    "passes": false
+  },
+  {
+    "criterion": "guardrails 2.19 names the cap.",
+    "passes": false
+  },
+  {
+    "criterion": "make check passes.",
+    "passes": false
+  }
+]
