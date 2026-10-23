@@ -13,6 +13,8 @@ Acceptance criteria:
 - A `fix-rounds` job in `policy.yml` runs it from the default branch's checkout when `policy` fails on a PR, in the `checks` environment, with `pull-requests: write` and `checks: read` only. zizmor passes.
 - A dry run on PR 7 counted 1 failed commit and left it alone; the Linear lookup for the Needs input state was tested against IRM-38.
 
+- After merge: a throwaway PR (#35, IRM-46) whose title broke pr-title was pushed four times; after the fourth failure `fix-rounds` closed it with the reason, commented on IRM-46 with the run link and moved it to Needs input.
+
 ## Decisions
 
 - Rounds are counted per commit, so re-runs of `policy` after an edited description don't count as rounds.

@@ -9,6 +9,6 @@
   },
   {
     "criterion": "A typical PR ci finishes in under 3 minutes.",
-    "passes": false
+    "passes": true
   }
 ]

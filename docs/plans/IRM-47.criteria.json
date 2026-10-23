@@ -1,0 +1,10 @@
+[
+  {
+    "criterion": "Every flipped criterion has its evidence (a run, a PR or a setting) in the plan's Progress.",
+    "passes": true
+  },
+  {
+    "criterion": "Criteria that nothing has shown yet stay false.",
+    "passes": true
+  }
+]

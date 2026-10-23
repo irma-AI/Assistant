@@ -13,6 +13,8 @@ Acceptance criteria:
 - `release.yml` gets a `deploy` job between `image` and `release`, in the `checks` environment with `DOKPLOY_API_KEY`; zizmor passes. The Linear lookup for the issue was tested against the workspace.
 - The app (`QBnL1Yn7fZ0Ficd4cbI36`) already serves 7eadda36 on its domain with a valid Let's Encrypt certificate.
 
+- After merge: deploys from 93d72c4 on pass only once /version served the commit; the failed attempts before that (401 from Dokploy) each opened a Linear issue with the run link, but none got as far as pinning a new image, so re-pinning the previous one hasn't been shown yet.
+
 ## Decisions
 
 - The workspace has no `deploy-failure` label yet, so the issue opens without one until it exists.

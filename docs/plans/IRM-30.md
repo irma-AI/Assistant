@@ -13,6 +13,8 @@ Acceptance criteria:
 - `make check` still runs everything locally (8.5 s here); `check-app` no longer includes the browser tests, and `make e2e` builds first.
 - Two runs stalled for over 6 minutes in `playwright install --with-deps` on apt, while the other runs took about 1.5 minutes.
 
+- After merge: `ci` on PR 22 took about 45 s with its three jobs in parallel, and later PRs stayed under a minute.
+
 ## Decisions
 
 - The required check keeps its name `ci`, so the ruleset doesn't change.
