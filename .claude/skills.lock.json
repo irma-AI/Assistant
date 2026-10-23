@@ -30,7 +30,16 @@
     "source": "pbakaus/impeccable",
     "commit": "5cb95eea9c96479f57afe0732a45470d30183326",
     "path": ".claude/skills/impeccable",
-    "sha256": "45ddbe4b2efb54be607b589941fb69d53a1d4647ee7a75903c238199aefed0b1"
+    "sha256": "45ddbe4b2efb54be607b589941fb69d53a1d4647ee7a75903c238199aefed0b1",
+    "engine": {
+      "version": "0.1.16",
+      "sha256": {
+        "darwin-arm64": "5c00c3130b961f3aa1066f04ed0e1f58e87808ad153efa00f1c44184800084f2",
+        "darwin-x64": "278b028848348b4dc21a20ee0a0bb33f09a8d14c5484b1a2f554df32e1d44f43",
+        "linux-x64": "a890a5b4b7d9d79ec54aa74612b5e924e5f5b422600a25fde8bcbda11b031787",
+        "linux-arm64": "a9a18bfa6d70642701446ed3b12a3e5e6eefe4a4b4c56effe30b449ccb329c4b"
+      }
+    }
   },
   "impeccable-agents": {
     "source": "pbakaus/impeccable",
@@ -78,8 +87,8 @@
     "commit": "09c434ab73ca43761c5d8b0c5d341926c2fba710",
     "path": "hooks",
     "dest": ".claude/hooks",
-    "files": "ponytail-*.js",
-    "sha256": "67a9b8bf4c020cbf6678a18175f6711f42a4f2320715efadebcad0e37aae15e0"
+    "files": "ponytail-*",
+    "sha256": "712ed8db8116c31d5c6d73105e95ec422f271a0e593df574b15fe94d3a9d083e"
   },
   "ponytail-review": {
     "source": "DietrichGebert/ponytail",

@@ -34,5 +34,10 @@ check "an impeccable agent does not" "echo '{\"agent_type\":\"impeccable-finish-
 check "an impeccable task gets the scope" "echo '{\"hook_event_name\":\"PostToolUse\",\"tool_input\":{\"skill\":\"impeccable\"}}' | bash $here/impeccable-scope.sh" "governs code structure only"
 check "a typed /impeccable gets the scope" "echo '{\"hook_event_name\":\"UserPromptSubmit\",\"prompt\":\"/impeccable audit\"}' | bash $here/impeccable-scope.sh" "governs code structure only"
 check "another skill does not" "echo '{\"hook_event_name\":\"PostToolUse\",\"tool_input\":{\"skill\":\"pr\"}}' | bash $here/impeccable-scope.sh" ""
+junk="$cfg/junk" env="$cfg/env" && echo junk > "$junk" && : > "$env"
+eng="XDG_CACHE_HOME=$cfg CLAUDE_ENV_FILE=$env IMPECCABLE_ENGINE_URL=file://$junk bash $here/impeccable-engine.sh hook"
+check "an engine off its pin is refused" "$eng" "does not match its pin; refused"
+check "and is not installed" "find $cfg/impeccable-pinned -type f" ""
+check "the launcher is told not to download" "cat $env" "IMPECCABLE_DOWNLOAD_BASE=https://engine-download.invalid"
 rm -rf "$cfg"
 exit $fail

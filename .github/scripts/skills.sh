@@ -33,6 +33,9 @@ case ${1:-} in
       [ -n "$(find "$dest" -maxdepth 1 -type f -name "$files" 2>/dev/null)" ] && [ "$(digest_files "$dest" "$files")" = "$sha" ] \
         || { echo "::error::skills: $dest/$files ($name) differs from its pinned copy. Fix: change it upstream and bump the commit, then make skills."; fail=1; }
     done
+    # impeccable's engine binary isn't vendored; .claude/hooks/impeccable-engine.sh runs it only at the pinned checksums.
+    [ "$(cat .claude/skills/impeccable/scripts/VERSION)" = "$(jq -r '.impeccable.engine.version' "$lock")" ] \
+      || { echo "::error::skills: impeccable's engine version differs from the engine pinned in $lock. Fix: pin the new engine's sha256 for each platform."; fail=1; }
     echo "skills: scanned $scanned"
     [ "$scanned" -gt 0 ] && exit $fail || exit 1
     ;;

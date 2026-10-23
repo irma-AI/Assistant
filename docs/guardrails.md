@@ -541,7 +541,7 @@ A skill is a Markdown file of instructions that Claude Code loads when it is cal
 
 **How they load.**
 
-- They live in one place, `.claude/skills/` in the repository. Skills from other repositories are copied in at a pinned commit and recorded with a hash in a lock file, and so are the hook scripts and agents that come with them (`.claude/hooks/ponytail-*.js`, `.claude/agents/impeccable-*.md`).
+- They live in one place, `.claude/skills/` in the repository. Skills from other repositories are copied in at a pinned commit and recorded with a hash in a lock file, and so are the hook scripts and agents that come with them (`.claude/hooks/ponytail-*`, `.claude/agents/impeccable-*.md`).
 - `.claude/` is a protected path ([2.12](#212-ci-as-the-authority)), so adding or updating a skill needs a `ci-change` issue and goes through the AI review.
 - A routine prompt names a skill's file by path, and the routine reads it as plain instructions ([2.28](#228-routine-prompts-point-into-the-repository)).
 - The AI review in CI reads its lens files by path from the default branch, so a PR cannot change the lenses that judge it ([2.11](#211-ai-review-and-task-fit-judge-run-by-ci-on-the-subscription)).
@@ -549,10 +549,10 @@ A skill is a Markdown file of instructions that Claude Code loads when it is cal
 - TanStack's skills ship inside its npm packages, so `make skills` copies the allowlisted ones into `.claude/skills/tanstack-<skill>/`, rewriting their names and relative links, and `scripts/tanstack-skills.ts --check` in `make check-app` keeps the copy equal to the installed version. The lockfile pins them, and `intent hooks install` is never run, because it edits `.claude/settings.json`.
 - Two vendored packs run hooks, by the owner's decision of 2026-10-23, set in `.claude/settings.json`:
   - ponytail puts its rules in every session at start, tracks level changes, and puts them in every subagent except impeccable's (`PONYTAIL_SUBAGENT_MATCHER='^(?!impeccable-)'`);
-  - impeccable runs its design detector at session start, after each edit and at stop;
+  - impeccable runs its design detector at session start, after each edit and at stop, through `.claude/hooks/impeccable-engine.sh`, which runs its engine binary only at the checksums pinned in the skills lock, because the upstream release it downloads from can be replaced;
   - `.claude/hooks/impeccable-scope.sh` tells an impeccable task that DESIGN.md and impeccable's craft floor set design completeness, and that ponytail governs code structure only.
 
-  `.claude/hooks/test.sh` runs each on sample events. *Not checked:* that cloud sessions have `node` on the path for ponytail's hooks, and that impeccable's launcher can download its binary there.
+  `.claude/hooks/test.sh` runs each on sample events. *Not checked:* that cloud sessions have `node` on the path for ponytail's hooks, and that they can download impeccable's engine from GitHub.
 - A claude.ai plugin that duplicates a repository skill is turned off in the owner's claude.ai settings, so each skill and hook loads once. The owner removes them.
 
 | Skill | Source | Used in | Role |

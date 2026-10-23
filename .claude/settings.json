@@ -33,8 +33,8 @@
         "hooks": [
           {
             "type": "command",
-            "command": "[ ! -f \"$CLAUDE_PROJECT_DIR/.claude/skills/impeccable/scripts/impeccable\" ] || \"$CLAUDE_PROJECT_DIR/.claude/skills/impeccable/scripts/impeccable\" hook",
-            "timeout": 5
+            "command": "bash \"$CLAUDE_PROJECT_DIR\"/.claude/hooks/impeccable-engine.sh hook",
+            "timeout": 120
           }
         ]
       }
@@ -88,11 +88,11 @@
         ]
       },
       {
-        "matcher": "Edit|Write",
+        "matcher": "Edit|Write|MultiEdit",
         "hooks": [
           {
             "type": "command",
-            "command": "[ ! -f \"$CLAUDE_PROJECT_DIR/.claude/skills/impeccable/scripts/impeccable\" ] || \"$CLAUDE_PROJECT_DIR/.claude/skills/impeccable/scripts/impeccable\" hook",
+            "command": "bash \"$CLAUDE_PROJECT_DIR\"/.claude/hooks/impeccable-engine.sh hook",
             "timeout": 5
           }
         ]
@@ -112,7 +112,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "[ ! -f \"$CLAUDE_PROJECT_DIR/.claude/skills/impeccable/scripts/impeccable\" ] || \"$CLAUDE_PROJECT_DIR/.claude/skills/impeccable/scripts/impeccable\" hook",
+            "command": "bash \"$CLAUDE_PROJECT_DIR\"/.claude/hooks/impeccable-engine.sh hook",
             "timeout": 30
           }
         ]
