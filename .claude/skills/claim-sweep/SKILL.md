@@ -5,7 +5,7 @@ description: Tests what the agent documents claim about the code against the cod
 
 # Claim sweep
 
-A **claim** is a sentence in an agent document that says how the code, CI, a command, a path or a rule behaves. The documents are `CLAUDE.md`, `docs/agents/`, `docs/plans/README.md` and every skill whose lock entry is `{"source": "local"}`. Copied skills are left to their upstream.
+A **claim** is a sentence in an agent document that says how the code, CI, a command, a path or a rule behaves. The documents are `CLAUDE.md`, `docs/guardrails.md`, `docs/agents/`, `docs/plans/README.md` and every skill whose lock entry is `{"source": "local"}`. Copied skills are left to their upstream.
 
 1. **List every claim** in those documents, one line each with its file.
 2. **Test each claim against the repository**: read the code, or run the command it names. Mark it **holds**, **stale** (the code does something else) or **unverifiable** (nothing could show it true or false).

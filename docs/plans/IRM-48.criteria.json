@@ -1,0 +1,14 @@
+[
+  {
+    "criterion": "docs/guardrails.md holds the principles, the pieces, the skills, where each check runs, the maybe and excluded lists and the open risks, with no \"not checked\" note that a live test has settled.",
+    "passes": true
+  },
+  {
+    "criterion": "Pieces that wait for the first feature are marked \"not built yet\", and the writer-only account is a known risk in section 7.",
+    "passes": true
+  },
+  {
+    "criterion": "CLAUDE.md points at it, and claim-sweep includes it.",
+    "passes": true
+  }
+]

@@ -1,6 +1,6 @@
 # Assistant
 
-Agents build this repository end to end; nobody reviews code by hand. CI on GitHub is the authority, and every rule below names the check that enforces it.
+Agents build this repository end to end; nobody reviews code by hand. CI on GitHub is the authority, and every rule below names the check that enforces it. Why each guard exists, and the known risks, are in `docs/guardrails.md`.
 
 ## Workflow
 
