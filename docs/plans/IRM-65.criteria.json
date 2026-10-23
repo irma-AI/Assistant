@@ -1,0 +1,14 @@
+[
+  {
+    "criterion": "`linear.yml` also runs daily, and on that run sets a Linear reminder for the owner on each IRM issue in Needs input not updated for 3 days, so the owner is reminded at least every 3 days until the question moves (daily, if a reminder doesn't count as an update). (A comment would notify no one: the workflow's Linear key is the owner's own.)",
+    "passes": true
+  },
+  {
+    "criterion": "The push-time archive job is unchanged.",
+    "passes": true
+  },
+  {
+    "criterion": "zizmor and `make check` pass, and guardrails 2.22 describes the reminder.",
+    "passes": true
+  }
+]

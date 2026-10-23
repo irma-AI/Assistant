@@ -1,13 +1,17 @@
 name: linear
 # Quota keeper: Linear Free stops creating issues at 250 unarchived, so every merge
 # archives the team's closed issues. Their text is already in the repository by then.
+# Daily, a reminder on each question to the owner that has waited in Needs input for 3 days.
 on:
   push:
     branches: [main]
+  schedule:
+    - cron: "23 7 * * *"
 permissions: {}
 concurrency: linear
 jobs:
   archive:
+    if: github.event_name == 'push'
     runs-on: ubuntu-latest
     timeout-minutes: 5
     environment: checks
@@ -26,4 +30,28 @@ jobs:
             jq -n --arg id "$id" '{query:"mutation($id:String!){issueArchive(id:$id){success}}",variables:{id:$id}}' \
               | gql | jq -e '.data.issueArchive.success' > /dev/null
             echo "archived $identifier"
+          done <<<"$ids"
+
+  remind:
+    if: github.event_name == 'schedule'
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    environment: checks
+    env:
+      LINEAR_API_TOKEN: ${{ secrets.LINEAR_API_TOKEN }}
+      LINEAR_TEAM: IRM
+    steps:
+      - name: Remind the owner of questions waiting 3 days
+        run: |
+          gql() { curl -sSf https://api.linear.app/graphql -H "Authorization: $LINEAR_API_TOKEN" -H 'Content-Type: application/json' -d @-; }
+          # A Linear reminder notifies the API key's owner; a comment from the same key would notify no one.
+          # shortcut: one page of 50, paginate if that many questions ever wait at once.
+          answer=$(jq -n --arg k "$LINEAR_TEAM" '{query:"query($k:String!){issues(first:50,filter:{team:{key:{eq:$k}},state:{name:{eq:\"Needs input\"}},updatedAt:{lt:\"-P3D\"}}){nodes{id identifier}}}",variables:{k:$k}}' | gql)
+          ids=$(jq -er '.data.issues.nodes | map("\(.id) \(.identifier)") | join("\n")' <<<"$answer")
+          [ -n "$ids" ] || { echo "no question has waited 3 days"; exit 0; }
+          at=$(date -u -d '+5 minutes' +%Y-%m-%dT%H:%M:%SZ)
+          while read -r id identifier; do
+            jq -n --arg id "$id" --arg at "$at" '{query:"mutation($id:String!,$at:DateTime!){issueReminder(id:$id,reminderAt:$at){success}}",variables:{id:$id,at:$at}}' \
+              | gql | jq -e '.data.issueReminder.success' > /dev/null \
+              && echo "reminded the owner of $identifier" || echo "::warning::could not set a reminder on $identifier"
           done <<<"$ids"
