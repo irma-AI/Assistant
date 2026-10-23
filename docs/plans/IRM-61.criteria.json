@@ -1,0 +1,10 @@
+[
+  {
+    "criterion": "`docs/agents/routines.md` lists the monthly ponytail audit with its prompt naming both skill files by path.",
+    "passes": true
+  },
+  {
+    "criterion": "The docs guard passes.",
+    "passes": true
+  }
+]
