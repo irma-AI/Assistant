@@ -40,4 +40,12 @@ if "$guard" "$d" > /dev/null 2>&1; then echo "FAIL  rule file over budget: passe
 printf 'Edit `src/gone.ts`.\n' > "$d/.claude/rules/routes.md"
 if "$guard" "$d" > /dev/null 2>&1; then echo "FAIL  rule file names a missing path: passed"; fail=1; else echo "ok    rule file names a missing path"; fi
 
+d=$(repo "$good") || exit 1
+mkdir -p "$d/docs/agents"; printf 'x%.0s' $(seq 1 4001) > "$d/docs/agents/routines.md"
+if "$guard" "$d" > /dev/null 2>&1; then echo "FAIL  agent doc over budget: passed"; fail=1; else echo "ok    agent doc over budget"; fi
+printf 'Follow `.claude/skills/gone/SKILL.md`.\n' > "$d/docs/agents/routines.md"
+if "$guard" "$d" > /dev/null 2>&1; then echo "FAIL  agent doc names a missing path: passed"; fail=1; else echo "ok    agent doc names a missing path"; fi
+printf 'Follow `scripts/s.sh`.\n' > "$d/docs/agents/routines.md"
+if "$guard" "$d" > /dev/null 2>&1; then echo "ok    agent doc naming a real path passes"; else echo "FAIL  agent doc naming a real path passes: failed"; fail=1; fi
+
 exit $fail

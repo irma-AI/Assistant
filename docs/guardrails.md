@@ -164,7 +164,7 @@ Size limits here count characters or words, and are enforced.
 
 - Detailed rules live in rule files that load only when the agent touches their paths, and the path patterns stay narrow.
 - Each rule lives in one place. With one harness, there is no pointer file for other tools.
-- A docs-reference guard checks that every path, command, task-runner target or check an agent document names exists.
+- A docs-reference guard checks that every path, command, task-runner target or check an agent document names exists. The agent documents are `CLAUDE.md`, `next-step`, the rule files and `docs/agents/`, where the routine prompts and the tracker conventions live, each within a character budget.
 - `CLAUDE.md` has a character budget, held by a guard.
 - A rule file scoped to `src/routes/**` holds TanStack's route conventions (`$id` parameters, optional segments, splat routes, `__root.tsx`) and says to quote paths containing `$` in shell commands.
 - Edits to `CLAUDE.md`, rule files and skills follow [`writing-for-agents`](#3-skills).

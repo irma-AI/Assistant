@@ -1,0 +1,14 @@
+[
+  {
+    "criterion": "`guards/docs.sh` scans every `docs/agents/*.md` with a 4,000-character budget each, for backticked paths and make targets.",
+    "passes": true
+  },
+  {
+    "criterion": "`guards/docs.test.sh` fails a fake repository whose `docs/agents/` file names a missing path or runs over budget.",
+    "passes": true
+  },
+  {
+    "criterion": "guardrails 2.5 names the scanned documents.",
+    "passes": true
+  }
+]
