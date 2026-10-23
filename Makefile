@@ -12,6 +12,7 @@ check-repo:
 	guards/docs.test.sh
 	guards/docs.sh
 	guards/stack.sh
+	bash .claude/hooks/test.sh
 	zizmor --offline --no-progress .github/workflows
 	gitleaks git --redact --no-banner
 	.github/scripts/skills.sh check
