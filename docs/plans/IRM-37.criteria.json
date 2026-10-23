@@ -1,0 +1,14 @@
+[
+  {
+    "criterion": "make skills copies the allowlisted TanStack skills from node_modules, renamed tanstack-<skill>.",
+    "passes": true
+  },
+  {
+    "criterion": "make check fails when a copied TanStack skill differs from what the installed package would give.",
+    "passes": true
+  },
+  {
+    "criterion": "The skills lock lists them with source \"tanstack\".",
+    "passes": true
+  }
+]

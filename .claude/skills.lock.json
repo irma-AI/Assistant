@@ -17,6 +17,15 @@
     "path": "skills/productivity/grilling",
     "sha256": "32855f2c6029748b91ef85d16a58b7c6e01780b7919e3e143769443eeda348e9"
   },
+  "next-step": {
+    "source": "local"
+  },
+  "ponytail-review": {
+    "source": "DietrichGebert/ponytail",
+    "commit": "09c434ab73ca43761c5d8b0c5d341926c2fba710",
+    "path": "skills/ponytail-review",
+    "sha256": "363f12117c84d2b876155241cdfd1ef916c9ae05af37ecf00ab1c70e9b492c47"
+  },
   "pr": {
     "source": "mattpocock/skills",
     "commit": "5beb35b040e3de97e54fa9e386d7e42d15c295c2",
@@ -29,6 +38,54 @@
     "path": "skills/engineering/research",
     "sha256": "e45255278d5affc53e4b7e84955cd5fc749a8f4a805f47fa0bb5fefbfcac09a2"
   },
+  "tanstack-react-router": {
+    "source": "tanstack"
+  },
+  "tanstack-react-start": {
+    "source": "tanstack"
+  },
+  "tanstack-router-core": {
+    "source": "tanstack"
+  },
+  "tanstack-router-core-auth-and-guards": {
+    "source": "tanstack"
+  },
+  "tanstack-router-core-data-loading": {
+    "source": "tanstack"
+  },
+  "tanstack-router-core-not-found-and-errors": {
+    "source": "tanstack"
+  },
+  "tanstack-router-core-path-params": {
+    "source": "tanstack"
+  },
+  "tanstack-router-core-search-params": {
+    "source": "tanstack"
+  },
+  "tanstack-router-core-type-safety": {
+    "source": "tanstack"
+  },
+  "tanstack-start-core": {
+    "source": "tanstack"
+  },
+  "tanstack-start-core-auth-server-primitives": {
+    "source": "tanstack"
+  },
+  "tanstack-start-core-execution-model": {
+    "source": "tanstack"
+  },
+  "tanstack-start-core-middleware": {
+    "source": "tanstack"
+  },
+  "tanstack-start-core-server-functions": {
+    "source": "tanstack"
+  },
+  "tanstack-start-core-server-routes": {
+    "source": "tanstack"
+  },
+  "tanstack-start-server-core": {
+    "source": "tanstack"
+  },
   "to-tickets": {
     "source": "mattpocock/skills",
     "commit": "5beb35b040e3de97e54fa9e386d7e42d15c295c2",
@@ -40,14 +97,5 @@
     "commit": "5beb35b040e3de97e54fa9e386d7e42d15c295c2",
     "path": "skills/productivity/writing-for-agents",
     "sha256": "c547369028f139f3c2380d32d07e5d8b29861bb8f665d07c3be9b029cbac33a9"
-  },
-  "ponytail-review": {
-    "source": "DietrichGebert/ponytail",
-    "commit": "09c434ab73ca43761c5d8b0c5d341926c2fba710",
-    "path": "skills/ponytail-review",
-    "sha256": "363f12117c84d2b876155241cdfd1ef916c9ae05af37ecf00ab1c70e9b492c47"
-  },
-  "next-step": {
-    "source": "local"
   }
 }

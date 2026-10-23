@@ -26,6 +26,7 @@ check-app: generate-check
 	pnpm exec tsc --noEmit
 	pnpm exec eslint .
 	pnpm exec squawk migrations/*.sql
+	node scripts/tanstack-skills.ts --check
 	guards/layers.sh
 	pnpm exec vitest run
 
@@ -74,9 +75,10 @@ check-push: check
 setup:
 	git config core.hooksPath .githooks
 
-# Downloads every pinned skill again from .claude/skills.lock.json.
+# Downloads every pinned skill again from .claude/skills.lock.json, and copies TanStack's from node_modules.
 skills:
 	.github/scripts/skills.sh vendor
+	node scripts/tanstack-skills.ts
 
 # Applies the repository settings, the checks environment and the rulesets (admin only).
 github:

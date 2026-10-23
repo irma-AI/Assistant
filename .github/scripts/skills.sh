@@ -15,7 +15,8 @@ case ${1:-} in
       name=$(basename "$dir") scanned=$((scanned + 1))
       entry=$(jq -c --arg n "$name" '.[$n] // empty' "$lock")
       if [ -z "$entry" ]; then echo "::error::skills: $name is not in $lock. Fix: add it, as {\"source\": \"local\"} for a skill written here or with make skills for a copied one."; fail=1; continue; fi
-      [ "$(jq -r .source <<<"$entry")" = local ] && continue
+      # Written here, or copied from installed packages by scripts/tanstack-skills.ts (checked there).
+      case $(jq -r .source <<<"$entry") in local | tanstack) continue ;; esac
       [ "$(digest "$dir")" = "$(jq -r .sha256 <<<"$entry")" ] \
         || { echo "::error::skills: $name differs from its pinned copy. Fix: change it upstream and bump the commit, then make skills."; fail=1; }
     done
@@ -27,7 +28,7 @@ case ${1:-} in
     ;;
   vendor)
     tmp=$(mktemp -d "${TMPDIR:-/tmp}/skills.XXXXXX")
-    for name in $(jq -r 'to_entries[] | select(.value.source != "local") | .key' "$lock"); do
+    for name in $(jq -r 'to_entries[] | select(.value.source != "local" and .value.source != "tanstack") | .key' "$lock"); do
       read -r source commit path < <(jq -r --arg n "$name" '.[$n] | "\(.source) \(.commit) \(.path)"' "$lock")
       src="$tmp/$(tr / _ <<<"$source")-$commit"
       [ -d "$src" ] || { mkdir -p "$src"; curl -sSfL "https://codeload.github.com/$source/tar.gz/$commit" | tar xz -C "$src" --strip-components 1; }
