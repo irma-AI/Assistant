@@ -15,7 +15,7 @@ expect() {
   if [ "$got" = "$4" ]; then echo "ok    $1"; else echo "FAIL  $1: got $got, want $4"; fail=1; fi
 }
 
-expect "no personal data" "create table status (id int, name text);" no pass
+expect "no personal data" "create table status (id int, label text);" no pass
 expect "personal data in a comment only" "-- later: an email column" no pass
 expect "an email column without the generator" "create table person (id int, email text);" no fail
 expect "a phone number without the generator" "alter table person add column phone_number text;" no fail
@@ -27,4 +27,20 @@ expect "Swedish column names" "create table k (id int, epost text, personnr text
 expect "a whole short word" "create table k (id int, tel text);" no fail
 expect "a short word inside another" "create table metric (id int, telemetry jsonb);" no pass
 expect "-- inside a string is not a comment" "create table c (id int, note text default '--', email text);" no fail
+expect "a people table split across lines" $'CREATE TABLE\n  candidates (id uuid);' no fail
+expect "repeated spaces" "create table  users (id int);" no fail
+expect "a quoted schema" 'create table "public"."users" (id int);' no fail
+expect "a bare name column" "alter table interviewer add column name text;" no fail
+expect "a spaced -- inside a string" "create table c (id int, note text default ' --', email text);" no fail
+expect "name only in a comment" "create table status (id int, label text); -- name later" no pass
+expect "an apostrophe in a comment" $'-- the talent\'s contact details\ncreate table t (id serial, email text, status text default \'new\');' no fail
+expect "-- inside a block comment" $'/* author -- someone */\ncreate table t (id int);\n/* end */\nalter table t add column email text;' no fail
+expect "an E-string escape" $'comment on table t is E\'it\\\'s\';\nalter table t add column email text;' no fail
+expect "a dollar-quoted body with an apostrophe" $'do $$ begin raise notice \'it\'\'s\'; end $$;\nalter table t add column email text;' no fail
+expect "an unlogged people table" "create unlogged table users (id int);" no fail
+expect "a byte that isn't UTF-8" $'create table t (id int, note text default \'s\xf6k\', email text);' no fail
+
+d=$(mktemp -d "${TMPDIR:-/tmp}/synthetic.XXXXXX") && mkdir -p "$d/migrations"
+if out=$("$guard" "$d" 2>&1) && [ "$out" = "synthetic-data: scanned 0" ]; then echo "ok    an empty migrations folder"; else echo "FAIL  an empty migrations folder: $out"; fail=1; fi
+rm -rf "$d"
 exit $fail
