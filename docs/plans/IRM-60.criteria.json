@@ -1,0 +1,10 @@
+[
+  {
+    "criterion": "`policy`'s review prompt says that for UI changes, what DESIGN.md or the craft floor requires counts as needed, and names the craft floor file by path.",
+    "passes": true
+  },
+  {
+    "criterion": "zizmor and `make check` pass.",
+    "passes": true
+  }
+]
