@@ -1,13 +1,28 @@
 {
   "pass": [
-    {"body": "Closes IRM-1\n\n## First principles\n\n1. Why: x\n2. Removed: y\n3. Rejected: z\n\n## Not live yet\n\nNothing\n"},
-    {"body": "## First principles\r\nA reason.\r\n## Not live yet  \r\nRun the migration.\r\n"}
+    {
+      "body": "Closes IRM-1\n\n## First principles\n\n1. Why: x\n2. Removed: y\n3. Rejected: z\n\n## Not live yet\n\nNothing\n"
+    },
+    {
+      "body": "## First principles\r\nA reason.\r\n## Not live yet  \r\nRun the migration.\r\n"
+    }
   ],
   "fail": [
-    {"body": "Closes IRM-1\n\nNo sections at all."},
-    {"body": "## First principles\n\n## Not live yet\nNothing"},
-    {"body": "## First principles\n<!-- Why did the problem happen? -->\n## Not live yet\nNothing"},
-    {"body": "## First principles\nA reason."},
-    {}
+    {
+      "body": "Closes IRM-1\n\nNo sections at all."
+    },
+    {
+      "body": "## First principles\n\n## Not live yet\nNothing"
+    },
+    {
+      "body": "## First principles\n<!-- Why did the problem happen? -->\n## Not live yet\nNothing"
+    },
+    {
+      "body": "## First principles\nA reason."
+    },
+    {},
+    {
+      "body": "Closes IRM-\n\n<!-- What changed, in a few sentences or bullets. Write the description with the pr skill. -->\n\n## First principles\n\n<!--\n1. Why did the problem happen?\n2. What could be removed or simplified instead?\n3. What alternative was considered, and why was it rejected?\n-->\n\n## Not live yet\n\n<!-- What still has to be switched on after merge (a migration, a scheduled job, a secret), or \"Nothing\". -->\n"
+    }
   ]
 }

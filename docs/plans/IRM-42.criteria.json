@@ -1,0 +1,14 @@
+[
+  {
+    "criterion": ".claude/rules/routes.md is scoped to src/routes/** and covers $param, optional and splat segments, __root.tsx, pathless layouts and quoting $ in the shell.",
+    "passes": true
+  },
+  {
+    "criterion": "A PR description left as the unfilled template fails pr-sections.",
+    "passes": true
+  },
+  {
+    "criterion": "The docs guard checks every .claude/rules/*.md file's paths and its 3000-character budget.",
+    "passes": true
+  }
+]
