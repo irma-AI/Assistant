@@ -1,0 +1,14 @@
+[
+  {
+    "criterion": "feat raises the minor version, fix or perf the patch version, and a breaking change the major version; a push with none of them publishes no release.",
+    "passes": true
+  },
+  {
+    "criterion": "The notes group changes by type, link each one Linear issue and PR, and end with a What to check list from the PRs Not live yet sections.",
+    "passes": true
+  },
+  {
+    "criterion": "git-cliff is pinned in mise.toml.",
+    "passes": true
+  }
+]

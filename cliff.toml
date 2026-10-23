@@ -1,0 +1,47 @@
+# Release notes and the next version, from the conventional commits since the last tag.
+[changelog]
+header = ""
+body = """
+{% for group, commits in commits | group_by(attribute="group") %}
+### {{ group | striptags | trim }}
+{% for commit in commits %}
+- {{ commit.message | split(pat="\n") | first | trim }}\
+{% if commit.links %} ({% for link in commit.links | unique(attribute="href") %}[{{ link.text }}]({{ link.href }}){% if not loop.last %}, {% endif %}{% endfor %}){% endif %}
+{%- endfor %}
+{% endfor %}
+{% set checks = [] -%}
+{% for commit in commits -%}
+  {% if commit.body and commit.body is containing("## Not live yet") -%}
+    {% set note = commit.body | split(pat="## Not live yet") | last | split(pat="\n## ") | first | split(pat="🤖") | first | trim -%}
+    {% if note and not note is starting_with("Nothing") -%}
+      {% set_global checks = checks | concat(with=note) -%}
+    {% endif -%}
+  {% endif -%}
+{% endfor -%}
+{% if checks %}
+### What to check
+{% for note in checks %}
+{{ note }}
+{% endfor %}
+{% endif %}
+"""
+trim = true
+
+[git]
+conventional_commits = true
+filter_unconventional = true
+commit_parsers = [
+  { message = "^feat", group = "<!-- 0 -->Features" },
+  { message = "^fix", group = "<!-- 1 -->Fixes" },
+  { message = "^perf", group = "<!-- 2 -->Performance" },
+  { message = "^revert", group = "<!-- 3 -->Reverts" },
+  { message = "^(refactor|test|docs|build|ci|chore)", group = "<!-- 4 -->Maintenance" },
+]
+link_parsers = [
+  { pattern = "[Cc]loses (IRM-\\d+)", href = "https://linear.app/petters/issue/$1", text = "$1" },
+  { pattern = "\\(#(\\d+)\\)", href = "https://github.com/irma-AI/Assistant/pull/$1", text = "#$1" },
+]
+tag_pattern = "^v[0-9]+\\.[0-9]+\\.[0-9]+$"
+
+[bump]
+initial_tag = "v0.1.0"

@@ -38,3 +38,27 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
         run: gh attestation verify "oci://$IMAGE:$GITHUB_SHA" --repo "$GITHUB_REPOSITORY"
+  # The version comes from the commits since the last tag (feat: minor, fix or perf: patch, a breaking
+  # change: major). The tag and the GitHub Release are the only record; nothing is committed.
+  release:
+    needs: image
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: jdx/mise-action@8418fedb1110381a0d3ba51a7a415d7c1b884550 # v5.2.2
+      - name: Tag and publish the release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          n=$(git-cliff --unreleased --context | jq '[.[0].commits[] | select((.group | test("Features|Fixes|Performance")) or .breaking)] | length')
+          [ "$n" -gt 0 ] || { echo "no feat, fix, perf or breaking change since the last release"; exit 0; }
+          version=$(git-cliff --bumped-version)
+          git-cliff --unreleased --tag "$version" --strip all > notes.md
+          gh release create "$version" --target "$GITHUB_SHA" --title "$version" --notes-file notes.md
+          echo "released $version"
