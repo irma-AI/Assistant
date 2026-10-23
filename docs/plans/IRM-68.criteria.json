@@ -1,0 +1,14 @@
+[
+  {
+    "criterion": "A migration with `$$it's$$` before a people column fails the check, and DDL inside `DO $$ ... $$` still does.",
+    "passes": true
+  },
+  {
+    "criterion": "`guards/synthetic-data.test.sh` covers the German and Dutch columns, a temp table, `respondents`, `talent`, `leads` and a bare `mail` column.",
+    "passes": true
+  },
+  {
+    "criterion": "A seed file importing `@faker-js/faker/locale/sv`, as `.ts`, `.mts` or `.js`, counts as a faker seed.",
+    "passes": true
+  }
+]
