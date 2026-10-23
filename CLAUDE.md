@@ -13,7 +13,7 @@ Agents build this repository end to end; nobody reviews code by hand. CI on GitH
 
 ## Agent skills
 
-Issues live in Linear, team IRM, with type labels `feature`, `bug`, `ui`, `chore` and `docs`. See `docs/agents/issue-tracker.md`.
+Issues live in Linear, team IRM, with type labels `feature`, `bug`, `ui`, `chore` and `docs`. See `docs/agents/issue-tracker.md`. Scheduled routines and their prompts are in `docs/agents/routines.md`.
 
 ## Rules
 
