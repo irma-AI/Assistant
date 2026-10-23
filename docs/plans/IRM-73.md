@@ -17,10 +17,15 @@ Acceptance criteria:
 
 ## Progress
 
-- Plan written.
+- `next-step` step 3.4: Auto-fix is the subscription in a routine, `subscribe_pr_activity` elsewhere; the REST poll exits on a failed check, a merge or a close, 30 minutes at most; auto-merge is named as no signal. Step 3.5: a queue-removal notice is handled like a failed check. 5,858 of 6,000 characters.
+- `docs/agents/routines.md`: every routine has "Auto-fix pull requests" on.
+- `docs/guardrails.md` 2.19: the watch bullet matches; the Why records PR 58's `auto_merge: null` while queued, and that queue state is GraphQL only.
+- `guards/docs.sh` and `make check` pass.
 
 ## Decisions
 
+- A drop is detected from the subscription's notice, not from a field: REST has no queue state, and the queue's own checks run on a temporary commit.
+
 ## Next step
 
-Change next-step step 3.
+Open the PR.

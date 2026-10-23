@@ -14,4 +14,5 @@ Every routine:
 
 - runs on the repository's default branch, in the Assistant cloud environment, so the SessionStart hook sets up the tools, the database and the git hooks;
 - has only the Linear connector on, connected to the workspace that holds team IRM;
+- has "Auto-fix pull requests" on, so the run watches the CI and review comments of the PR it opens;
 - reads the named file by path, so it follows the reviewed copy whether or not the skill loader picks the skill up.
