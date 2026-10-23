@@ -15,9 +15,10 @@ Acceptance criteria:
 
 ## Decisions
 
-- `locked` stays out of `mise.toml`, because it also refuses tools from a developer's global mise config; the cloud setup script sets `MISE_LOCKED=1` instead.
+- `locked` stays out of `mise.toml`, because it also refuses tools from a developer's global mise config; the hook runs `mise install` with `MISE_LOCKED=1` instead, so cloud installs use only the lock.
+- The hook installs missing tools itself, waits up to 15 s for PostgreSQL and checks `DATABASE_URL`, after the review on the first push found it relied on the setup script.
 - The first two criteria are checked in the next cloud session after merge.
 
 ## Next step
 
-Open the PR; after merge, confirm in a cloud session and flip the first criterion.
+Confirm the first criterion in a cloud session on this branch (its SessionStart hook runs from the branch), then flip it.
