@@ -1,0 +1,14 @@
+[
+  {
+    "criterion": "The image runs scripts/migrate.ts before the server, and exits non-zero when a migration fails.",
+    "passes": true
+  },
+  {
+    "criterion": "ci image check starts the image against a PostgreSQL service, so migrations are proven inside the image before merge.",
+    "passes": true
+  },
+  {
+    "criterion": "After the deploy, production database has the migrations applied.",
+    "passes": false
+  }
+]
