@@ -29,27 +29,27 @@ Each skill named below is a file to read and follow by its path, so a routine fo
 | `ui` | As `feature`, with the UI steps |
 | `chore`, `docs` | Straight to step 3 |
 
-No type label, or two: ask (step 4).
+No type label, or two: ask (section 4).
 
 **UI steps.**
-1. No DESIGN.md or PRODUCT.md at the repository root: ask (step 4), because the look is the owner's call.
-2. Follow `.claude/skills/impeccable/SKILL.md` inside the world DESIGN.md sets. Skip its new-work flow and its interviews; a design choice the brief doesn't settle is a question (step 4). DESIGN.md and impeccable's craft floor (`.claude/skills/impeccable/reference/craft-floor.md`) set how complete the design must be; ponytail governs the code's structure only.
-3. Before the PR, run `impeccable audit` on the changed surface. Fix each P0 and P1 finding with the command it recommends, then run `impeccable polish`. A recommended command that changes the look or the words (`bolder`, `quieter`, `colorize`, `animate`, `delight`, `overdrive`, `clarify`, `distill`, `onboard`) is a question (step 4).
+1. No DESIGN.md or PRODUCT.md at the repository root: ask (section 4), because the look is the owner's call.
+2. Follow `.claude/skills/impeccable/SKILL.md` inside the world DESIGN.md sets. Skip its new-work flow and its interviews; a design choice the brief doesn't settle is a question (section 4). DESIGN.md and impeccable's craft floor (`.claude/skills/impeccable/reference/craft-floor.md`) set how complete the design must be; ponytail governs the code's structure only.
+3. Before the PR, run `impeccable audit` on the changed surface. Fix each P0 and P1 finding with the command it recommends, then run `impeccable polish`. A recommended command that changes the look or the words (`bolder`, `quieter`, `colorize`, `animate`, `delight`, `overdrive`, `clarify`, `distill`, `onboard`) is a question (section 4).
 4. Take before and after screenshots with Playwright at 390 and 1280 px wide, of made-up data only, because the repository is public, and put them in the PR.
 
 **Whatever the label:**
 - A change to `CLAUDE.md`, a skill, a rule file or `docs/agents/` follows `.claude/skills/writing-for-agents/SKILL.md`.
 - Work that depends on an outside fact nobody has checked, such as an API's or a vendor's behaviour, follows `.claude/skills/research/SKILL.md`. Save the notes as `docs/plans/<ID>.research.md`, with the date each source was read.
 
-The issue needs a protected path (the list in `CLAUDE.md`) and has no `ci-change`: ask (step 4). The label only counts when the issue had it at Ready, so adding it now would fail `policy`.
+The issue needs a protected path (the list in `CLAUDE.md`) and has no `ci-change`: ask (section 4). The label only counts when the issue had it at Ready, so adding it now would fail `policy`.
 
 ## 3. Finish
 
 1. Every criterion in the criteria file has `passes: true`, and `make check` passes. When the change touches access control, data deletion, migrations, CI or guards, run `.claude/skills/skeptic-pass/SKILL.md` on the frozen head first.
 2. Push the branch and open the PR. The title is a conventional commit; write the description with `.claude/skills/pr/SKILL.md`, with the `## First principles` and `## Not live yet` sections and `Closes <ID>`.
-3. Turn on auto-merge with the GitHub tools' `enable_pr_auto_merge` (in cloud, `gh pr` commands get a GraphQL 403), and move the issue to In Review. The merge queue merges once `ci` and `policy` pass.
-4. Watch the PR until it merges. Subscribe to its activity (`subscribe_pr_activity`), and start a background command that polls the PR and its head commit's check runs over REST (`gh api`) every minute and exits when a check fails or the PR merges, so a missed event still wakes you. The session ends when the PR has merged.
-5. `ci` or `policy` fails: read its log, fix the cause, push and watch again. After three rounds of fixes, ask (step 4) with the failing check's name and error.
+3. Turn on auto-merge with the GitHub tools' `enable_pr_auto_merge`, or `gh pr merge --auto` where `gh` reaches GitHub's GraphQL API (in cloud it gets a 403), and move the issue to In Review. The merge queue merges once `ci` and `policy` pass.
+4. Watch the PR until it merges. Subscribe to its activity (`subscribe_pr_activity`), and start a background command that polls the PR and its head commit's check runs over REST (`gh api`) every minute. It exits when a check fails, the PR merges or closes, or auto-merge goes off, which is how the queue drops a PR, and after 30 minutes at most; while the PR is open and queued, start it again. The session ends when the PR merges, or closes.
+5. A check fails or the queue drops the PR: read the log, fix the cause, push, turn auto-merge on again and watch again. After three rounds of fixes, ask (section 4) with the failing check's name and error.
 6. A review finding you consider wrong: explain why in the PR description; `policy` judges again when the description changes.
 
 ## 4. Ask the owner
