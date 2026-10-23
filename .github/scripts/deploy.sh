@@ -4,7 +4,17 @@
 # keeping the broken image, so /version alone decides; on failure the previous image is pinned again.
 # Env: DOKPLOY_URL, DOKPLOY_API_KEY, APPLICATION_ID, APP_URL, IMAGE, TAG
 set -euo pipefail
-api() { curl -sSf -H "x-api-key: $DOKPLOY_API_KEY" -H 'Content-Type: application/json' "$DOKPLOY_URL/api/$1" "${@:2}"; }
+# On an error, prints the status and Dokploy's message only: a successful answer can hold the app's env.
+api() {
+  local out code
+  out=$(curl -sS -w '\n%{http_code}' -H "x-api-key: $DOKPLOY_API_KEY" -H 'Content-Type: application/json' "$DOKPLOY_URL/api/$1" "${@:2}")
+  code=${out##*$'\n'}
+  if [ "${code:0:1}" != 2 ]; then
+    echo "::error::Dokploy $1 returned $code: $(jq -r '.message // .error // "no message"' <<<"${out%$'\n'*}" 2>/dev/null | head -c 300)" >&2
+    return 1
+  fi
+  printf '%s' "${out%$'\n'*}"
+}
 pin() {
   api application.saveDockerProvider -d "$(jq -n --arg id "$APPLICATION_ID" --arg img "$1" \
     '{applicationId: $id, dockerImage: $img, username: null, password: null, registryUrl: null}')" > /dev/null

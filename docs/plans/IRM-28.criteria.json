@@ -1,0 +1,10 @@
+[
+  {
+    "criterion": "A failed Dokploy call prints \"Dokploy <call> returned <status>: <message>\".",
+    "passes": true
+  },
+  {
+    "criterion": "No successful Dokploy answer is printed to the log.",
+    "passes": true
+  }
+]
