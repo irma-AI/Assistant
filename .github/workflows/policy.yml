@@ -68,6 +68,14 @@ jobs:
           jq -n --arg id "$issue" '{query:"query($id:String!){issue(id:$id){identifier title description}}",variables:{id:$id}}' \
             | curl -sSf https://api.linear.app/graphql -H "Authorization: $LINEAR_API_TOKEN" -H 'Content-Type: application/json' -d @- \
             | jq -er '.data.issue | "# \(.identifier): \(.title)\n\n\(.description // "")"' > review/issue.md
+      # Opus for PRs that touch a protected path, where a loosened check would hide; Sonnet for the rest,
+      # to spare the subscription's usage. With no MESSAGE the check exits 1 on any protected path, offline.
+      - name: Pick the review model
+        id: model
+        run: |
+          if [ -s review/files.txt ] && MESSAGE='' .github/scripts/protected-paths.sh review/files.txt > /dev/null 2>&1; then model=claude-sonnet-5-5; else model=claude-opus-5-5; fi
+          echo "model=$model" >> "$GITHUB_OUTPUT"
+          echo "review model: $model"
       # shortcut: one review pass covers every lens and the task-fit judge; split into a pass per lens if findings get shallow.
       - name: AI review and task-fit judge
         id: review
@@ -89,6 +97,7 @@ jobs:
             Severity: P0 = exploitable security hole or data loss, P1 = wrong behaviour, an unmet criterion or out-of-scope work, P2 = minor, P3 = nit.
             Return every finding in the structured output, or an empty list.
           claude_args: >-
+            --model ${{ steps.model.outputs.model }}
             --max-turns 40
             --allowedTools Read,Grep,Glob
             --disallowedTools Bash,Edit,Write,WebFetch,WebSearch
