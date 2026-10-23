@@ -1,0 +1,18 @@
+[
+  {
+    "criterion": "ESLint is on 10, and make check passes.",
+    "passes": true
+  },
+  {
+    "criterion": "An eslint-disable comment without a description fails lint.",
+    "passes": true
+  },
+  {
+    "criterion": "@tanstack/eslint-plugin-router's recommended rules run on src/.",
+    "passes": true
+  },
+  {
+    "criterion": "make fix formats and applies lint fixes.",
+    "passes": true
+  }
+]

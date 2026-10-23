@@ -1,6 +1,6 @@
 REPO ?= irma-AI/Assistant
 
-.PHONY: check check-repo check-app check-staged check-push e2e install dev image-check setup skills github
+.PHONY: check check-repo check-app check-staged check-push fix e2e install dev image-check setup skills github
 
 # Everything CI runs.
 check: check-repo check-app e2e
@@ -32,6 +32,11 @@ check-app: generate-check
 
 test:
 	pnpm exec vitest run
+
+# Applies prettier and ESLint's automatic fixes.
+fix:
+	pnpm exec prettier --write .
+	pnpm exec eslint --fix .
 
 # The browser seam against a fresh production build; ci calls the same script in Playwright's
 # image, which has no make.

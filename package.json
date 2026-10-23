@@ -24,15 +24,17 @@
     "react-dom": "^19.2.0"
   },
   "devDependencies": {
+    "@eslint-community/eslint-plugin-eslint-comments": "4.8.1",
     "@playwright/test": "^1.64.1",
     "@tanstack/eslint-config": "0.4.0",
+    "@tanstack/eslint-plugin-router": "1.162.0",
     "@types/node": "^22.10.2",
     "@types/pg": "^8.23.1",
     "@types/react": "^19.2.0",
     "@types/react-dom": "^19.2.0",
     "@vitejs/plugin-react": "^6.0.1",
     "dependency-cruiser": "18.7.0",
-    "eslint": "^9.20.0",
+    "eslint": "10.13.0",
     "kysely-codegen": "^0.20.0",
     "prettier": "^3.8.1",
     "squawk-cli": "^2.70.0",

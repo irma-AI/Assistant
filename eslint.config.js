@@ -1,11 +1,15 @@
 //  @ts-check
 
+import comments from '@eslint-community/eslint-plugin-eslint-comments/configs'
 import { tanstackConfig } from '@tanstack/eslint-config'
+import router from '@tanstack/eslint-plugin-router'
 import tseslint from 'typescript-eslint'
 
 export default [
   ...tanstackConfig,
   ...tseslint.configs.strictTypeChecked,
+  comments.recommended,
+  ...router.configs['flat/recommended'],
   {
     linterOptions: { reportUnusedDisableDirectives: 'error' },
     rules: {
@@ -33,6 +37,8 @@ export default [
         { max: 80, skipBlankLines: true, skipComments: true },
       ],
       complexity: ['error', 10],
+      // Every suppression says why.
+      '@eslint-community/eslint-comments/require-description': 'error',
     },
   },
   {
