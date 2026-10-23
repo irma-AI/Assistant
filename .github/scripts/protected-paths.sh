@@ -6,7 +6,9 @@ set -euo pipefail
 here=$(dirname "$0")
 files=$1
 
-protected='^(\.github/|guards/|\.claude/|\.githooks/|CLAUDE\.md$|rulesets/|Makefile$|mise\.toml$|mise\.lock$|pnpm-workspace\.yaml$|tsconfig\.json$|eslint\.config\.js$|vite\.config\.ts$|sgconfig\.yml$|\.dependency-cruiser\.cjs$|\.squawk\.toml$|package\.json$|vitest\.config\.ts$|playwright\.config\.ts$|tsr\.config\.json$|scripts/|src/server/migrate\.server\.ts$|docs/agents/)'
+# Root paths, then configuration files at any depth, because make, ESLint and prettier also read
+# a GNUmakefile or makefile first, and a nested config file in place of the root one.
+protected='^(\.github/|guards/|\.claude/|\.githooks/|CLAUDE\.md$|rulesets/|scripts/|docs/agents/|src/server/migrate\.server\.ts$|mise\.(toml|lock)$|pnpm-workspace\.yaml$|package\.json$|tsr\.config\.json$)|(^|/)(GNUmakefile|[Mm]akefile|tsconfig[^/]*\.json|eslint\.config\.[^/]+|\.eslintrc[^/]*|vite\.config\.[^/]+|vitest\.config\.[^/]+|playwright\.config\.[^/]+|prettier\.config\.[^/]+|\.prettierrc[^/]*|\.prettierignore|sgconfig\.yml|\.dependency-cruiser\.[^/]+|\.squawk\.toml|\.gitleaksignore|\.gitleaks\.toml)$'
 hits=$(grep -E "$protected" "$files" || true)
 if [ -z "$hits" ]; then
   echo "scanned $(grep -c . "$files" || true) files, none protected"

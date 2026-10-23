@@ -10,8 +10,8 @@ check() {
   got=$?
   if [ "$got" = "$2" ]; then echo "ok    $1"; else echo "FAIL  $1: exit $got, want $2"; fail=1; fi
 }
-for p in .github/workflows/ci.yml guards/pr-title.jq .claude/settings.json .githooks/pre-push CLAUDE.md rulesets/main.json Makefile mise.toml mise.lock pnpm-workspace.yaml tsconfig.json eslint.config.js vite.config.ts sgconfig.yml .dependency-cruiser.cjs .squawk.toml package.json vitest.config.ts playwright.config.ts tsr.config.json scripts/migrate.ts src/server/migrate.server.ts docs/agents/routines.md; do
+for p in .github/workflows/ci.yml guards/pr-title.jq .claude/settings.json .githooks/pre-push CLAUDE.md rulesets/main.json Makefile GNUmakefile makefile mise.toml mise.lock pnpm-workspace.yaml tsconfig.json eslint.config.js vite.config.ts sgconfig.yml .dependency-cruiser.cjs .squawk.toml package.json vitest.config.ts playwright.config.ts tsr.config.json scripts/migrate.ts src/server/migrate.server.ts docs/agents/routines.md src/eslint.config.js .prettierignore .prettierrc src/.prettierrc.json prettier.config.js .gitleaksignore .gitleaks.toml vite.config.js e2e/playwright.config.ts tsconfig.node.json; do
   check "$p" 1
 done
-for p in src/routes/index.tsx docs/plans/IRM-1.md e2e/smoke.spec.ts; do check "$p" 0; done
+for p in src/routes/index.tsx docs/plans/IRM-1.md e2e/smoke.spec.ts scripts-old/x src/package.json docs/agents-x/a Makefile.bak src/eslint-helpers.ts docs/prettier-notes.md; do check "$p" 0; done
 exit $fail
