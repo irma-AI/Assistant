@@ -16,7 +16,7 @@ for p in .github/workflows/ci.yml guards/pr-title.jq .claude/settings.json .gith
   package.json tsconfig.json eslint.config.js vite.config.ts vite.config.js vitest.config.ts playwright.config.ts tsr.config.json \
   sgconfig.yml .dependency-cruiser.cjs .squawk.toml .prettierignore .prettierrc prettier.config.js .gitleaksignore .gitleaks.toml \
   .gitattributes .gitignore zizmor.yml Dockerfile .dockerignore cliff.toml README.md docs/guardrails.md docs/agents/routines.md \
-  scripts/migrate.ts src/server/migrate.server.ts src/CLAUDE.md src/.claude/settings.json src/package.json e2e/package.json \
+  scripts/migrate.ts src/server/migrate.server.ts src/server/synthetic.server.ts src/CLAUDE.md src/.claude/settings.json src/package.json e2e/package.json \
   src/.gitignore src/.ignore src/eslint.config.js src/.prettierrc.json e2e/playwright.config.ts src/tsconfig.json src/Makefile; do
   check "$p" 1
 done
