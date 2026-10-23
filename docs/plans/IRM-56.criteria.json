@@ -1,0 +1,14 @@
+[
+  {
+    "criterion": "Exactly one usage comment, updated on each later review, showing model, verdict, turns, time, and per-model input, cache-read, output tokens and estimated cost, with the commit and run it describes.",
+    "passes": false
+  },
+  {
+    "criterion": "It is posted by a job of its own with pull-requests: write, and the policy job's permissions are unchanged.",
+    "passes": true
+  },
+  {
+    "criterion": "A failed review still gets its numbers, with the verdict saying so.",
+    "passes": false
+  }
+]
