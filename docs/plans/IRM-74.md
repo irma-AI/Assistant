@@ -15,10 +15,13 @@ Acceptance criteria:
 
 ## Progress
 
-- Plan written.
+- `next-step` step 3.4 ends the watch after two hours with the PR open and green, asking through section 4; guardrails 2.19 names the cap and why.
+- `guards/docs.sh` and `make check` pass.
 
 ## Decisions
 
+- Two hours, the owner's number: the queue normally merges in minutes, so two hours open and green means a drop nobody saw.
+
 ## Next step
 
-Add the cap.
+Open the PR.

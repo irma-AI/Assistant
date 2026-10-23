@@ -412,7 +412,7 @@ Size limits here count characters or words, and are enforced.
 **What it is.** The agent opens each PR and turns on auto-merge. The merge queue merges once the required checks pass, and a workflow deploys.
 
 - Right after opening the PR, the agent turns on auto-merge through the GitHub tools of Claude's GitHub connection (for example `enable_pr_auto_merge`). It never merges directly.
-- The session then watches the PR until it merges or closes. In a routine, its "Auto-fix pull requests" setting subscribes the run to the PR's CI and review comments; a background command polling the PR and its check runs over REST, 30 minutes at a time, covers a missed event. A failed check, or a notice that the queue removed the PR, gets fixed and pushed with auto-merge on again, up to three rounds. *Not checked* in a routine run.
+- The session then watches the PR until it merges or closes. In a routine, its "Auto-fix pull requests" setting subscribes the run to the PR's CI and review comments; a background command polling the PR and its check runs over REST, 30 minutes at a time, covers a missed event. After two hours with the PR open and green, the session asks the owner and ends, because a queue drop leaves the PR's own checks green. A failed check, or a notice that the queue removed the PR, gets fixed and pushed with auto-merge on again, up to three rounds. *Not checked* in a routine run.
 - The merge queue retests the PR and merges it. The rulesets ([2.12](#212-ci-as-the-authority)) keep the required checks in force whoever turned auto-merge on.
 - A deploy workflow ([2.13](#213-done-means-seen-working)) runs on pushes to the default branch, and merges by the queue's own bot start it.
 
