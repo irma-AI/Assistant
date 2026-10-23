@@ -1,5 +1,6 @@
 name: release
-# Every push to main ships one image, tagged with its commit (a tag that never moves) and attested.
+# Every push to main ships one image, tagged with its commit (a tag that never moves) and attested,
+# deploys it, and releases only once it is serving.
 on:
   push:
     branches: [main]
@@ -38,10 +39,51 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
         run: gh attestation verify "oci://$IMAGE:$GITHUB_SHA" --repo "$GITHUB_REPOSITORY"
+  # Deploys the attested image and checks it is the one serving; on failure it pins the previous
+  # image again and opens a deploy-failure issue in Linear.
+  deploy:
+    needs: image
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    environment: checks
+    permissions:
+      contents: read
+    env:
+      IMAGE: ghcr.io/irma-ai/assistant
+      TAG: ${{ github.sha }}
+      DOKPLOY_URL: https://dokploy.petterannerwall.se
+      APPLICATION_ID: QBnL1Yn7fZ0Ficd4cbI36
+      APP_URL: https://assistant-u5wrvv-8d3252-207-2-120-210.sslip.io
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - name: Verify the attestation
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh attestation verify "oci://$IMAGE:$TAG" --repo "$GITHUB_REPOSITORY"
+      - name: Deploy and check /version
+        env:
+          DOKPLOY_API_KEY: ${{ secrets.DOKPLOY_API_KEY }}
+        run: .github/scripts/deploy.sh
+      - name: Open a deploy-failure issue
+        if: failure()
+        env:
+          LINEAR_API_TOKEN: ${{ secrets.LINEAR_API_TOKEN }}
+          RUN: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+        run: |
+          gql() { curl -sSf https://api.linear.app/graphql -H "Authorization: $LINEAR_API_TOKEN" -H 'Content-Type: application/json' -d @-; }
+          ids=$(jq -n '{query:"{teams(filter:{key:{eq:\"IRM\"}}){nodes{id labels(filter:{name:{eq:\"deploy-failure\"}}){nodes{id}}}}}"}' | gql \
+            | jq -c '.data.teams.nodes[0] | {team: .id, labels: [.labels.nodes[].id]}')
+          jq -n --argjson ids "$ids" --arg title "Deploy failed at ${TAG::7}" \
+            --arg d "Deploying $IMAGE:$TAG failed its /version or home page check, and the previous image was pinned again. Run: $RUN" \
+            '{query:"mutation($i:IssueCreateInput!){issueCreate(input:$i){success}}",variables:{i:{teamId:$ids.team,labelIds:$ids.labels,title:$title,description:$d}}}' \
+            | gql | jq -e '.data.issueCreate.success' > /dev/null
+
   # The version comes from the commits since the last tag (feat: minor, fix or perf: patch, a breaking
   # change: major). The tag and the GitHub Release are the only record; nothing is committed.
   release:
-    needs: image
+    needs: deploy
     runs-on: ubuntu-latest
     timeout-minutes: 10
     permissions:
