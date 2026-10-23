@@ -1,22 +1,22 @@
 [
   {
     "criterion": "next-step's watch ends on a merge, a close, auto-merge going off or a failed check, never waits more than 30 minutes per poll, and stays within its 6,000-character budget.",
-    "passes": false
+    "passes": true
   },
   {
     "criterion": "next-step names `gh pr merge --auto` as the fallback.",
-    "passes": false
+    "passes": true
   },
   {
     "criterion": "Every reference to the ask section in next-step reads \"section 4\".",
-    "passes": false
+    "passes": true
   },
   {
     "criterion": "guardrails 2.19 and section 3 match next-step.",
-    "passes": false
+    "passes": true
   },
   {
     "criterion": "make check passes.",
-    "passes": false
+    "passes": true
   }
 ]

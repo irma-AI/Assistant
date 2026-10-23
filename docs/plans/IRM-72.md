@@ -22,10 +22,18 @@ Acceptance criteria:
 
 ## Progress
 
-- Plan written.
+- `next-step` step 3.3: `gh pr merge --auto` is back as the fallback where `gh` reaches GraphQL.
+- Step 3.4: the poll also exits when the PR closes or auto-merge goes off (how the queue drops a PR), and after 30 minutes at most; it is restarted while the PR is open and queued; the session ends on a merge or a close.
+- Step 3.5: a dropped PR is fixed like a failed check, with auto-merge turned on again, inside the three rounds.
+- Every ask reference reads "section 4" (6 of them, none says "step 4"). 5,779 of 6,000 characters.
+- `docs/guardrails.md`: 2.19's watch bullet and section 3's reason for naming skills by path match.
+- `guards/docs.sh` and `make check` pass.
 
 ## Decisions
 
+- Auto-merge going off is the signal for a drop, because GitHub turns it off when the queue removes a PR and REST shows it on the PR, while the queue's own checks run on a commit the poll doesn't watch.
+- A close ends the session without asking: `fix-rounds` already moved the issue to Needs input with the reason.
+
 ## Next step
 
-Change next-step step 3.
+Open the PR.

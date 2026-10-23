@@ -412,7 +412,7 @@ Size limits here count characters or words, and are enforced.
 **What it is.** The agent opens each PR and turns on auto-merge. The merge queue merges once the required checks pass, and a workflow deploys.
 
 - Right after opening the PR, the agent turns on auto-merge through the GitHub tools of Claude's GitHub connection (for example `enable_pr_auto_merge`). It never merges directly.
-- The session then watches the PR until it merges: subscribed to its activity, with a background command polling the check runs over REST as a backup. A failed check gets fixed and pushed, up to three rounds. *Not checked* in a routine run.
+- The session then watches the PR until it merges or closes: subscribed to its activity, with a background command polling the PR and its check runs over REST as a backup, for 30 minutes at a time. A failed check, or a PR the queue dropped by turning auto-merge off, gets fixed and pushed with auto-merge on again, up to three rounds. *Not checked* in a routine run.
 - The merge queue retests the PR and merges it. The rulesets ([2.12](#212-ci-as-the-authority)) keep the required checks in force whoever turned auto-merge on.
 - A deploy workflow ([2.13](#213-done-means-seen-working)) runs on pushes to the default branch, and merges by the queue's own bot start it.
 
@@ -599,7 +599,7 @@ A skill is a Markdown file of instructions that Claude Code loads when it is cal
   | `ui` | As `feature`, then `impeccable` inside the world DESIGN.md sets, an `impeccable audit` of the changed surface, its P0 and P1 findings fixed with the commands it recommends (one that changes the look or the words goes to the owner) and `impeccable polish`, with before and after screenshots of made-up data in the PR; a `feature` that adds or changes a page takes the same steps |
   | `chore`, `docs` | Straight to the end |
 
-- It names each skill by file path, because routines read files, not skill names ([2.28](#228-routine-prompts-point-into-the-repository)). Whatever the label, a change to an agent document follows [`writing-for-agents`](#3-skills), and an unchecked outside fact gets [`research`](#3-skills) notes in the plan folder.
+- It names each skill by file path, so a routine follows the reviewed copy whether or not the skill loader picks it up ([2.28](#228-routine-prompts-point-into-the-repository)). Whatever the label, a change to an agent document follows [`writing-for-agents`](#3-skills), and an unchecked outside fact gets [`research`](#3-skills) notes in the plan folder.
 - An issue that an unfinished one blocks waits; intake skips it.
 - It ends with `make check`, a description written with `pr`, the PR opened with auto-merge on and watched until it merges ([2.19](#219-merging-and-deploying-on-githubs-side)), and up to three rounds of CI fixes ([2.11](#211-ai-review-and-task-fit-judge-run-by-ci-on-the-subscription)).
 - It has a character budget like `CLAUDE.md`'s, and the docs-reference guard covers it ([2.5](#25-instruction-layering-with-size-budgets)).
