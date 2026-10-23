@@ -1,0 +1,14 @@
+[
+  {
+    "criterion": "A push to main deploys ghcr.io/irma-ai/assistant:<commit>, and the job passes only once the app /version serves that commit.",
+    "passes": false
+  },
+  {
+    "criterion": "A failed check pins the previous image again and opens a Linear issue with the run link.",
+    "passes": false
+  },
+  {
+    "criterion": "The release job waits for the deploy job.",
+    "passes": true
+  }
+]
