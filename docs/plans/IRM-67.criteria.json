@@ -1,0 +1,14 @@
+[
+  {
+    "criterion": "`guards/synthetic-data.sh` fails a migration that stores people while no file in `seeds/` imports `@faker-js/faker` and calls `exampleEmail`, and passes once one does.",
+    "passes": true
+  },
+  {
+    "criterion": "It reads migrations as SQL as described, including DDL inside a `DO $$ ... $$` block, and an empty `migrations/` passes.",
+    "passes": true
+  },
+  {
+    "criterion": "`guards/synthetic-data.test.sh` covers each case, `src/server/synthetic.server.ts` is no longer a protected-path entry, and guardrails 2.8 describes the faker and kysely-ctl setup and the check.",
+    "passes": true
+  }
+]
