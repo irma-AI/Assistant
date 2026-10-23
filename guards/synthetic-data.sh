@@ -16,13 +16,13 @@ for f in migrations/*.sql; do
   scanned=$((scanned + 1))
   # One line per file, in lower case, without string literals, comments, quotes or repeated whitespace, so a
   # statement split across lines or a quoted schema reads like any other. Literals and comments go in one pass,
-  # so whichever starts first wins; backslash escapes count only in E'' strings. Dollar quotes ($$, $tag$) are
-  # dropped but their bodies kept, because DDL inside DO $$ ... $$ is still DDL.
-  flat=$(perl -0777 -pe 's/\$\w*\$/ /g; s/[eE]\x27(?:[^\x27\\]|\x27\x27|\\.)*\x27|\x27(?:[^\x27]|\x27\x27)*\x27|--[^\n]*|\/\*.*?\*\// /gs; s/"//g; s/\s+/ /g; $_ = lc' "$f")
+  # so whichever starts first wins; backslash escapes count only in E'' strings. A dollar-quoted body ($$, $tag$)
+  # keeps its text without its apostrophes, because DDL inside DO $$ ... $$ is still DDL.
+  flat=$(perl -0777 -pe 's/\$(\w*)\$(.*?)\$\1\$/" " . ($2 =~ tr{\x27}{}dr) . " "/gse; s/[eE]\x27(?:[^\x27\\]|\x27\x27|\\.)*\x27|\x27(?:[^\x27]|\x27\x27)*\x27|--[^\n]*|\/\*.*?\*\// /gs; s/"//g; s/\s+/ /g; $_ = lc' "$f")
   m=$(grep -aoiE "(^|[^a-z0-9])($prefix)|(^|[^a-z0-9])($whole)([^a-z0-9]|$)" <<<"$flat" | sed "s|^|$f: |" || true)
   [ -n "$m" ] && hits+="$m"$'\n'
 done
-seeded=$(grep -lE "from ['\"]@faker-js/faker['\"]" seeds/*.ts 2>/dev/null | xargs grep -l 'exampleEmail' 2>/dev/null || true)
+seeded=$(grep -lE "from ['\"]@faker-js/faker(/[a-z/_]+)?['\"]" seeds/*.ts seeds/*.mts seeds/*.js 2>/dev/null | xargs grep -l 'exampleEmail' 2>/dev/null || true)
 if [ -n "$hits" ] && [ -z "$seeded" ]; then
   echo "::error::synthetic-data: migrations store personal data, but no seed file in seeds/ imports @faker-js/faker and uses exampleEmail:"
   printf '%s' "$hits"

@@ -12,6 +12,7 @@ expect() {
   mkdir -p "$d/seeds"
   [ "$3" = yes ] && printf "import { faker } from '@faker-js/faker'\nexport const email = faker.internet.exampleEmail()\n" > "$d/seeds/0001_people.ts"
   [ "$3" = stub ] && touch "$d/seeds/0001_people.ts"
+  [ "$3" = locale ] && printf "import { faker } from '@faker-js/faker/locale/sv'\nexport const email = faker.internet.exampleEmail()\n" > "$d/seeds/0001_people.mts"
   [ "$3" = nofaker ] && printf "export const email = 'a@example.com'\n" > "$d/seeds/0001_people.ts"
   if "$guard" "$d" > /dev/null 2>&1; then got=pass; else got=fail; fi
   rm -rf "$d"
@@ -46,6 +47,12 @@ expect "a byte that isn't UTF-8" $'create table t (id int, note text default \'s
 expect "DDL inside a DO block" $'do $$ begin alter table t add column email text; end $$;' no fail
 expect "a plain string ending in a backslash" $'create table t (id int, path text default \'c:\\\', email text);' no fail
 expect "upper-case Swedish" "create table k (id int, FÖRNAMN text);" no fail
+expect "an apostrophe in a dollar-quoted string" $'comment on table t is $$it\'s$$;\nalter table t add column email text default \'x\';' no fail
+expect "German and Dutch names" "create table k (id int, vorname text, nachname text, voornaam text, achternaam text);" no fail
+expect "a temp people table" "create temp table respondents (id int);" no fail
+expect "talent and leads" "create table talent (id int); create table leads (id int);" no fail
+expect "a bare mail column" "create table k (id int, mail text);" no fail
+expect "faker seeds from a locale entry point" "create table person (id int, email text);" locale pass
 
 d=$(mktemp -d "${TMPDIR:-/tmp}/synthetic.XXXXXX") && mkdir -p "$d/migrations"
 if out=$("$guard" "$d" 2>&1) && [ "$out" = "synthetic-data: scanned 0" ]; then echo "ok    an empty migrations folder"; else echo "FAIL  an empty migrations folder: $out"; fail=1; fi
