@@ -1,0 +1,14 @@
+[
+  {
+    "criterion": "After the deploy job, a smoke job runs e2e/ against the production URL, expecting /version to show the deployed commit.",
+    "passes": false
+  },
+  {
+    "criterion": "A failed smoke test pins the previous image again and opens a deploy-failure issue that says so.",
+    "passes": false
+  },
+  {
+    "criterion": "The release job runs only after the smoke test passes.",
+    "passes": true
+  }
+]
