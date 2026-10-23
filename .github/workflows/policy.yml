@@ -73,7 +73,7 @@ jobs:
       - name: Pick the review model
         id: model
         run: |
-          if MESSAGE='' .github/scripts/protected-paths.sh review/files.txt > /dev/null 2>&1; then model=claude-sonnet-5-5; else model=claude-opus-5-5; fi
+          if [ -s review/files.txt ] && MESSAGE='' .github/scripts/protected-paths.sh review/files.txt > /dev/null 2>&1; then model=claude-sonnet-5-5; else model=claude-opus-5-5; fi
           echo "model=$model" >> "$GITHUB_OUTPUT"
           echo "review model: $model"
       # shortcut: one review pass covers every lens and the task-fit judge; split into a pass per lens if findings get shallow.

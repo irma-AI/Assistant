@@ -1,0 +1,14 @@
+[
+  {
+    "criterion": "A PR that touches a protected path is reviewed with claude-opus-5-5, and any other PR with claude-sonnet-5-5.",
+    "passes": false
+  },
+  {
+    "criterion": "The choice uses the same protected-path rule as policy check, with no network call.",
+    "passes": true
+  },
+  {
+    "criterion": "guardrails 2.11 says which model reviews what, and why.",
+    "passes": true
+  }
+]
