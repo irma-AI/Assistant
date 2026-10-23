@@ -1,0 +1,10 @@
+[
+  {
+    "criterion": "The review prompt names the three lens files by path, read from the default branch's checkout, and keeps the task-fit judge and severities.",
+    "passes": true
+  },
+  {
+    "criterion": "next-step runs skeptic-pass on the frozen head before the PR for those risk paths.",
+    "passes": true
+  }
+]
