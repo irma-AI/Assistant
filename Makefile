@@ -71,9 +71,12 @@ image-check:
 dev:
 	pnpm dev
 
-# git hooks. shortcut: pre-commit runs the repository checks and pre-push everything; lint only staged files once check-app outgrows 10 s.
+# git hooks: pre-commit checks the repository and the staged files only; pre-push runs everything.
+STAGED = git diff --cached --name-only --diff-filter=ACMR
 check-staged: check-repo
 	gitleaks git --pre-commit --staged --redact --no-banner
+	@f=$$($(STAGED)); [ -z "$$f" ] || pnpm exec prettier --check --ignore-unknown $$f
+	@f=$$($(STAGED) -- '*.ts' '*.tsx' '*.js'); [ -z "$$f" ] || pnpm exec eslint --no-warn-ignored $$f
 check-push: check
 
 # Points git at the repository's hooks. Cloud sessions do this in the SessionStart hook.
