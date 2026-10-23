@@ -63,6 +63,7 @@ jobs:
           GH_TOKEN: ${{ github.token }}
         run: gh attestation verify "oci://$IMAGE:$TAG" --repo "$GITHUB_REPOSITORY"
       - name: Deploy and check /version
+        id: deploy
         env:
           DOKPLOY_API_KEY: ${{ secrets.DOKPLOY_API_KEY }}
         run: .github/scripts/deploy.sh
@@ -71,12 +72,18 @@ jobs:
         env:
           LINEAR_API_TOKEN: ${{ secrets.LINEAR_API_TOKEN }}
           RUN: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+          OUTCOME: ${{ steps.deploy.outputs.outcome }}
         run: |
+          case "$OUTCOME" in
+            rolled-back) what="failed its /version or home page check; the previous image was pinned again and serves" ;;
+            rollback-failed) what="failed, and the previous image did not come back either: production may be down" ;;
+            *) what="failed before anything was deployed (the attestation or the Dokploy API); production is unchanged" ;;
+          esac
           gql() { curl -sSf https://api.linear.app/graphql -H "Authorization: $LINEAR_API_TOKEN" -H 'Content-Type: application/json' -d @-; }
           ids=$(jq -n '{query:"{teams(filter:{key:{eq:\"IRM\"}}){nodes{id labels(filter:{name:{eq:\"deploy-failure\"}}){nodes{id}}}}}"}' | gql \
             | jq -c '.data.teams.nodes[0] | {team: .id, labels: [.labels.nodes[].id]}')
           jq -n --argjson ids "$ids" --arg title "Deploy failed at ${TAG::7}" \
-            --arg d "Deploying $IMAGE:$TAG failed its /version or home page check, and the previous image was pinned again. Run: $RUN" \
+            --arg d "Deploying $IMAGE:$TAG $what. Run: $RUN" \
             '{query:"mutation($i:IssueCreateInput!){issueCreate(input:$i){success}}",variables:{i:{teamId:$ids.team,labelIds:$ids.labels,title:$title,description:$d}}}' \
             | gql | jq -e '.data.issueCreate.success' > /dev/null
 
