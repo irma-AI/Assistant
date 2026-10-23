@@ -6,9 +6,6 @@ function Home() {
   return (
     <main>
       <h1>Assistant</h1>
-      <p>
-        Edit <code>src/routes/index.tsx</code> to get started.
-      </p>
     </main>
   )
 }
