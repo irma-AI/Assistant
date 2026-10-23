@@ -4,7 +4,7 @@ Routines are scheduled cloud sessions on claude.ai. Each prompt only names a fil
 
 | Routine | Schedule | Prompt |
 |---|---|---|
-| Intake | Every hour | Pick the oldest issue in Linear team IRM that is in Ready and that no open pull request closes, and follow `.claude/skills/next-step/SKILL.md` for it, as a plain set of instructions. If no issue is Ready, stop. |
+| Intake | Every hour | Pick the oldest issue in Linear team IRM that is in Ready, that no open pull request closes and that no issue short of Done blocks, and follow `.claude/skills/next-step/SKILL.md` for it, as a plain set of instructions. If no issue is Ready, stop. |
 | Claim sweep | Weekly, Monday 06:00 UTC | Follow `.claude/skills/claim-sweep/SKILL.md`, as a plain set of instructions. |
 
 Every routine:

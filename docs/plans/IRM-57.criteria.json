@@ -1,0 +1,22 @@
+[
+  {
+    "criterion": "`next-step` names every skill it uses by file path, and `make check` (the docs guard) passes, so every path exists and the skill stays within its budget.",
+    "passes": true
+  },
+  {
+    "criterion": "`next-step` and the intake prompt in `docs/agents/routines.md` skip an issue with an open blocker.",
+    "passes": true
+  },
+  {
+    "criterion": "`next-step`'s UI steps name `impeccable` by path, require `DESIGN.md` and `PRODUCT.md` or a question to the owner, run `impeccable audit` before the PR, and ask for screenshots at 390 and 1280 px of made-up data only.",
+    "passes": true
+  },
+  {
+    "criterion": "`next-step` points to `writing-for-agents` for agent documents and to `research` for outside facts, with notes in `docs/plans/<ID>.research.md`.",
+    "passes": true
+  },
+  {
+    "criterion": "`docs/agents/issue-tracker.md` maps `ready-for-agent` to Ready with a type label, and guardrails section 3 and 2.20 describe the new `next-step` and intake.",
+    "passes": true
+  }
+]
