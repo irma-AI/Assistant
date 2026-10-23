@@ -448,6 +448,7 @@ Size limits here count characters or words, and are enforced.
 
 - A routine posts the question as a comment on the Linear issue, moves the issue to "Needs input" and picks up other work. An interactive cloud session asks with the Ask tool. *Not checked* from a routine yet.
 - The owner asks Claude which issues need input and answers through Claude, which posts the answer as a comment.
+- A daily workflow sets a Linear reminder for the owner on each issue that has waited in Needs input for 3 days without an update, so a question can't sit unseen. It is a reminder, not a comment, because the workflow's API key is the owner's, and Linear doesn't notify anyone of their own comments.
 - `CLAUDE.md` words its ask-first rules as "comment on the issue and move it to Needs input".
 - Typical questions: wording users will read, a new vendor, a product call, or an issue that can be read two ways.
 
