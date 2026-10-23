@@ -21,7 +21,7 @@ Issues live in Linear, team IRM, with type labels `feature`, `bug`, `ui`, `chore
 - The PR description has a `## First principles` section answering why the problem happened, what could be removed instead and which alternative was rejected, plus a `## Not live yet` section ("Nothing" when nothing is). [enforced: guard:pr-sections]
 - The PR description closes exactly one Linear issue, as `Closes IRM-12`. [enforced: guard:pr-issue]
 - Every commit is authored by `Claude <noreply@anthropic.com>`. [enforced: guard:commit-identity]
-- A change to a protected path (CI, guards, hooks, rulesets, `Makefile`, `mise.toml`, `mise.lock`, the TypeScript, ESLint, Vite, pnpm, ast-grep and dependency-cruiser configuration, `.claude/`, this file) needs an issue that carried the `ci-change` label when it reached Ready. [enforced: path:.github/scripts/protected-paths.sh]
+- A change to a protected path (CI, guards, hooks, rulesets, `Makefile`, `mise.toml`, `mise.lock`, the TypeScript, ESLint, Vite, pnpm, ast-grep, dependency-cruiser and squawk configuration, `.claude/`, this file) needs an issue that carried the `ci-change` label when it reached Ready. [enforced: path:.github/scripts/protected-paths.sh]
 - Changes reach `main` only through a PR in the merge queue, with `ci` and `policy` green. [enforced: path:rulesets/main.json]
 - Every rule in this file names an existing check, and this file stays under 4000 characters. [enforced: guard:docs]
 - Skills copied from other repositories match the commit pinned in `.claude/skills.lock.json`. [enforced: path:.github/scripts/skills.sh]

@@ -25,6 +25,7 @@ check-app: generate-check
 	pnpm exec prettier --check .
 	pnpm exec tsc --noEmit
 	pnpm exec eslint .
+	pnpm exec squawk migrations/*.sql
 	guards/layers.sh
 	pnpm exec vitest run
 

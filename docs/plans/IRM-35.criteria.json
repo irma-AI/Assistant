@@ -1,0 +1,10 @@
+[
+  {
+    "criterion": "make check runs squawk on migrations/*.sql.",
+    "passes": true
+  },
+  {
+    "criterion": "A migration that adds a NOT NULL column without a default, or creates an index without CONCURRENTLY on an existing table, fails make check.",
+    "passes": true
+  }
+]
