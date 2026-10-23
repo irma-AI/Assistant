@@ -7,6 +7,8 @@ root=${1:-.}
 cd "$root"
 # Each agent document and its character budget; a missing optional one is skipped.
 docs="CLAUDE.md:4000 .claude/skills/next-step/SKILL.md:6000"
+# Rule files load whenever the agent touches their paths, so each gets a budget too.
+for r in .claude/rules/*.md; do [ -e "$r" ] && docs="$docs $r:3000"; done
 fail=0 scanned=0
 bad() { echo "::error::docs: $1"; fail=1; }
 

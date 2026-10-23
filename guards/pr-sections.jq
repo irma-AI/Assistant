@@ -1,6 +1,6 @@
 # The PR description needs a non-empty "First principles" and "Not live yet" section.
 def section($h):
-  (.body // "" | gsub("<!--.*?-->"; ""; "s") | split("\n") | map(sub("\\s+$"; ""))) as $l
+  (.body // "" | gsub("<!--[\\s\\S]*?-->"; "") | split("\n") | map(sub("\\s+$"; ""))) as $l
   | ($l | index("## " + $h)) as $i
   | if $i == null then null
     else $l[$i + 1:] | (map(startswith("## ")) | index(true)) as $j

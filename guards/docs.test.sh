@@ -34,4 +34,10 @@ if "$guard" "$d" > /dev/null 2>&1; then echo "FAIL  next-step over budget: passe
 printf 'See `gone/x.md`.\n' > "$d/.claude/skills/next-step/SKILL.md"
 if "$guard" "$d" > /dev/null 2>&1; then echo "FAIL  next-step names a missing path: passed"; fail=1; else echo "ok    next-step names a missing path"; fi
 
+d=$(repo "$good") || exit 1
+mkdir -p "$d/.claude/rules"; printf 'x%.0s' $(seq 1 3001) > "$d/.claude/rules/routes.md"
+if "$guard" "$d" > /dev/null 2>&1; then echo "FAIL  rule file over budget: passed"; fail=1; else echo "ok    rule file over budget"; fi
+printf 'Edit `src/gone.ts`.\n' > "$d/.claude/rules/routes.md"
+if "$guard" "$d" > /dev/null 2>&1; then echo "FAIL  rule file names a missing path: passed"; fail=1; else echo "ok    rule file names a missing path"; fi
+
 exit $fail
