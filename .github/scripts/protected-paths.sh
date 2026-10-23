@@ -6,10 +6,13 @@ set -euo pipefail
 here=$(dirname "$0")
 files=$1
 
-# Root paths, then configuration files at any depth, because make, ESLint and prettier also read
-# a GNUmakefile or makefile first, and a nested config file in place of the root one.
-protected='^(\.github/|guards/|\.claude/|\.githooks/|CLAUDE\.md$|rulesets/|scripts/|docs/agents/|src/server/migrate\.server\.ts$|mise\.(toml|lock)$|pnpm-workspace\.yaml$|package\.json$|tsr\.config\.json$)|(^|/)(GNUmakefile|[Mm]akefile|tsconfig[^/]*\.json|eslint\.config\.[^/]+|\.eslintrc[^/]*|vite\.config\.[^/]+|vitest\.config\.[^/]+|playwright\.config\.[^/]+|prettier\.config\.[^/]+|\.prettierrc[^/]*|\.prettierignore|sgconfig\.yml|\.dependency-cruiser\.[^/]+|\.squawk\.toml|\.gitleaksignore|\.gitleaks\.toml)$'
-hits=$(grep -E "$protected" "$files" || true)
+# An allowlist: only app code is free, and everything else is protected, so a config file a tool
+# starts reading tomorrow is covered without being named. Inside the free folders, anything a tool
+# reads as configuration stays protected too: dotfiles and dot folders, package manifests,
+# *.config.* files, tsconfigs, makefiles, CLAUDE*.md, and the migration provider.
+free='^(src/|e2e/|migrations/|docs/plans/)'
+risky='(^|/)\.|(^|/)(package\.(json|ya?ml)|[^/]*\.config\.[^/]+|tsconfig[^/]*\.json|GNUmakefile|[Mm]akefile|CLAUDE[^/]*\.md)$|^src/server/migrate\.server\.ts$'
+hits=$( { grep -vE "$free" "$files"; grep -E "$risky" "$files"; } | grep . | sort -u || true)
 if [ -z "$hits" ]; then
   echo "scanned $(grep -c . "$files" || true) files, none protected"
   exit 0
