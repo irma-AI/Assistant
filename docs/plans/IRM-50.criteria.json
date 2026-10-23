@@ -1,0 +1,10 @@
+[
+  {
+    "criterion": "The step is in policy.yml and this PR own policy run shows it ran.",
+    "passes": false
+  },
+  {
+    "criterion": "Guardrails 2.11 describes the step.",
+    "passes": true
+  }
+]
