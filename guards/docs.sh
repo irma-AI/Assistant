@@ -9,6 +9,8 @@ cd "$root"
 docs="CLAUDE.md:4000 .claude/skills/next-step/SKILL.md:6000"
 # Rule files load whenever the agent touches their paths, so each gets a budget too.
 for r in .claude/rules/*.md; do [ -e "$r" ] && docs="$docs $r:3000"; done
+# Routines and the tracker conventions start every unattended run, so what they name must exist too.
+for a in docs/agents/*.md; do [ -e "$a" ] && docs="$docs $a:4000"; done
 fail=0 scanned=0
 bad() { echo "::error::docs: $1"; fail=1; }
 
