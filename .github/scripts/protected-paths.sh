@@ -6,7 +6,7 @@ set -euo pipefail
 here=$(dirname "$0")
 files=$1
 
-protected='^(\.github/|guards/|\.claude/|\.githooks/|CLAUDE\.md$|rulesets/|Makefile$|mise\.toml$|mise\.lock$|pnpm-workspace\.yaml$|tsconfig\.json$|eslint\.config\.js$|vite\.config\.ts$|sgconfig\.yml$|\.dependency-cruiser\.cjs$)'
+protected='^(\.github/|guards/|\.claude/|\.githooks/|CLAUDE\.md$|rulesets/|Makefile$|mise\.toml$|mise\.lock$|pnpm-workspace\.yaml$|tsconfig\.json$|eslint\.config\.js$|vite\.config\.ts$|sgconfig\.yml$|\.dependency-cruiser\.cjs$|\.squawk\.toml$)'
 hits=$(grep -E "$protected" "$files" || true)
 if [ -z "$hits" ]; then
   echo "scanned $(grep -c . "$files" || true) files, none protected"
