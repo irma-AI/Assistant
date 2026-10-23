@@ -1,6 +1,6 @@
 REPO ?= irma-AI/Assistant
 
-.PHONY: check check-repo check-app check-staged check-push install dev image-check setup skills github
+.PHONY: check check-repo check-app check-staged check-push e2e install dev image-check setup skills github
 
 # Everything CI runs.
 check: check-repo check-app
@@ -17,7 +17,8 @@ check-repo:
 	.github/scripts/skills.sh check
 	jq empty rulesets/*.json
 
-# The app: generated files and the production build, format, type check, lint with size limits, tests.
+# The app: generated files and the production build, format, type check, lint with size limits,
+# unit and real-database tests, then the browser tests against the build.
 # Needs DATABASE_URL pointing at a PostgreSQL 16 database the checks may migrate.
 check-app: generate-check
 	pnpm exec prettier --check .
@@ -25,9 +26,14 @@ check-app: generate-check
 	pnpm exec eslint .
 	guards/layers.sh
 	pnpm exec vitest run
+	pnpm exec playwright test
 
 test:
 	pnpm exec vitest run
+
+# The browser seam against the production build (make generate builds it).
+e2e:
+	pnpm exec playwright test
 
 migrate:
 	node scripts/migrate.ts
@@ -43,10 +49,11 @@ generate: migrate
 generate-check: generate
 	@{ git diff --name-only -- $(GENERATED); git ls-files --others --exclude-standard -- $(GENERATED); } | grep . && { echo "::error::Generated files are out of date. Fix: make generate, then commit them."; exit 1; } || echo "generated files up to date"
 
-# The pinned Node and pnpm, then the dependencies from the lockfile only.
+# The pinned Node and pnpm, the dependencies from the lockfile only, and Playwright's WebKit.
 install:
 	mise install
 	pnpm install --frozen-lockfile
+	pnpm exec playwright install webkit
 
 # The release image builds and serves VERSION on /version (needs Docker).
 image-check:
