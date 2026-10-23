@@ -3,7 +3,7 @@ REPO ?= irma-AI/Assistant
 .PHONY: check check-repo check-app check-staged check-push e2e install dev image-check setup skills github
 
 # Everything CI runs.
-check: check-repo check-app
+check: check-repo check-app e2e
 
 # Guards, skills and repository rules.
 check-repo:
@@ -18,7 +18,7 @@ check-repo:
 	jq empty rulesets/*.json
 
 # The app: generated files and the production build, format, type check, lint with size limits,
-# unit and real-database tests, then the browser tests against the build.
+# unit and real-database tests.
 # Needs DATABASE_URL pointing at a PostgreSQL 16 database the checks may migrate.
 check-app: generate-check
 	pnpm exec prettier --check .
@@ -26,14 +26,14 @@ check-app: generate-check
 	pnpm exec eslint .
 	guards/layers.sh
 	pnpm exec vitest run
-	pnpm exec playwright test
 
 test:
 	pnpm exec vitest run
 
-# The browser seam against the production build (make generate builds it).
+# The browser seam against a fresh production build; ci calls the same script in Playwright's
+# image, which has no make.
 e2e:
-	pnpm exec playwright test
+	pnpm e2e
 
 migrate:
 	node scripts/migrate.ts

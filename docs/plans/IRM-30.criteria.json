@@ -1,0 +1,14 @@
+[
+  {
+    "criterion": "The browser tests run in the pinned mcr.microsoft.com/playwright image, with no apt step.",
+    "passes": true
+  },
+  {
+    "criterion": "The required ci check passes only when checks, e2e and image all succeeded.",
+    "passes": true
+  },
+  {
+    "criterion": "A typical PR ci finishes in under 3 minutes.",
+    "passes": false
+  }
+]

@@ -1,14 +1,14 @@
 name: ci
+# Parallel jobs, then one job named ci, the required check, that passes only if all of them did.
 on:
   pull_request:
   merge_group:
 permissions:
   contents: read
 jobs:
-  ci:
-    name: ci
-    runs-on: ubuntu-24.04 # Playwright supports it; ubuntu-latest moved to 26.04, where its apt dependencies stalled
-    timeout-minutes: 20
+  checks:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
     services:
       postgres:
         image: postgres:16.15-alpine@sha256:f4610795587492cd4fb887c2dc3de301b813278bb6f616992061141b5f15ac36
@@ -25,6 +25,42 @@ jobs:
           persist-credentials: false
       - uses: jdx/mise-action@8418fedb1110381a0d3ba51a7a415d7c1b884550 # v5.2.2
       - run: pnpm install --frozen-lockfile
-      - run: pnpm exec playwright install --with-deps webkit
-      - run: make check
+      - run: make check-repo check-app
+
+  # Playwright's image carries WebKit and its system libraries, so nothing comes from apt.
+  e2e:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    container:
+      image: mcr.microsoft.com/playwright:v1.64.1-noble@sha256:47b510dd9230bf0b9bfc9b20102241e577ea7a99334ab4c3ca19f19770e9b8ea
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: jdx/mise-action@8418fedb1110381a0d3ba51a7a415d7c1b884550 # v5.2.2
+        with:
+          install_args: node pnpm
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm e2e # the image has no make; make e2e runs the same script
+
+  image:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
       - run: make image-check VERSION=${{ github.sha }}
+
+  ci:
+    name: ci
+    needs: [checks, e2e, image]
+    if: always()
+    runs-on: ubuntu-24.04
+    timeout-minutes: 2
+    steps:
+      - env:
+          RESULTS: ${{ toJSON(needs.*.result) }}
+        run: |
+          echo "$RESULTS"
+          jq -e 'all(. == "success")' <<<"$RESULTS" > /dev/null || { echo "::error::A ci job failed or was skipped."; exit 1; }
