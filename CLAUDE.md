@@ -20,7 +20,7 @@ Issues live in Linear, team IRM, with type labels `feature`, `bug`, `ui`, `chore
 - The PR title is a conventional commit, `type(scope): summary`, because it becomes the squash commit's subject. [enforced: guard:pr-title]
 - The PR description has a `## First principles` section answering why the problem happened, what could be removed instead and which alternative was rejected, plus a `## Not live yet` section ("Nothing" when nothing is). [enforced: guard:pr-sections]
 - The PR description closes exactly one Linear issue, as `Closes IRM-12`. [enforced: guard:pr-issue]
-- Every commit is authored by `Claude <noreply@anthropic.com>`. [enforced: guard:commit-identity]
+- Every commit in a PR is authored by `Claude <noreply@anthropic.com>`; the squash commit on `main` carries Claude as co-author. [enforced: guard:commit-identity]
 - Every path outside `src/`, `e2e/`, `migrations/` and `docs/plans/` is protected, and so is any dotfile, package manifest, `*.config.*` file, tsconfig, makefile or `CLAUDE*.md` inside them, and the migration provider; a renamed file counts under its old name. A change to one needs an issue that carried the `ci-change` label when it reached Ready. [enforced: path:.github/scripts/protected-paths.sh]
 - Changes reach `main` only through a PR in the merge queue, with `ci` and `policy` green. [enforced: path:rulesets/main.json]
 - Every rule in this file names an existing check, and this file stays under 4000 characters. [enforced: guard:docs]
