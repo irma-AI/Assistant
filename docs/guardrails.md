@@ -412,12 +412,15 @@ Size limits here count characters or words, and are enforced.
 **What it is.** The agent opens each PR and turns on auto-merge. The merge queue merges once the required checks pass, and a workflow deploys.
 
 - Right after opening the PR, the agent turns on auto-merge through the GitHub tools of Claude's GitHub connection (for example `enable_pr_auto_merge`). It never merges directly.
+- The session then watches the PR until it merges: subscribed to its activity, with a background command polling the check runs over REST as a backup. A failed check gets fixed and pushed, up to three rounds. *Not checked* in a routine run.
 - The merge queue retests the PR and merges it. The rulesets ([2.12](#212-ci-as-the-authority)) keep the required checks in force whoever turned auto-merge on.
 - A deploy workflow ([2.13](#213-done-means-seen-working)) runs on pushes to the default branch, and merges by the queue's own bot start it.
 
 **Why.**
 
 - The old repository ran this way for its whole history: agent sessions turned on auto-merge under the owner's account, and the PR queued and merged. The GitHub tools act with the connected account's own permissions, while `git` and `gh` in a cloud session go through a proxy that rejects GraphQL, so `gh pr merge` fails there.
+- A cloud session tested on 2026-10-23 confirmed it: `enable_pr_auto_merge` queued a PR as the owner's account, `gh pr checks` got a GraphQL 403 while `gh api` read the check runs, and `subscribe_pr_activity` delivered the queued and merged events. A finished background command woke the session too.
+- A session that ended once the PR opened left a failed check to nobody: `fix-rounds` acts only after four failed commits, and intake never takes an issue In Review back. Locally the interactive session had been watching each PR, which hid this.
 - A queue merge after a person's account turned on auto-merge is an ordinary push, so the deploy workflow starts. Merges caused by GitHub's built-in token are known to start no push workflows.
 - Turning on auto-merge hands the decision to the required checks. A direct merge would skip the queue's retest on top of the latest default branch.
 
@@ -583,7 +586,7 @@ A skill is a Markdown file of instructions that Claude Code loads when it is cal
 | `writing-for-agents` | [mattpocock/skills](https://github.com/mattpocock/skills) | [2.5](#25-instruction-layering-with-size-budgets) | Rules for editing `CLAUDE.md`, rule files and skills |
 | TanStack's skills for Start, Router and DB | Inside the TanStack npm packages ([TanStack Intent](https://tanstack.com/intent)) | [2.6](#26-strict-static-checks-from-the-first-commit), [2.10](#210-architecture-layers-enforced), [2.11](#211-ai-review-and-task-fit-judge-run-by-ci-on-the-subscription), [2.29](#229-one-write-path-with-live-updates) | TanStack's own rules: code runs on server and browser by default, server-only logic goes in `createServerFn`, types are inferred and never cast, and Next.js patterns are wrong here |
 
-**`next-step`.** Given one Linear issue ID, from a routine or from `/next-step ABC-12`, it runs the issue to an open PR with auto-merge on. It never waits in a session: a question goes to Linear ([2.22](#222-asking-the-owner)) and the routine moves on.
+**`next-step`.** Given one Linear issue ID, from a routine or from `/next-step ABC-12`, it runs the issue until its PR merges. It never waits on the owner: a question goes to Linear ([2.22](#222-asking-the-owner)) and the routine moves on.
 
 - It starts by copying the issue into the plan file, or resuming from it ([2.23](#223-issue-linkage-with-the-issue-copied-into-the-repository), [2.24](#224-restartable-execution-plans)), and creating the branch.
 - The issue's type label picks the flow, so the procedure never guesses:
@@ -598,7 +601,7 @@ A skill is a Markdown file of instructions that Claude Code loads when it is cal
 
 - It names each skill by file path, because routines read files, not skill names ([2.28](#228-routine-prompts-point-into-the-repository)). Whatever the label, a change to an agent document follows [`writing-for-agents`](#3-skills), and an unchecked outside fact gets [`research`](#3-skills) notes in the plan folder.
 - An issue that an unfinished one blocks waits; intake skips it.
-- It ends with `make check`, a description written with `pr`, the PR opened with auto-merge on ([2.19](#219-merging-and-deploying-on-githubs-side)), and up to three rounds of CI fixes ([2.11](#211-ai-review-and-task-fit-judge-run-by-ci-on-the-subscription)).
+- It ends with `make check`, a description written with `pr`, the PR opened with auto-merge on and watched until it merges ([2.19](#219-merging-and-deploying-on-githubs-side)), and up to three rounds of CI fixes ([2.11](#211-ai-review-and-task-fit-judge-run-by-ci-on-the-subscription)).
 - It has a character budget like `CLAUDE.md`'s, and the docs-reference guard covers it ([2.5](#25-instruction-layering-with-size-budgets)).
 
 **Why.**

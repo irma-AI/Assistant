@@ -1,0 +1,18 @@
+[
+  {
+    "criterion": "next-step step 3 has the watch, the REST poll as a backup, the fix loop with the three-round limit, and the end at merge, within its 6,000-character budget.",
+    "passes": true
+  },
+  {
+    "criterion": "guardrails 2.19 and section 3 say the same, with the routine-run part marked not checked.",
+    "passes": true
+  },
+  {
+    "criterion": "routines.md names the two values the dispatcher reads.",
+    "passes": true
+  },
+  {
+    "criterion": "make check passes.",
+    "passes": true
+  }
+]
