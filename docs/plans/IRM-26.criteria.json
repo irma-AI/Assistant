@@ -1,0 +1,10 @@
+[
+  {
+    "criterion": "A failure in saveDockerProvider or deploy for the new image pins the previous image again.",
+    "passes": true
+  },
+  {
+    "criterion": "The issue text distinguishes \"nothing deployed\", \"rolled back\" and \"rollback failed\".",
+    "passes": true
+  }
+]

@@ -19,14 +19,23 @@ serves() {
   return 1
 }
 
+# What happened, for the failure issue: not-started, deployed, rolled-back or rollback-failed.
+outcome() { echo "outcome=$1" >> "${GITHUB_OUTPUT:-/dev/null}"; }
+
+outcome not-started
 previous=$(api "application.one?applicationId=$APPLICATION_ID" | jq -er .dockerImage)
 echo "previous image: $previous"
-pin "$IMAGE:$TAG"
-if serves "$TAG" && curl -sf "$APP_URL/" | grep -q '<h1>Assistant</h1>'; then
+if pin "$IMAGE:$TAG" && serves "$TAG" && curl -sf "$APP_URL/" | grep -q '<h1>Assistant</h1>'; then
   echo "serving $TAG"
+  outcome deployed
   exit 0
 fi
 echo "::error::$APP_URL did not serve $TAG with a working home page. Redeploying $previous."
-pin "$previous"
-serves "${previous##*:}" && echo "back on ${previous##*:}" || echo "::error::$previous is not serving either."
+if pin "$previous" && serves "${previous##*:}"; then
+  echo "back on ${previous##*:}"
+  outcome rolled-back
+else
+  echo "::error::$previous is not serving either; production may be down."
+  outcome rollback-failed
+fi
 exit 1
