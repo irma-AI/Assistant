@@ -1,0 +1,14 @@
+[
+  {
+    "criterion": "make check-repo runs protected-paths.test.sh, covering every bypass the skeptic pass found and ordinary free paths, and it passes.",
+    "passes": true
+  },
+  {
+    "criterion": "CLAUDE.md, guardrails 2.12 and 2.28 describe the allowlist the script implements.",
+    "passes": true
+  },
+  {
+    "criterion": "A renamed protected file counts as a change to a protected path.",
+    "passes": true
+  }
+]

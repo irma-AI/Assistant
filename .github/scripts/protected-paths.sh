@@ -6,8 +6,13 @@ set -euo pipefail
 here=$(dirname "$0")
 files=$1
 
-protected='^(\.github/|guards/|\.claude/|\.githooks/|CLAUDE\.md$|rulesets/|Makefile$|mise\.toml$|mise\.lock$|pnpm-workspace\.yaml$|tsconfig\.json$|eslint\.config\.js$|vite\.config\.ts$|sgconfig\.yml$|\.dependency-cruiser\.cjs$|\.squawk\.toml$)'
-hits=$(grep -E "$protected" "$files" || true)
+# An allowlist: only app code is free, and everything else is protected, so a config file a tool
+# starts reading tomorrow is covered without being named. Inside the free folders, anything a tool
+# reads as configuration stays protected too: dotfiles and dot folders, package manifests,
+# *.config.* files, tsconfigs, makefiles, CLAUDE*.md, and the migration provider.
+free='^(src/|e2e/|migrations/|docs/plans/)'
+risky='(^|/)\.|(^|/)(package\.(json|ya?ml)|[^/]*\.config\.[^/]+|tsconfig[^/]*\.json|GNUmakefile|[Mm]akefile|CLAUDE[^/]*\.md)$|^src/server/migrate\.server\.ts$'
+hits=$( { grep -vE "$free" "$files"; grep -E "$risky" "$files"; } | grep . | sort -u || true)
 if [ -z "$hits" ]; then
   echo "scanned $(grep -c . "$files" || true) files, none protected"
   exit 0

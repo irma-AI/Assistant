@@ -45,7 +45,8 @@ jobs:
         run: |
           mkdir -p review
           gh pr diff "$PR" --repo "$GITHUB_REPOSITORY" > review/pr.diff
-          gh pr diff "$PR" --repo "$GITHUB_REPOSITORY" --name-only > review/files.txt
+          # A renamed file counts under its old name too, so moving a protected file away is still caught.
+          gh api --paginate "repos/$GITHUB_REPOSITORY/pulls/$PR/files" --jq '.[] | .filename, (.previous_filename // empty)' > review/files.txt
           gh api --paginate "repos/$GITHUB_REPOSITORY/pulls/$PR/commits" \
             --jq '.[] | {sha, author: .commit.author.email, committer: .commit.committer.email}' > review/commits.jsonl
           jq -n --arg title "$TITLE" --arg body "$BODY" --rawfile files review/files.txt --slurpfile commits review/commits.jsonl \
