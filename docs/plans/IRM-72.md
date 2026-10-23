@@ -31,7 +31,7 @@ Acceptance criteria:
 
 ## Decisions
 
-- Auto-merge going off is the signal for a drop, because GitHub turns it off when the queue removes a PR and REST shows it on the PR, while the queue's own checks run on a commit the poll doesn't watch.
+- Auto-merge going off is taken as the signal for a drop, since the queue's own checks run on a commit the poll doesn't watch and REST shows auto-merge on the PR. That GitHub turns it off when the queue removes a PR is not seen yet; the 30-minute cap bounds the wait if it doesn't.
 - A close ends the session without asking: `fix-rounds` already moved the issue to Needs input with the reason.
 
 ## Next step
