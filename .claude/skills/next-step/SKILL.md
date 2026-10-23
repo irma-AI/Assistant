@@ -1,13 +1,13 @@
 ---
 name: next-step
-description: Runs one Linear issue from Ready to an open PR with auto-merge on, picking the flow from the issue's type label and resuming from its plan file. Use from a routine, or as /next-step IRM-12.
+description: Runs one Linear issue from Ready to a merged PR, picking the flow from the issue's type label and resuming from its plan file. Use from a routine, or as /next-step IRM-12.
 ---
 
 # Next step
 
-Takes one issue ID and runs it to an open PR with auto-merge on. The session keeps moving: a question goes to Linear and the session ends, and the next run resumes from the plan file.
+Takes one issue ID and runs it until its PR merges. The session never waits on the owner: a question goes to Linear and the session ends, and the next run resumes from the plan file.
 
-Each skill named below is a file to read and follow by its path, because routines may not load skills by name.
+Each skill named below is a file to read and follow by its path, so a routine follows the reviewed copy whether or not the skill loader picks it up.
 
 ## 1. Start or resume
 
@@ -47,9 +47,9 @@ The issue needs a protected path (the list in `CLAUDE.md`) and has no `ci-change
 
 1. Every criterion in the criteria file has `passes: true`, and `make check` passes. When the change touches access control, data deletion, migrations, CI or guards, run `.claude/skills/skeptic-pass/SKILL.md` on the frozen head first.
 2. Push the branch and open the PR. The title is a conventional commit; write the description with `.claude/skills/pr/SKILL.md`, with the `## First principles` and `## Not live yet` sections and `Closes <ID>`.
-3. Turn on auto-merge (the GitHub tools' `enable_pr_auto_merge`; `gh pr merge --auto` where `gh` can reach GitHub). The merge queue merges once `ci` and `policy` pass.
-4. Move the issue to In Review.
-5. A check fails: read its log, fix the cause and push. After three rounds of fixes, ask (step 4) with the failing check's name and error.
+3. Turn on auto-merge with the GitHub tools' `enable_pr_auto_merge` (in cloud, `gh pr` commands get a GraphQL 403), and move the issue to In Review. The merge queue merges once `ci` and `policy` pass.
+4. Watch the PR until it merges. Subscribe to its activity (`subscribe_pr_activity`), and start a background command that polls the PR and its head commit's check runs over REST (`gh api`) every minute and exits when a check fails or the PR merges, so a missed event still wakes you. The session ends when the PR has merged.
+5. `ci` or `policy` fails: read its log, fix the cause, push and watch again. After three rounds of fixes, ask (step 4) with the failing check's name and error.
 6. A review finding you consider wrong: explain why in the PR description; `policy` judges again when the description changes.
 
 ## 4. Ask the owner

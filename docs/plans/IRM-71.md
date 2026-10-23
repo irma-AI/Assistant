@@ -17,10 +17,16 @@ Acceptance criteria:
 
 ## Progress
 
-- Plan written.
+- `next-step` step 3: auto-merge through `enable_pr_auto_merge`, then steps 4 and 5 watch the PR (the subscription, a background REST poll that exits on a failed check or the merge), fix and push on red, three rounds, end at merge. The description and opening say "until its PR merges"; the path line no longer says routines may not load skills. 5,557 of 6,000 characters.
+- `docs/guardrails.md` 2.19: the watch (not checked in a routine run), the cloud facts tested on 2026-10-23 and why the session waits; section 3's `next-step` entry matches.
+- `docs/agents/routines.md`: names the dispatcher, `INTAKE_FIRE_URL` and `INTAKE_FIRE_TOKEN`.
+- `guards/docs.sh` passes (scanned 68); `make check` passes against PostgreSQL 16.
 
 ## Decisions
 
+- One background poll covers both a missed event and the merge, so the session has one thing to wait on besides the subscription.
+- "Never waits in a session" became "never waits on the owner": the rule was about questions, and waiting on CI is now the point.
+
 ## Next step
 
-Change next-step step 3.
+Open the PR.
