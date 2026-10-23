@@ -92,3 +92,28 @@ jobs:
           echo "$OUT" | jq -r '.findings[] | "\(.severity) \(.file // "-"): \(.summary)"'
           n=$(echo "$OUT" | jq '[.findings[] | select(.severity=="P0" or .severity=="P1")] | length')
           [ "$n" -eq 0 ] || { echo "::error::$n open P0/P1 findings. Fix them, or explain in the PR description why one is wrong."; exit 1; }
+
+  # After three fix rounds, close the PR and hand the issue back to the owner.
+  fix-rounds:
+    needs: policy
+    if: failure() && github.event_name == 'pull_request_target'
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    environment: checks
+    permissions:
+      contents: read
+      pull-requests: write
+      checks: read
+    steps:
+      - name: Check out the default branch (trusted)
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - name: Close after three failed fix rounds
+        env:
+          GH_TOKEN: ${{ github.token }}
+          PR: ${{ github.event.pull_request.number }}
+          MESSAGE: ${{ github.event.pull_request.body }}
+          RUN: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+          LINEAR_API_TOKEN: ${{ secrets.LINEAR_API_TOKEN }}
+        run: .github/scripts/fix-rounds.sh
