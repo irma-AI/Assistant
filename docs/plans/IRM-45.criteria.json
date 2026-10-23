@@ -1,0 +1,14 @@
+[
+  {
+    "criterion": ".claude/skills/impeccable matches pbakaus/impeccable's Claude copy at the pinned commit, with its hash in the lock.",
+    "passes": true
+  },
+  {
+    "criterion": "Its LICENSE and NOTICE are in .claude/vendor-licenses.",
+    "passes": true
+  },
+  {
+    "criterion": "It installs no hooks into this repository's settings.",
+    "passes": true
+  }
+]
