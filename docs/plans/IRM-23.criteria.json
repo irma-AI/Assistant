@@ -1,0 +1,14 @@
+[
+  {
+    "criterion": "In a cloud session, ast-grep, pnpm and node from mise.toml are on PATH, and PostgreSQL accepts connections at DATABASE_URL, without anyone running a command.",
+    "passes": false
+  },
+  {
+    "criterion": "The hook does nothing outside the cloud.",
+    "passes": true
+  },
+  {
+    "criterion": "mise.lock pins URLs and checksums for linux-x64 and macos-arm64, and is a protected path.",
+    "passes": true
+  }
+]
