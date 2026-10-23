@@ -13,6 +13,8 @@ Acceptance criteria:
 - `image-check.sh` now needs `DATABASE_URL` and runs the container on the host network against it; ci's `image` job gets the same PostgreSQL service as `checks`.
 - A local Docker build isn't possible here (base image pulls stall), so ci's image job is the first run.
 
+- After merge: the deploy of 14e2839 served the new commit, which the image only does after `node scripts/migrate.ts` succeeds against production's DATABASE_URL.
+
 ## Decisions
 
 - Migrations run in the container rather than from CI, because the database is only reachable inside Dokploy's network.

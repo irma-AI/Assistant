@@ -12,6 +12,8 @@ Acceptance criteria:
 - Added `Dockerfile` (two stages on node:24.22.1-alpine by digest, runtime as the node user with a /version health check), `.github/scripts/image-check.sh` behind `make image-check` in ci, and `.github/workflows/release.yml`.
 - `make check` passes. The image itself is first built by ci on this PR; a local Docker build stalled on the base image pull.
 
+- After merge: every `ci` run since builds the image and reads its commit from /version, and every push to main pushed, attested and verified `ghcr.io/irma-ai/assistant:<commit>` (first: release run on fd00ad5).
+
 ## Decisions
 
 - The deploy to Dokploy is a separate issue: it needs a Dokploy app, a member user scoped to it and its key in the checks environment.

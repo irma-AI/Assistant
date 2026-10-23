@@ -1,11 +1,11 @@
 [
   {
     "criterion": "ci builds the image and fails unless the container serves the commit on /version.",
-    "passes": false
+    "passes": true
   },
   {
     "criterion": "A push to main pushes ghcr.io/irma-ai/assistant:<commit>, attested with actions/attest-build-provenance, and gh attestation verify passes.",
-    "passes": false
+    "passes": true
   },
   {
     "criterion": "Base images are pinned to a digest, and pnpm version comes from mise.toml.",

@@ -10,6 +10,8 @@ Acceptance criteria:
 
 - `.github/scripts/apply-github.sh` now enables both settings. Both read `disabled` on 2026-10-22.
 
+- After merge: after `make github` on 2026-10-23, `security_and_analysis` shows secret scanning and push protection enabled.
+
 ## Decisions
 
 - Applying it changes repository settings, so the owner approves running `make github` after merge.

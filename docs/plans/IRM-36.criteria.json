@@ -9,6 +9,6 @@
   },
   {
     "criterion": "After the deploy, production database has the migrations applied.",
-    "passes": false
+    "passes": true
   }
 ]

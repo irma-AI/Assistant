@@ -1,11 +1,11 @@
 [
   {
     "criterion": "A PR whose policy check failed on four of its commits is closed with a comment giving the reason.",
-    "passes": false
+    "passes": true
   },
   {
     "criterion": "The Linear issue the PR closes gets a comment with the run link and moves to Needs input.",
-    "passes": false
+    "passes": true
   },
   {
     "criterion": "A PR with fewer failed commits is left alone.",

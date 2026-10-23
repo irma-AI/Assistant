@@ -5,6 +5,6 @@
   },
   {
     "criterion": "After make github, the repository security_and_analysis shows both enabled.",
-    "passes": false
+    "passes": true
   }
 ]
