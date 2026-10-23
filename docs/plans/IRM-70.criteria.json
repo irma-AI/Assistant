@@ -1,14 +1,14 @@
 [
   {
     "criterion": "On sample data the selection fires nothing with nothing Ready, fires the one Ready issue, fires nothing while one is In Progress, and skips a Ready issue that an open PR closes or an unfinished issue blocks; the test runs in make check-repo.",
-    "passes": false
+    "passes": true
   },
   {
     "criterion": "No step prints the fire response body.",
-    "passes": false
+    "passes": true
   },
   {
     "criterion": "zizmor and make check pass.",
-    "passes": false
+    "passes": true
   }
 ]

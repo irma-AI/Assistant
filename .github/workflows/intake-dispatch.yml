@@ -1,0 +1,58 @@
+name: intake-dispatch
+# Starts the Intake routine through its API trigger when Linear has work, so a check that
+# finds none costs no cloud session. Every 10 minutes off the hour, on each merge and on demand.
+on:
+  schedule:
+    - cron: "3,13,23,33,43,53 * * * *"
+  push:
+    branches: [main]
+  workflow_dispatch:
+permissions: {}
+concurrency: intake-dispatch
+jobs:
+  dispatch:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    environment: checks
+    permissions:
+      contents: read
+      pull-requests: read
+    env:
+      LINEAR_TEAM: IRM
+      MAX_PARALLEL: 1
+    steps:
+      - name: Check out the default branch
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - name: Pick an issue
+        id: pick
+        env:
+          LINEAR_API_TOKEN: ${{ secrets.LINEAR_API_TOKEN }}
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gql() { curl -sSf https://api.linear.app/graphql -H "Authorization: $LINEAR_API_TOKEN" -H 'Content-Type: application/json' -d @-; }
+          # The state's name, not its type: Needs input and In Review share In Progress's type (started).
+          linear=$(jq -n --arg k "$LINEAR_TEAM" '{query:"query($k:String!){inProgress:issues(first:50,filter:{team:{key:{eq:$k}},state:{name:{eq:\"In Progress\"}}}){nodes{identifier}} ready:issues(first:100,filter:{team:{key:{eq:$k}},state:{name:{eq:\"Ready\"}}}){pageInfo{hasNextPage} nodes{identifier createdAt inverseRelations(first:50){pageInfo{hasNextPage} nodes{type issue{identifier state{type}}}}}}}",variables:{k:$k}}' | gql)
+          # shortcut: the first 100 open PRs, page through them if that many are ever open at once.
+          prs=$(gh pr list --repo "$GITHUB_REPOSITORY" --state open --limit 100 --json body)
+          decision=$(jq -n --argjson linear "$linear" --argjson prs "$prs" --argjson max "$MAX_PARALLEL" '{linear:$linear, prs:$prs, max:$max}' \
+            | jq -r -f .github/scripts/intake-pick.jq)
+          echo "$decision"
+          case $decision in "fire "*) echo "id=${decision#fire }" >> "$GITHUB_OUTPUT";; esac
+      - name: Fire the Intake routine
+        if: steps.pick.outputs.id != ''
+        env:
+          ID: ${{ steps.pick.outputs.id }}
+          INTAKE_FIRE_URL: ${{ vars.INTAKE_FIRE_URL }}
+          INTAKE_FIRE_TOKEN: ${{ secrets.INTAKE_FIRE_TOKEN }}
+        run: |
+          [[ $ID =~ ^IRM-[0-9]+$ ]] || { echo "::error::refusing to fire '$ID', which is not an IRM issue ID"; exit 1; }
+          [ -n "$INTAKE_FIRE_URL" ] && [ -n "$INTAKE_FIRE_TOKEN" ] || { echo "::error::INTAKE_FIRE_URL or INTAKE_FIRE_TOKEN is missing from the checks environment"; exit 1; }
+          # One call, never retried: the endpoint has no idempotency key, so a retry could start a second session.
+          # The answer holds the session's URL and this repository's logs are public, so only the status is kept.
+          status=$(jq -n --arg t "$ID" '{text:$t}' | curl -sS -o /dev/null -w '%{http_code}' -X POST "$INTAKE_FIRE_URL" \
+            -H "Authorization: Bearer $INTAKE_FIRE_TOKEN" -H 'anthropic-version: 2026-10-21' \
+            -H 'anthropic-beta: experimental-cc-routine-2026-04-01' -H 'Content-Type: application/json' -d @-)
+          echo "fired $ID: HTTP $status"
+          [ "$status" = 200 ] || { echo "::error::the fire call answered HTTP $status"; exit 1; }

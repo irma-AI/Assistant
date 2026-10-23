@@ -21,10 +21,19 @@ Acceptance criteria:
 
 ## Progress
 
-- Plan written.
+- `.github/scripts/intake-pick.jq`: the selection. It fails on a Linear answer without data or with more than one page, waits at MAX_PARALLEL In Progress issues, and otherwise picks the oldest Ready issue that no open PR closes (closes, fixes or resolves, as `guards/pr-issue.jq` reads them) and no blocker short of completed blocks.
+- `.github/scripts/intake-pick.test.sh`: 12 cases, run by `make check-repo` (passes).
+- `.github/workflows/intake-dispatch.yml`: schedule, push to main and workflow_dispatch; the pick, then one fire call whose body goes to /dev/null, with only the ID and status logged.
+- The workflow's Linear query and `gh pr list`, run by hand against IRM with the owner's key, answered `wait: IRM-70 in progress` (Ready held only IRM-5).
+- `zizmor` and `make check` pass.
 
 ## Decisions
 
+- The selection lives in jq, as `ci-change.jq` does, so the test feeds it stored answers; the API calls stay in the workflow.
+- A canceled blocker still blocks, matching "short of Done" in the routine prompt.
+- anthropic-version 2026-10-21 as the fire endpoint's reference shows; the beta header is pinned because breaking changes ship behind new header dates.
+- The fire step refuses to run without the URL and token, naming the missing one.
+
 ## Next step
 
-Write the selection and its test.
+Open the PR.
