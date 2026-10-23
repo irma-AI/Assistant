@@ -13,8 +13,11 @@ Acceptance criteria:
 - `--check` renders into a temp folder and compares; it passed on the fresh copy and failed with the fix after a copied SKILL.md was edited. It runs in `make check-app`; `make skills` writes the copies.
 - The lock lists them with `"source": "tanstack"`, which `skills.sh` skips because the script checks them; their licence is in `.claude/vendor-licenses/TanStack__router.LICENSE`.
 
+- After the review on the first push, `--check` also fails unless the lock's `tanstack` entries, the `tanstack-*` folders and the allowlist name the same skills; an extra folder and an extra lock entry each failed it.
+
 ## Decisions
 
+- Plain-text mentions such as `router-core/data-loading/SKILL.md` stay as TanStack wrote them; only markdown links are rewritten.
 - Migration guides, code splitting, deployment, server components and the TanStack Query composition are left out, since nothing here uses them.
 
 ## Next step

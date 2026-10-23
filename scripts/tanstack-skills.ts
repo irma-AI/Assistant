@@ -117,6 +117,31 @@ if (process.argv.includes('--check')) {
     (name) => !same(join(tmp, name), join(target, name)),
   )
   rmSync(tmp, { recursive: true })
+  // skills.sh skips hashing "tanstack" entries, so the lock, the tanstack-* folders and the
+  // allowlist must name exactly the same skills, or a hand-made folder could pass unchecked.
+  const isLock = (v: unknown): v is Record<string, { source?: unknown }> =>
+    typeof v === 'object' && v !== null
+  const lock: unknown = JSON.parse(
+    readFileSync(join(root, '.claude/skills.lock.json'), 'utf8'),
+  )
+  const expected = [...copied.values()].sort().join()
+  const locked = isLock(lock)
+    ? Object.entries(lock)
+        .filter(([, entry]) => entry.source === 'tanstack')
+        .map(([name]) => name)
+        .sort()
+        .join()
+    : ''
+  const folders = readdirSync(target)
+    .filter((name) => name.startsWith('tanstack-'))
+    .sort()
+    .join()
+  if (locked !== expected || folders !== expected) {
+    console.error(
+      `::error::The tanstack skills in .claude/skills.lock.json (${locked}) or the tanstack-* folders (${folders}) don't match the allowlist in scripts/tanstack-skills.ts. Fix: make skills, and list each copied skill in the lock with "source": "tanstack".`,
+    )
+    process.exit(1)
+  }
   if (stale.length > 0) {
     console.error(
       `::error::TanStack skills differ from the installed packages: ${stale.join(', ')}. Fix: make skills, then commit them.`,
