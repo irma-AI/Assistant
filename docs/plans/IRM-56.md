@@ -16,6 +16,8 @@ Acceptance criteria:
 - Skeptic pass on da63f9a, two lenses (correctness, security): no P0 or P1. Fixed the two P2s: overlapping runs could post two comments or put an older commit's numbers over a newer one's, so the job now runs one at a time per PR and posts nothing when the PR's head has moved past the commit it describes; model keys with a date or `[1m]` suffix now render as "Sonnet 5.5". Left: cache-write tokens are not shown (not in the criteria).
 - guardrails 2.11 describes the comment and why it is a separate job and not the description.
 
+- After merge: PR 43 got exactly one usage comment (Opus 5.5, passed, 8 turns, 18 s, both models' tokens and estimates, commit 00addea and its run). The first criterion stays false until a later review updates it in place, and the third until a review fails.
+
 ## Decisions
 
 - A comment, not a description footer: editing the description fires `edited`, which re-runs policy and its review.

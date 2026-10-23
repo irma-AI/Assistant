@@ -13,6 +13,8 @@ Acceptance criteria:
 - Skeptic pass on 6f0c482, two lenses, no counterexamples: any script error, odd file name or protected path picks Opus; the value is one of two literals, so nothing from the PR reaches `claude_args`; both IDs are valid, Opus is available on Pro, and `--model` is honoured by the pinned action. The one fail-open edge, a missing file list picking Sonnet, is closed with the `-s` check.
 - guardrails 2.11 says which model reviews what, and why.
 
+- After merge: PRs 42 and 43, both touching protected paths, were reviewed with claude-opus-5-5 ("review model: claude-opus-5-5" in their policy runs). The first criterion stays false until a PR without a protected path shows Sonnet.
+
 ## Decisions
 
 - Sonnet still reviews `src/server/` and `migrations/`; widening Opus to those is the next step if the usage windows allow it.
