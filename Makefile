@@ -30,10 +30,10 @@ check-app: generate-check
 test:
 	pnpm exec vitest run
 
-# The browser seam against a fresh production build.
+# The browser seam against a fresh production build; ci calls the same script in Playwright's
+# image, which has no make.
 e2e:
-	pnpm build
-	pnpm exec playwright test
+	pnpm e2e
 
 migrate:
 	node scripts/migrate.ts

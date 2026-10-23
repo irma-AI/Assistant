@@ -41,7 +41,7 @@ jobs:
         with:
           install_args: node pnpm
       - run: pnpm install --frozen-lockfile
-      - run: make e2e
+      - run: pnpm e2e # the image has no make; make e2e runs the same script
 
   image:
     runs-on: ubuntu-24.04
