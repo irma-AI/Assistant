@@ -9,6 +9,7 @@ check: check-repo check-app e2e
 check-repo:
 	.github/scripts/ci-change.test.sh
 	.github/scripts/protected-paths.test.sh
+	.github/scripts/review-usage.test.sh
 	guards/run.sh --self-test
 	guards/docs.test.sh
 	guards/docs.sh

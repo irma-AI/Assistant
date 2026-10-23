@@ -16,6 +16,8 @@ jobs:
     permissions:
       contents: read
       pull-requests: read
+    outputs:
+      usage: ${{ steps.usage.outputs.usage }}
     steps:
       - name: Check out the default branch (trusted)
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
@@ -103,6 +105,7 @@ jobs:
             --disallowedTools Bash,Edit,Write,WebFetch,WebSearch
             --json-schema '{"type":"object","properties":{"findings":{"type":"array","items":{"type":"object","properties":{"severity":{"enum":["P0","P1","P2","P3"]},"file":{"type":"string"},"summary":{"type":"string"}},"required":["severity","summary"]}}},"required":["findings"]}'
       - name: Verdict
+        id: verdict
         env:
           OUT: ${{ steps.review.outputs.structured_output }}
         run: |
@@ -110,6 +113,42 @@ jobs:
           echo "$OUT" | jq -r '.findings[] | "\(.severity) \(.file // "-"): \(.summary)"'
           n=$(echo "$OUT" | jq '[.findings[] | select(.severity=="P0" or .severity=="P1")] | length')
           [ "$n" -eq 0 ] || { echo "::error::$n open P0/P1 findings. Fix them, or explain in the PR description why one is wrong."; exit 1; }
+      # The review-usage job posts this, so the job holding the AI review keeps read-only permissions.
+      - name: Record the review's usage
+        id: usage
+        if: ${{ !cancelled() && steps.review.outputs.execution_file != '' }}
+        continue-on-error: true # the numbers are a report, never a reason for policy to fail
+        env:
+          EXECUTION_FILE: ${{ steps.review.outputs.execution_file }}
+          MODEL: ${{ steps.model.outputs.model }}
+          VERDICT: ${{ steps.verdict.outcome }}
+          SHA: ${{ github.event.pull_request.head.sha }}
+          OUT: ${{ steps.review.outputs.structured_output }}
+        run: echo "usage=$(.github/scripts/review-usage.sh "$EXECUTION_FILE" "$MODEL" "$VERDICT" "$SHA" "$OUT")" >> "$GITHUB_OUTPUT"
+
+  # One PR comment with the review's turns, time, tokens and estimated cost, updated in place on every review.
+  review-usage:
+    needs: policy
+    if: ${{ !cancelled() && github.event_name == 'pull_request_target' && needs.policy.outputs.usage != '' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      contents: read
+      pull-requests: write
+    steps:
+      - name: Check out the default branch (trusted)
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - name: Post or update the usage comment
+        env:
+          GH_TOKEN: ${{ github.token }}
+          PR: ${{ github.event.pull_request.number }}
+          USAGE: ${{ needs.policy.outputs.usage }}
+          RUN: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+        run: |
+          printf '%s' "$USAGE" > usage.json
+          .github/scripts/review-usage-comment.sh usage.json "$RUN" --post "$PR"
 
   # After three fix rounds, close the PR and hand the issue back to the owner.
   fix-rounds:

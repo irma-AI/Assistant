@@ -1,0 +1,8 @@
+[
+  {"type": "system", "subtype": "init"},
+  {"type": "assistant", "message": {"content": []}},
+  {"type": "result", "num_turns": 8, "duration_ms": 32451, "total_cost_usd": 0.0825308,
+   "modelUsage": {
+     "claude-sonnet-5-5": {"inputTokens": 8, "outputTokens": 2989, "cacheReadInputTokens": 104224, "costUSD": 0.0823484},
+     "claude-haiku-5-5": {"inputTokens": 1729, "outputTokens": 19, "cacheReadInputTokens": 0, "costUSD": 0.0001824}}}
+]
