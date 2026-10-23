@@ -10,7 +10,7 @@ Acceptance criteria:
 ## Progress
 
 - `skeptic-pass` and `claim-sweep` written here from the plan's descriptions (source local); `agentic-actions-auditor` vendored from trailofbits/skills@1e0cb77 with its CC BY-SA 4.0 licence; `skills.sh check` scans 28 skills.
-- `docs/agents/routines.md` lists the hourly intake and weekly claim-sweep routines with their prompts; `CLAUDE.md` points at it, and `next-step` runs `skeptic-pass` before the PR on risk paths. `make check` passes.
+- `docs/agents/routines.md` lists the hourly intake and weekly claim-sweep routines with their prompts; `CLAUDE.md` points at it. `make check` passes.
 
 ## Decisions
 
