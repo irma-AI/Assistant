@@ -424,7 +424,7 @@ Size limits here count characters or words, and are enforced.
 **What it is.** Work enters only through Linear, picked up by a routine that polls it.
 
 - The owner files issues and moves them to Ready by asking Claude in a cloud session on the repository. Claude interviews the owner with [`grilling`](#3-skills) and files the issues with [`to-tickets`](#3-skills), each with a type label and acceptance criteria.
-- A routine runs every hour, the shortest interval routines allow, takes one Ready issue at a time and follows [`next-step`](#3-skills) for it. It does not check who created or readied the issue ([section 7](#7-open-risks)). *Not checked:* no routine has run yet.
+- A routine runs every hour, the shortest interval routines allow, takes one Ready issue at a time that nothing unfinished blocks, and follows [`next-step`](#3-skills) for it. It does not check who created or readied the issue ([section 7](#7-open-risks)). *Not checked:* no routine has run yet.
 - `next-step` tells the agent to drop zero-width characters and HTML comments from the issue text before reading it. Nothing strips them in code, because routines read Linear through the connector, where a script can't step in.
 
 **Why.**
@@ -575,9 +575,11 @@ A skill is a Markdown file of instructions that Claude Code loads when it is cal
   | `feature` | Tests at a declared seam ([2.8](#28-declared-test-seams-swept)), then the code |
   | `bug` | `diagnosing-bugs`, a failing regression test, the fix, and one line on the wider class of bug |
   | `deploy-failure` (opened by [2.13](#213-done-means-seen-working)) | `diagnosing-bugs` first, then as `bug` |
-  | `ui` | `impeccable`, with before and after screenshots in the PR |
+  | `ui` | As `feature`, then `impeccable` inside the world DESIGN.md sets and an `impeccable audit` of the changed surface, with before and after screenshots of made-up data in the PR; a `feature` that adds or changes a page takes the same steps |
   | `chore`, `docs` | Straight to the end |
 
+- It names each skill by file path, because routines read files, not skill names ([2.28](#228-routine-prompts-point-into-the-repository)). Whatever the label, a change to an agent document follows [`writing-for-agents`](#3-skills), and an unchecked outside fact gets [`research`](#3-skills) notes in the plan folder.
+- An issue that an unfinished one blocks waits; intake skips it.
 - It ends with `make check`, a description written with `pr`, the PR opened with auto-merge on ([2.19](#219-merging-and-deploying-on-githubs-side)), and up to three rounds of CI fixes ([2.11](#211-ai-review-and-task-fit-judge-run-by-ci-on-the-subscription)).
 - It has a character budget like `CLAUDE.md`'s, and the docs-reference guard covers it ([2.5](#25-instruction-layering-with-size-budgets)).
 
@@ -585,6 +587,7 @@ A skill is a Markdown file of instructions that Claude Code loads when it is cal
 
 - In the old repository the skeptic pass found the most real defects, the code-review lenses fixed smaller gaps on 13 tickets, and the ponytail review caught over-engineering that review fixes had added.
 - The old router went wrong where a hook forced it on every session, it guessed the flow, and it stopped for approval. A label set at intake removes the guess, and Linear and CI hold the gates.
+- An audit of the old repository advised keeping impeccable's audit as the review and skipping its full new-work flow, and found the old screenshot rule rarely followed.
 - Copying skills from the tip of upstream changed them under the old repository twice, once renaming a file and once removing a skill. A pinned copy changes only through a reviewed PR.
 
 ---

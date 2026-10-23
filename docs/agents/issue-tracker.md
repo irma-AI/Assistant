@@ -13,7 +13,7 @@ Issues for this repository live in Linear, team **IRM**. Use the Linear connecto
 
 ## When a skill says "publish to the issue tracker"
 
-Create a Linear issue in team IRM, in Ready when it is ready to build.
+Create a Linear issue in team IRM, in Ready when it is ready to build. A skill's `ready-for-agent` label means the same here: the Ready state with one type label, plus `ci-change` when the work changes a protected path. There is no such label.
 
 ## When a skill says "fetch the relevant ticket"
 
