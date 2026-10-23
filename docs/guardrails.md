@@ -427,7 +427,7 @@ Size limits here count characters or words, and are enforced.
 
 - The owner files issues and moves them to Ready by asking Claude in a cloud session on the repository. Claude interviews the owner with [`grilling`](#3-skills) and files the issues with [`to-tickets`](#3-skills), each with a type label and acceptance criteria.
 - Every 10 minutes, on each merge and on demand, the workflow counts the issues In Progress. With none, it fires the routine once with the oldest Ready issue that no open PR closes and nothing unfinished blocks. The routine follows `docs/agents/intake.md`, which checks the ID, claims the issue by moving it to In Progress and follows [`next-step`](#3-skills) for it. A daily run with no ID is the backstop. Nothing checks who created or readied the issue ([section 7](#7-open-risks)). *Not checked:* neither the workflow nor the routine has run yet.
-- A session that dies leaves its issue In Progress, and the workflow then fires nothing until the owner resumes it (Run now with the ID) or moves it back to Ready.
+- A session that dies leaves its issue In Progress, and the workflow then fires nothing until the owner resumes it (Run now with the ID) or moves it back to Ready. *Not checked.*
 - `next-step` tells the agent to drop zero-width characters and HTML comments from the issue text before reading it. Nothing strips them in code, because routines read Linear through the connector, where a script can't step in.
 
 **Why.**

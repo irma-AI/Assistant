@@ -28,6 +28,8 @@ Acceptance criteria:
 - Without automatic resume, a dead session leaves its issue In Progress and the dispatcher fires nothing until the owner acts. Recorded in 2.20 as the visible failure, rather than letting work run twice.
 - Claim sweep at 08:00 and the audit at 09:00 local are today's 06:00 and 07:00 UTC in Stockholm summer time.
 
+- Review on PR 55: the claim now reads the issue again and stops if anything besides its state changed; the trigger's secrets left `routines.md` for the dispatcher's PR; the dead-session bullet in 2.20 is marked not checked.
+
 ## Next step
 
-Open the PR.
+Wait for `policy` on PR 55.
