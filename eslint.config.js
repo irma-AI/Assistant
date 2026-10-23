@@ -49,6 +49,8 @@ export default [
       'src/routeTree.gen.ts',
       'src/server/db.gen.ts',
       '.output/**',
+      // Vendored and generated skills are checked against their sources, not linted.
+      '.claude/**',
     ],
   },
 ]

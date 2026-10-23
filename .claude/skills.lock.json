@@ -26,6 +26,12 @@
     "path": "skills/productivity/grilling",
     "sha256": "32855f2c6029748b91ef85d16a58b7c6e01780b7919e3e143769443eeda348e9"
   },
+  "impeccable": {
+    "source": "pbakaus/impeccable",
+    "commit": "5cb95eea9c96479f57afe0732a45470d30183326",
+    "path": ".claude/skills/impeccable",
+    "sha256": "45ddbe4b2efb54be607b589941fb69d53a1d4647ee7a75903c238199aefed0b1"
+  },
   "next-step": {
     "source": "local"
   },
