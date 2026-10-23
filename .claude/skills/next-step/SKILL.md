@@ -33,7 +33,7 @@ The issue needs a protected path (the list in `CLAUDE.md`) and has no `ci-change
 
 ## 3. Finish
 
-1. Every criterion in the criteria file has `passes: true`, and `make check` passes.
+1. Every criterion in the criteria file has `passes: true`, and `make check` passes. When the change touches access control, data deletion, migrations, CI or guards, run `skeptic-pass` on the frozen head first.
 2. Push the branch and open the PR. The title is a conventional commit; write the description with `pr`, with the `## First principles` and `## Not live yet` sections and `Closes <ID>`.
 3. Turn on auto-merge (the GitHub tools' `enable_pr_auto_merge`; `gh pr merge --auto` where `gh` can reach GitHub). The merge queue merges once `ci` and `policy` pass.
 4. Move the issue to In Review.

@@ -1,0 +1,14 @@
+[
+  {
+    "criterion": ".claude/skills holds skeptic-pass and claim-sweep (source local) and agentic-actions-auditor (pinned with its hash and licence).",
+    "passes": true
+  },
+  {
+    "criterion": "docs/agents/routines.md gives the intake and claim-sweep routines' schedule and prompt, each naming a file in the repository.",
+    "passes": true
+  },
+  {
+    "criterion": "CLAUDE.md points at the routines doc, and make check passes.",
+    "passes": true
+  }
+]

@@ -1,4 +1,13 @@
 {
+  "agentic-actions-auditor": {
+    "source": "trailofbits/skills",
+    "commit": "1e0cb77d071a8b9453391d111f17d34d2114e057",
+    "path": "plugins/agentic-actions-auditor/skills/agentic-actions-auditor",
+    "sha256": "d60cde50d9fa34de6128219bc09807eb0b860122a9c06a30c9de263c3c6223ce"
+  },
+  "claim-sweep": {
+    "source": "local"
+  },
   "code-review": {
     "source": "mattpocock/skills",
     "commit": "5beb35b040e3de97e54fa9e386d7e42d15c295c2",
@@ -37,6 +46,9 @@
     "commit": "5beb35b040e3de97e54fa9e386d7e42d15c295c2",
     "path": "skills/engineering/research",
     "sha256": "e45255278d5affc53e4b7e84955cd5fc749a8f4a805f47fa0bb5fefbfcac09a2"
+  },
+  "skeptic-pass": {
+    "source": "local"
   },
   "tanstack-react-router": {
     "source": "tanstack"
