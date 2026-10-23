@@ -13,7 +13,7 @@ Acceptance criteria:
 - `.claude/vendor-licenses` holds its MIT LICENSE and NOTICE.
 - It installs a hook only when its `hooks on` command runs, into `.claude/settings.local.json`; nothing in this PR runs it, and `.claude/` is a protected path, so a committed hook change needs a ci-change issue and the review. `make check` passes.
 
-- ESLint now ignores `.claude/`, because it tried to lint impeccable's vendored scripts; vendored and generated skills are checked against their sources instead.
+- ESLint ignores `.claude/skills/impeccable/`, because it tried to lint impeccable's vendored scripts, which the lock's hash holds to upstream instead (narrowed from `.claude/` after the review).
 
 ## Decisions
 

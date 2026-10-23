@@ -49,8 +49,8 @@ export default [
       'src/routeTree.gen.ts',
       'src/server/db.gen.ts',
       '.output/**',
-      // Vendored and generated skills are checked against their sources, not linted.
-      '.claude/**',
+      // impeccable's vendored scripts are held to their upstream by the skills lock, not linted.
+      '.claude/skills/impeccable/**',
     ],
   },
 ]
