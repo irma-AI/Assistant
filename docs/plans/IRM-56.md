@@ -13,6 +13,7 @@ Acceptance criteria:
 - `.github/scripts/review-usage-comment.sh` renders the comment behind the marker `<!-- ai-review-usage -->`, and with `--post` patches the github-actions[bot] comment that starts with the marker, or posts one.
 - `.github/scripts/review-usage.test.sh` (in `make check-repo`) checks pass, fail with findings, fail without output, thousands separators, small costs, a single result object and a run with no result message.
 - `policy.yml`: the Verdict step has an id; "Record the review's usage" runs unless cancelled when the review left an execution file, never fails the job, and writes the `usage` job output; the `review-usage` job (pull-requests: write, contents: read) posts it on `pull_request_target`.
+- Skeptic pass on da63f9a, two lenses (correctness, security): no P0 or P1. Fixed the two P2s: overlapping runs could post two comments or put an older commit's numbers over a newer one's, so the job now runs one at a time per PR and posts nothing when the PR's head has moved past the commit it describes; model keys with a date or `[1m]` suffix now render as "Sonnet 5.5". Left: cache-write tokens are not shown (not in the criteria).
 - guardrails 2.11 describes the comment and why it is a separate job and not the description.
 
 ## Decisions
@@ -22,4 +23,4 @@ Acceptance criteria:
 
 ## Next step
 
-Skeptic pass, then open the PR with auto-merge on. The first and third criteria show on the first PR after this one merges, since policy runs from the default branch.
+Open the PR with auto-merge on. The first and third criteria show on the first PR after this one merges, since policy runs from the default branch.

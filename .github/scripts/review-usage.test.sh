@@ -27,6 +27,9 @@ expect "commit and run" "$ex" success '' '<sub>Commit 7ee3f2a · [run](https://e
 
 jq '.[2] | .modelUsage["claude-opus-5-5"] = {"inputTokens": 1234567, "outputTokens": 1000, "cacheReadInputTokens": 0, "costUSD": 1.5}' "$ex" > "$tmp/object.json"
 expect "single result object" "$tmp/object.json" success '' '| Opus 5.5 | 1,234,567 | 0 | 1,000 | $1.5 |'
+jq '.[2].modelUsage = {"claude-sonnet-5-5-20260901": {"outputTokens": 1}, "claude-opus-5-5[1m]": {"outputTokens": 1}}' "$ex" > "$tmp/suffixes.json"
+expect "date suffix dropped" "$tmp/suffixes.json" success '' '| Sonnet 5.5 | 0 | 0 | 1 | $0 |'
+expect "context suffix dropped" "$tmp/suffixes.json" success '' '| Opus 5.5 | 0 | 0 | 1 | $0 |'
 echo '[{"type": "system", "subtype": "init"}]' > "$tmp/crashed.json"
 expect "no result message" "$tmp/crashed.json" failure '' '**AI review** · Opus 5.5 · failed (no review output) · ? turns · 0 s'
 

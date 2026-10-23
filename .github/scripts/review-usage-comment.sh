@@ -4,7 +4,7 @@
 set -euo pipefail
 marker='<!-- ai-review-usage -->'
 body=$(jq -r --arg run "$2" --arg marker "$marker" '
-  def pretty: sub("^claude-"; "") | (capture("^(?<n>[a-z]+)-(?<v>[0-9-]+)$") | "\(.n[:1] | ascii_upcase)\(.n[1:]) \(.v | gsub("-"; "."))") // .;
+  def pretty: sub("^claude-"; "") | sub("\\[.*\\]$"; "") | sub("-[0-9]{8}$"; "") | (capture("^(?<n>[a-z]+)-(?<v>[0-9-]+)$") | "\(.n[:1] | ascii_upcase)\(.n[1:]) \(.v | gsub("-"; "."))") // .;
   def commas: tostring | if length <= 3 then . else (.[:-3] | commas) + "," + .[-3:] end;
   def usd: if . < 0.01 then "$\(. * 10000 | round / 10000)" else "$\(. * 1000 | round / 1000)" end;
   (if .verdict == "success" then "passed"
@@ -17,6 +17,9 @@ body=$(jq -r --arg run "$2" --arg marker "$marker" '
 ' "$1")
 if [ "${3:-}" != --post ]; then printf '%s\n' "$body"; exit 0; fi
 pr=$4
+# A later push may have finished first; numbers for an older commit must not overwrite its comment.
+head=$(gh api "repos/$GITHUB_REPOSITORY/pulls/$pr" --jq .head.sha)
+[ "$head" = "$(jq -r .sha "$1")" ] || { echo "the PR has moved on to $head, so this run posts nothing"; exit 0; }
 ids=$(gh api --paginate "repos/$GITHUB_REPOSITORY/issues/$pr/comments" \
   --jq ".[] | select(.user.login == \"github-actions[bot]\" and (.body | startswith(\"$marker\"))) | .id")
 id=${ids%%$'\n'*}
