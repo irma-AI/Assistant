@@ -48,6 +48,8 @@ jobs:
     environment: checks
     permissions:
       contents: read
+    outputs:
+      previous: ${{ steps.deploy.outputs.previous }}
     env:
       IMAGE: ghcr.io/irma-ai/assistant
       TAG: ${{ github.sha }}
@@ -79,18 +81,70 @@ jobs:
             rollback-failed) what="failed, and the previous image did not come back either: production may be down" ;;
             *) what="failed before anything was deployed (the attestation or the Dokploy API); production is unchanged" ;;
           esac
-          gql() { curl -sSf https://api.linear.app/graphql -H "Authorization: $LINEAR_API_TOKEN" -H 'Content-Type: application/json' -d @-; }
-          ids=$(jq -n '{query:"{teams(filter:{key:{eq:\"IRM\"}}){nodes{id labels(filter:{name:{eq:\"deploy-failure\"}}){nodes{id}}}}}"}' | gql \
-            | jq -c '.data.teams.nodes[0] | {team: .id, labels: [.labels.nodes[].id]}')
-          jq -n --argjson ids "$ids" --arg title "Deploy failed at ${TAG::7}" \
-            --arg d "Deploying $IMAGE:$TAG $what. Run: $RUN" \
-            '{query:"mutation($i:IssueCreateInput!){issueCreate(input:$i){success}}",variables:{i:{teamId:$ids.team,labelIds:$ids.labels,title:$title,description:$d}}}' \
-            | gql | jq -e '.data.issueCreate.success' > /dev/null
+          .github/scripts/deploy-issue.sh "$what"
+
+  # The browser seam against production, in Playwright's image like ci's e2e job.
+  smoke:
+    needs: deploy
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    container:
+      image: mcr.microsoft.com/playwright:v1.64.1-noble@sha256:47b510dd9230bf0b9bfc9b20102241e577ea7a99334ab4c3ca19f19770e9b8ea
+    permissions:
+      contents: read
+    env:
+      PLAYWRIGHT_BASE_URL: https://assistant-u5wrvv-8d3252-207-2-120-210.sslip.io
+      APP_VERSION: ${{ github.sha }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: jdx/mise-action@8418fedb1110381a0d3ba51a7a415d7c1b884550 # v5.2.2
+        with:
+          install_args: node pnpm
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm exec playwright test
+
+  # A failed smoke test pins the previous image again.
+  rollback:
+    needs: [deploy, smoke]
+    if: failure() && needs.deploy.result == 'success'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    environment: checks
+    permissions:
+      contents: read
+    env:
+      IMAGE: ghcr.io/irma-ai/assistant
+      TAG: ${{ github.sha }}
+      DOKPLOY_URL: https://dokploy.petterannerwall.se
+      APPLICATION_ID: QBnL1Yn7fZ0Ficd4cbI36
+      APP_URL: https://assistant-u5wrvv-8d3252-207-2-120-210.sslip.io
+      PREVIOUS: ${{ needs.deploy.outputs.previous }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - name: Pin the previous image again
+        id: rollback
+        env:
+          DOKPLOY_API_KEY: ${{ secrets.DOKPLOY_API_KEY }}
+        run: .github/scripts/deploy.sh rollback
+      - name: Open a deploy-failure issue
+        if: always()
+        env:
+          LINEAR_API_TOKEN: ${{ secrets.LINEAR_API_TOKEN }}
+          RUN: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+          OUTCOME: ${{ steps.rollback.outputs.outcome }}
+        run: |
+          if [ "$OUTCOME" = rolled-back ]; then what="failed the smoke test in production; the previous image was pinned again and serves"
+          else what="failed the smoke test in production, and the previous image did not come back: production may be down"; fi
+          .github/scripts/deploy-issue.sh "$what"
 
   # The version comes from the commits since the last tag (feat: minor, fix or perf: patch, a breaking
   # change: major). The tag and the GitHub Release are the only record; nothing is committed.
   release:
-    needs: deploy
+    needs: smoke
     runs-on: ubuntu-latest
     timeout-minutes: 10
     permissions:

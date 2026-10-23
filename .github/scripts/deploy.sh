@@ -2,7 +2,9 @@
 # Deploys IMAGE:TAG to Dokploy and waits until the app serves TAG on /version.
 # Dokploy marks a deploy done before traffic moves, and reports a Swarm rollback as done while
 # keeping the broken image, so /version alone decides; on failure the previous image is pinned again.
-# Env: DOKPLOY_URL, DOKPLOY_API_KEY, APPLICATION_ID, APP_URL, IMAGE, TAG
+# Usage: deploy.sh             deploy IMAGE:TAG, rolling back if it doesn't serve
+#        deploy.sh rollback    pin PREVIOUS again (after a failed smoke test)
+# Env: DOKPLOY_URL, DOKPLOY_API_KEY, APPLICATION_ID, APP_URL, IMAGE, TAG, and PREVIOUS for rollback
 set -euo pipefail
 # On an error, prints the status and Dokploy's message only: a successful answer can hold the app's env.
 api() {
@@ -32,9 +34,17 @@ serves() {
 # What happened, for the failure issue: not-started, deployed, rolled-back or rollback-failed.
 outcome() { echo "outcome=$1" >> "${GITHUB_OUTPUT:-/dev/null}"; }
 
+if [ "${1:-}" = rollback ]; then
+  if pin "$PREVIOUS" && serves "${PREVIOUS##*:}"; then outcome rolled-back; exit 0; fi
+  echo "::error::$PREVIOUS is not serving either; production may be down."
+  outcome rollback-failed
+  exit 1
+fi
+
 outcome not-started
 previous=$(api "application.one?applicationId=$APPLICATION_ID" | jq -er .dockerImage)
 echo "previous image: $previous"
+echo "previous=$previous" >> "${GITHUB_OUTPUT:-/dev/null}"
 if pin "$IMAGE:$TAG" && serves "$TAG" && curl -sf "$APP_URL/" | grep -q '<h1>Assistant</h1>'; then
   echo "serving $TAG"
   outcome deployed
