@@ -13,3 +13,19 @@ test('/version serves the running version', async ({ request }) => {
     version: process.env.APP_VERSION ?? 'e2e',
   })
 })
+
+// A Capacitor web view on Android calls the API cross-origin from https://localhost.
+test('the API answers a cross-origin call from the app origin', async ({
+  page,
+  baseURL,
+}) => {
+  await page.route('https://localhost/', (route) =>
+    route.fulfill({ contentType: 'text/html', body: '<title>app</title>' }),
+  )
+  await page.goto('https://localhost/')
+  const status = await page.evaluate(
+    async (url) => (await fetch(url)).status,
+    new URL('/api/v1/me', baseURL).href,
+  )
+  expect(status).toBe(401)
+})
