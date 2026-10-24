@@ -34,6 +34,8 @@ Acceptance criteria:
 
 - Second review on PR 63: a worker that read Ready before another's move but fetched after its push took the resume path and landed a fast-forward. Fixed: intake notes the branch's tip (`git ls-remote`) before re-reading the issue as Ready, and next-step pushes with `--force-with-lease=refs/heads/irm-12:<noted tip>`, so the claim compares against what the worker saw before claiming. routines.md has the local worker set its git identity to Claude. The selection binds the cloud's issues once. next-step tightened again without dropping a fact: 5,993 characters. `make check` passes.
 
+- Third review on PR 63: the lease only checks the remote tip, so a claim commit built on a stale local `irm-12` could overwrite the branch. Fixed: step 1.2 switches to the noted tip itself (`git switch -C irm-12 <noted tip>`, or `origin/main`), so every claim is a fast-forward of exactly the tip the lease checks. Dropped the guardrails bullet on the C compiler and Symphony, which the issue didn't ask for. next-step tightened again, every fact kept: 5,995 characters. `make check` passes.
+
 ## Decisions
 
 - No stall rule (owner): a dead worker's issue holds the cloud slot until the owner moves it.
@@ -43,6 +45,8 @@ Acceptance criteria:
 - Between moving an issue to In Progress and its label, the local worker's issue counts as the cloud's for seconds. That holds the cloud back and never starts an extra session; a local worker that dies there leaves the issue for the owner, as any dead worker does.
 
 - No branch uses the old `irm-<n>-<slug>` naming: `git ls-remote --heads origin 'irm-*'` lists only `irm-77`, and the open issues (IRM-52, 53, 54) have none, so the rename needs no switch-over.
+
+- The claim is `--force-with-lease` on the noted tip rather than the plain push the issue's first criterion names: a plain push can't compare against what the worker saw before claiming, which the second review showed is needed. Built on exactly that tip, the push is a fast-forward and can't overwrite anything, which is what "without force" was there to guarantee.
 
 ## Next step
 
