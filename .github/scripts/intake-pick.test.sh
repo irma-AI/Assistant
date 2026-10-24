@@ -10,10 +10,10 @@ ready() {
     inverseRelations:{pageInfo:{hasNextPage:false}, nodes:(if $b == "" then [] else
       [{type:"blocks", issue:{identifier:"IRM-1", state:{type:$b}}}, {type:"related", issue:{identifier:"IRM-2", state:{type:"started"}}}] end)}}'
 }
-# input IN_FLIGHT READY PR_BODIES: the jq program's input, with max 1. An in-flight entry is
+# input IN_FLIGHT READY PR_BODIES [MAX]: the jq program's input, with max 1 unless given. An in-flight entry is
 # "ID[/State][+label...]", In Progress unless a state is given.
 input() {
-  jq -n --argjson p "$1" --argjson r "$2" --argjson b "$3" '{max:1, prs:[$b[] | {body:.}],
+  jq -n --argjson p "$1" --argjson r "$2" --argjson b "$3" --argjson m "${4:-1}" '{max:$m, prs:[$b[] | {body:.}],
     linear:{data:{inFlight:{nodes:[$p[] | (split("+")) as $x | ($x[0] | split("/")) as $i
       | {identifier:$i[0], state:{name:($i[1] // "In Progress")}, labels:{nodes:[$x[1:][] | {name:.}]}}]},
       ready:{pageInfo:{hasNextPage:false}, nodes:$r}}}}'
@@ -38,6 +38,11 @@ expect "blocked by an unfinished issue" "$(input '[]' "[$(ready IRM-12 10:00 sta
 expect "blocked by a canceled issue" "$(input '[]' "[$(ready IRM-12 10:00 canceled)]" '[]')" "wait: nothing in Ready qualifies"
 expect "its blocker is Done" "$(input '[]' "[$(ready IRM-12 10:00 completed)]" '[]')" "fire IRM-12"
 expect "a PR with no body" "$(input '[]' "[$(ready IRM-12 10:00)]" '[null]')" "fire IRM-12"
+three="[$(ready IRM-12 10:00), $(ready IRM-13 11:00), $(ready IRM-14 12:00)]"
+expect "two free slots of three" "$(input '["IRM-11"]' "$three" '[]' 3)" "fire IRM-12 IRM-13"
+expect "one free slot of three" "$(input '["IRM-10", "IRM-11/In Review"]' "$three" '[]' 3)" "fire IRM-12"
+expect "three of three in flight" "$(input '["IRM-9", "IRM-10", "IRM-11"]' "$three" '[]' 3)" "wait: IRM-9, IRM-10, IRM-11 in flight"
+expect "fewer qualify than slots" "$(input '[]' "[$(ready IRM-12 10:00)]" '[]' 3)" "fire IRM-12"
 expect "Linear answered an error" '{"max":1,"prs":[],"linear":{"errors":[{"message":"bad"}]}}' 'error: [{"message":"bad"}]'
 expect "more than one page" "$(input '[]' "[$(ready IRM-12 10:00)]" '[]' | jq '.linear.data.ready.pageInfo.hasNextPage=true')" "error: more Ready issues or relations than one page"
 
