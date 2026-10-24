@@ -35,7 +35,11 @@ jobs:
           # The states' names, not their type: Needs input shares In Progress's and In Review's type (started).
           linear=$(jq -n --arg k "$LINEAR_TEAM" '{query:"query($k:String!){inFlight:issues(first:50,filter:{team:{key:{eq:$k}},state:{name:{in:[\"In Progress\",\"In Review\"]}}}){nodes{identifier state{name} labels{nodes{name}} history(first:50){nodes{createdAt fromState{name} toState{name}}} comments(first:50){nodes{createdAt body}}}} ready:issues(first:100,filter:{team:{key:{eq:$k}},state:{name:{eq:\"Ready\"}}}){pageInfo{hasNextPage} nodes{identifier createdAt inverseRelations(first:50){pageInfo{hasNextPage} nodes{type issue{identifier state{type}}}}}}}",variables:{k:$k}}' | gql)
           # shortcut: the first 100 open PRs, page through them if that many are ever open at once.
-          prs=$(gh pr list --repo "$GITHUB_REPOSITORY" --state open --limit 100 --json body,commits)
+          # Only the body and the last commit's date: `gh pr list --json commits` asks for every commit's authors and
+          # exceeds GitHub's 500,000-node limit (IRM-124). Reshaped to the {body, commits:[{committedDate}]} the jq reads.
+          prs=$(gh api graphql -F owner="${GITHUB_REPOSITORY%/*}" -F name="${GITHUB_REPOSITORY#*/}" \
+            -f query='query($owner:String!,$name:String!){repository(owner:$owner,name:$name){pullRequests(states:OPEN,first:100){nodes{body commits(last:1){nodes{commit{committedDate}}}}}}}' \
+            --jq '[.data.repository.pullRequests.nodes[] | {body, commits: [.commits.nodes[].commit | {committedDate}]}]')
           decision=$(jq -n --argjson linear "$linear" --argjson prs "$prs" --argjson max "$MAX_PARALLEL" '{linear:$linear, prs:$prs, max:$max}' \
             | jq -r -f .github/scripts/intake-pick.jq)
           echo "$decision"
