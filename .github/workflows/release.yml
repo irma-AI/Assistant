@@ -55,7 +55,7 @@ jobs:
       TAG: ${{ github.sha }}
       DOKPLOY_URL: https://dokploy.petterannerwall.se
       APPLICATION_ID: QBnL1Yn7fZ0Ficd4cbI36
-      APP_URL: https://assistant-u5wrvv-8d3252-207-2-120-210.sslip.io
+      APP_URL: https://redo.petterannerwall.se
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
@@ -93,7 +93,7 @@ jobs:
     permissions:
       contents: read
     env:
-      PLAYWRIGHT_BASE_URL: https://assistant-u5wrvv-8d3252-207-2-120-210.sslip.io
+      PLAYWRIGHT_BASE_URL: https://redo.petterannerwall.se
       APP_VERSION: ${{ github.sha }}
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
@@ -119,7 +119,7 @@ jobs:
       TAG: ${{ github.sha }}
       DOKPLOY_URL: https://dokploy.petterannerwall.se
       APPLICATION_ID: QBnL1Yn7fZ0Ficd4cbI36
-      APP_URL: https://assistant-u5wrvv-8d3252-207-2-120-210.sslip.io
+      APP_URL: https://redo.petterannerwall.se
       PREVIOUS: ${{ needs.deploy.outputs.previous }}
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
