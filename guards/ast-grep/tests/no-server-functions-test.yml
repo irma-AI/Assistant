@@ -1,0 +1,7 @@
+id: no-server-functions
+valid:
+  - "import { createFileRoute } from '@tanstack/react-router'"
+  - "const createServerFnLike = 1"
+invalid:
+  - "import { createServerFn } from '@tanstack/react-start'"
+  - "export const f = createServerFn({ method: 'GET' }).handler(async () => 1)"

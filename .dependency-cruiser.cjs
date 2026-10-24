@@ -1,23 +1,46 @@
-/** Architecture layers (plan 2.10). Server-only code lives in *.server.ts; the UI reaches it
- *  only through *.functions.ts, whose createServerFn wrappers TanStack Start strips from the
- *  browser bundle. */
+/** Architecture layers (plan 2.10). Every UI reaches the server over /api/v1; only the API
+ *  routes under src/routes/api/ import src/server/, where server-only code lives in *.server.ts. */
 module.exports = {
   forbidden: [
     {
       name: 'server-only',
       comment:
-        'Only src/server/ (and tests and scripts) may import *.server.ts. Fix: call it from a *.functions.ts server function.',
+        'Only src/server/, src/routes/api/ and scripts/ may import *.server.ts. Fix: add an endpoint under src/routes/api/v1/ and call it through src/api/.',
       severity: 'error',
-      from: { pathNot: '^(src/server/|scripts/)' },
+      from: { pathNot: '^(src/server/|src/routes/api/|scripts/)' },
       to: { path: '\\.server\\.ts$' },
     },
     {
-      name: 'ui-through-server-functions',
+      name: 'ui-through-api',
       comment:
-        'Routes and components reach src/server/ only through *.functions.ts. Fix: wrap the call in a createServerFn there.',
+        'Only src/server/ and src/routes/api/ import src/server/. Fix: add an endpoint under src/routes/api/v1/ and call it through src/api/.',
       severity: 'error',
-      from: { path: '^src/(routes|components)/' },
-      to: { path: '^src/server/', pathNot: '\\.functions\\.ts$' },
+      from: { path: '^src/', pathNot: '^src/(server|routes/api)/' },
+      to: { path: '^src/server/' },
+    },
+    {
+      name: 'server-no-ui',
+      comment:
+        'src/server/ never imports UI code. Fix: move the shared part into src/server/ or src/api/.',
+      severity: 'error',
+      from: { path: '^src/server/' },
+      to: { path: '^src/(routes|features|components|platform)/' },
+    },
+    {
+      name: 'api-self-contained',
+      comment:
+        'src/api/ holds the contract and imports no other app code. Fix: move the shared part into src/api/.',
+      severity: 'error',
+      from: { path: '^src/api/' },
+      to: { path: '^src/', pathNot: '^src/api/' },
+    },
+    {
+      name: 'capacitor-in-platform',
+      comment:
+        'Only src/platform/ imports @capacitor/*. Fix: wrap the native call in src/platform/.',
+      severity: 'error',
+      from: { pathNot: '^src/platform/' },
+      to: { path: '(^|/)@capacitor/' },
     },
     {
       name: 'no-circular',

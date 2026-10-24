@@ -1,0 +1,6 @@
+[
+  {"criterion": "guard:layers passes for a route under src/routes/api/v1/ importing a *.server.ts, and fails each forbidden import, each proved by its own fixture", "passes": true},
+  {"criterion": "guard:stack fails createServerFn in src/, proved by the ast-grep rule's tests", "passes": true},
+  {"criterion": "CLAUDE.md, routes.md and guardrails no longer describe server functions as the path to the server; guard:docs passes", "passes": true},
+  {"criterion": "make check passes", "passes": true}
+]
