@@ -1,0 +1,9 @@
+[
+  {"criterion": "Vitest: preflight 204 from capacitor://localhost and https://localhost, 403 from a foreign origin", "passes": true},
+  {"criterion": "Vitest: a 401 to an allowed origin carries Access-Control-Allow-Origin and Vary: Origin", "passes": true},
+  {"criterion": "Vitest: a same-origin request gets no CORS headers", "passes": true},
+  {"criterion": "Vitest: a missing or any bearer token returns 401 with the JSON body", "passes": true},
+  {"criterion": "Playwright: fetch from the fake https://localhost page resolves 401", "passes": true},
+  {"criterion": "CI e2e job passes with the HTTPS web server (openssl installed if missing)", "passes": false},
+  {"criterion": "make check passes", "passes": false}
+]

@@ -40,6 +40,7 @@ jobs:
       - uses: jdx/mise-action@8418fedb1110381a0d3ba51a7a415d7c1b884550 # v5.2.2
         with:
           install_args: node pnpm
+      - run: command -v openssl || (apt-get update && apt-get install -y --no-install-recommends openssl) # the local e2e server needs a throwaway certificate
       - run: pnpm install --frozen-lockfile
       - run: pnpm e2e # the image has no make; make e2e runs the same script
 
