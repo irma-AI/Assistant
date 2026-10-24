@@ -1,7 +1,7 @@
 [
   {
     "criterion": "Playwright (WebKit, iPhone profiles) against the fake: log in with QR, log in on the same device, cancel, and an expired order.",
-    "passes": false
+    "passes": true
   },
   {
     "criterion": "Vitest: an IP mismatch, risk: high and a wrong nonce each refuse the session.",
@@ -17,6 +17,6 @@
   },
   {
     "criterion": "make check passes.",
-    "passes": false
+    "passes": true
   }
 ]
