@@ -1,0 +1,10 @@
+[
+  {
+    "criterion": "intake.md stops a cloud run on an In Progress issue labelled `local`.",
+    "passes": true
+  },
+  {
+    "criterion": "make check passes.",
+    "passes": true
+  }
+]

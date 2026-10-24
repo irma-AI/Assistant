@@ -8,6 +8,6 @@ Each Intake run builds at most one Linear issue in team IRM. Two workers run it:
    - It holds anything else: stop.
 2. Read the issue's state.
    - Ready: stop if an issue short of Done blocks it or an open pull request closes it. Otherwise claim it with your first write: move it to In Progress, adding the `local` label as the local worker so the cloud's count leaves it out. Then read it again and stop if anything besides its state and labels changed since step 1.
-   - In Progress: resume it.
+   - In Progress: resume it, unless it has the `local` label and you are not the local worker: then stop.
    - Any other state: stop without changing it.
 3. Follow `.claude/skills/next-step/SKILL.md` for the issue, as a plain set of instructions.
