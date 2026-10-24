@@ -12,3 +12,6 @@ src/server/db.gen.ts
 Dockerfile
 .dockerignore
 cliff.toml
+ios/
+android/
+.output/
