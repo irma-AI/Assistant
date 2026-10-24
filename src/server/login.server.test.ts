@@ -119,15 +119,23 @@ test('same device: the right nonce completes', async () => {
   expect(done.body).toEqual({ status: 'complete' })
 })
 
+test('QR login: the scanning phone may have another IP than the browser', async () => {
+  const { login, id } = await begin(fakeOtherIp)
+  await poll(login, id)
+  const done = await poll(login, id)
+  expect(done.body).toEqual({ status: 'complete' })
+})
+
 test.each([
-  ['an IP mismatch', fakeOtherIp, false, undefined],
+  ['an IP mismatch on the same device', fakeOtherIp, true, 'real'],
   ['risk high', fakeHighRiskIp, false, undefined],
   ['a wrong nonce', '203.0.113.7', true, 'wrong'],
 ])('%s refuses the session', async (_, ip, sameDevice, nonce) => {
   const before = await sessionCount()
-  const { login, id } = await begin(ip, sameDevice)
-  await poll(login, id, nonce)
-  const done = await poll(login, id, nonce)
+  const { login, id, nonce: real } = await begin(ip, sameDevice)
+  const sent = nonce === 'real' ? (real ?? undefined) : nonce
+  await poll(login, id, sent)
+  const done = await poll(login, id, sent)
   expect(done.body).toMatchObject({ status: 'failed' })
   expect(cookieOf(done.response, '__Host-session=')).toBeUndefined()
   expect(await sessionCount()).toBe(before)

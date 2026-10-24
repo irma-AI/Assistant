@@ -79,7 +79,7 @@ export function useLogin() {
       }
     },
     cancel: async () => {
-      await cancelLogin()
+      await cancelLogin().catch(() => undefined)
       setBig(false)
       setPhase({ name: 'idle' })
     },

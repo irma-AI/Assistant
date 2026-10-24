@@ -140,8 +140,9 @@ const claimCollect = (db: Kysely<DB>, id: string) =>
 type Attempt = NonNullable<Awaited<ReturnType<typeof loadAttempt>>>
 type Done = Extract<Awaited<ReturnType<typeof collect>>, { status: 'complete' }>
 
-// A completed order becomes a session only if BankID saw our client's IP, rated the risk below high
-// and, for a same-device login, the browser came back with the nonce from the returnUrl.
+// A completed order becomes a session only if BankID rated the risk below high and, for a same-device
+// login, saw our client's IP and the browser came back with the nonce from the returnUrl. In a QR login
+// BankID reports the scanning phone's IP, which is rightly not the browser's, so it is not compared.
 async function complete(
   db: Kysely<DB>,
   row: Attempt,
@@ -149,7 +150,8 @@ async function complete(
   nonce: string | undefined,
 ) {
   const sameBrowser = row.nonce === null || nonce === row.nonce
-  if (result.ip !== row.end_user_ip || result.risk === 'high' || !sameBrowser) {
+  const sameIp = row.nonce === null || result.ip === row.end_user_ip
+  if (!sameIp || result.risk === 'high' || !sameBrowser) {
     return failed(db, row.id, refused)
   }
   const user = await db
