@@ -10,6 +10,7 @@ export const Route = createFileRoute('/app/login/return')({
 function Return() {
   const navigate = useNavigate()
   const [message, setMessage] = useState<string>()
+  const [hint, setHint] = useState('')
 
   useEffect(() => {
     const nonce = new URLSearchParams(location.hash.slice(1)).get('nonce')
@@ -20,7 +21,10 @@ function Return() {
     const timer = setInterval(() => {
       poll(nonce).then(
         (next) => {
-          if (next.status === 'pending') return
+          if (next.status === 'pending') {
+            setHint(next.message)
+            return
+          }
           clearInterval(timer)
           if (next.status === 'complete') void navigate({ to: '/app' })
           else
@@ -45,7 +49,7 @@ function Return() {
           </p>
         </>
       ) : (
-        <p role="status">Slutför inloggningen…</p>
+        <p role="status">{hint || 'Slutför inloggningen…'}</p>
       )}
     </main>
   )

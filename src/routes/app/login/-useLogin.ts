@@ -9,7 +9,9 @@ import {
   startLogin,
 } from './-bankid'
 
-type Phase = { name: 'idle'; message?: string } | { name: 'qr'; qr?: string }
+type Phase =
+  | { name: 'idle'; message?: string }
+  | { name: 'qr'; qr?: string; message?: string }
 
 export function useLogin() {
   const navigate = useNavigate()
@@ -30,7 +32,7 @@ export function useLogin() {
           if (next.status === 'complete') {
             void navigate({ to: '/app' })
           } else if (next.status === 'pending') {
-            setPhase({ name: 'qr', qr: next.qr })
+            setPhase({ name: 'qr', qr: next.qr, message: next.message })
           } else {
             setBig(false)
             setPhase({
@@ -62,8 +64,10 @@ export function useLogin() {
       try {
         const { autoStartToken } = await startLogin(true)
         // The BankID app returns to /app/login/return, which finishes the login.
+        // BankID's autostart guide: the app link on mobile, the bankid scheme on desktop.
+        const mobile = /Android|iPhone|iPad|iPod/.test(navigator.userAgent)
         const link = document.createElement('a')
-        link.href = `https://app.bankid.com/?autostarttoken=${autoStartToken ?? ''}&redirect=null`
+        link.href = `${mobile ? 'https://app.bankid.com/' : 'bankid:///'}?autostarttoken=${autoStartToken ?? ''}`
         link.referrerPolicy = 'origin'
         link.click()
       } catch {

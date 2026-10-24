@@ -34,6 +34,7 @@ function Login() {
       ) : (
         <>
           <p>Öppna BankID-appen på din andra enhet och skanna QR-koden.</p>
+          {phase.message && <p role="status">{phase.message}</p>}
           {phase.qr && (
             <button
               type="button"

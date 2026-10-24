@@ -38,8 +38,8 @@ export const qrData = (token: string, secret: string, seconds: number) =>
 const messages: Record<string, string> = {
   outstandingTransaction: 'Starta BankID-appen.',
   noClient: 'Starta BankID-appen.',
-  started: 'Söker efter BankID. Starta appen om inget händer.',
-  userSign: 'Legitimera dig i BankID-appen.',
+  started: 'Försöker starta BankID-appen.',
+  userSign: 'Skriv in din säkerhetskod i BankID-appen och välj Legitimera.',
   userCancel: 'Inloggningen avbröts.',
   cancelled: 'Inloggningen avbröts.',
   expiredTransaction: 'BankID-appen svarade inte. Försök igen.',

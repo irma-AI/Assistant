@@ -173,20 +173,13 @@ async function complete(
 export async function pollLogin(request: Request, db: Kysely<DB> = getDb()) {
   const row = await loadAttempt(db, request)
   if (!row) return respond({ error: 'no_attempt' }, [], 404)
-  if (row.age >= orderSeconds) {
-    await drop(db, row.id)
-    return respond({ status: 'expired' }, [clearLogin])
-  }
+  // BankID ends an unscanned order itself; we only stop offering QR data after 30 seconds and never cancel a login being signed.
   const pending = (message: string) => {
-    const qr = qrData(
-      row.qr_start_token,
-      row.qr_start_secret,
-      Math.floor(row.age),
-    )
-    return respond(
-      { status: 'pending', message, ...(row.nonce === null && { qr }) },
-      [],
-    )
+    const qr =
+      row.nonce === null && row.age < orderSeconds
+        ? qrData(row.qr_start_token, row.qr_start_secret, Math.floor(row.age))
+        : undefined
+    return respond({ status: 'pending', message, ...(qr && { qr }) }, [])
   }
   if (!(await claimCollect(db, row.id))) return pending('')
 
@@ -194,8 +187,9 @@ export async function pollLogin(request: Request, db: Kysely<DB> = getDb()) {
   if (result?.status === 'pending') return pending(result.message)
   if (result?.status !== 'complete')
     return failed(db, row.id, result ? result.message : messageFor(undefined))
-  const { nonce } = statusBody.parse(await request.json().catch(() => ({})))
-  return complete(db, row, result, nonce)
+  const body = statusBody.safeParse(await request.json().catch(() => ({})))
+  if (!body.success) return failed(db, row.id, refused)
+  return complete(db, row, result, body.data.nonce)
 }
 
 export async function cancelLogin(request: Request, db: Kysely<DB> = getDb()) {

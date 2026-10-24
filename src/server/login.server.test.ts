@@ -150,14 +150,17 @@ test('a cancelled order fails and leaves no attempt', async () => {
   expect(await attempts()).toBe(0)
 })
 
-test('an order older than 30 seconds expires', async () => {
+test('after 30 seconds no QR data is offered, but a login being signed still completes', async () => {
   const { login, id } = await begin('203.0.113.7')
   await db
     .updateTable('login_attempts')
     .set({ created_at: sql<Date>`now() - interval '31 seconds'` })
     .where('id', '=', id)
     .execute()
-  expect((await poll(login, id)).body).toEqual({ status: 'expired' })
+  const first = await poll(login, id)
+  expect(first.body).toMatchObject({ status: 'pending' })
+  expect(first.body.qr).toBeUndefined()
+  expect((await poll(login, id)).body).toEqual({ status: 'complete' })
   expect(await attempts()).toBe(0)
 })
 
