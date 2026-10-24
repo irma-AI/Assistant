@@ -9,7 +9,7 @@ import { getDb } from './db.server'
 type Kind = 'web' | 'app' | 'demo'
 
 export const cookieName = '__Host-session'
-const webSeconds = 12 * 60 * 60
+export const webSeconds = 12 * 60 * 60
 const appSeconds = 90 * 24 * 60 * 60
 
 const hash = (token: string) => createHash('sha256').update(token).digest()
@@ -33,17 +33,21 @@ export async function createSession(
   return token
 }
 
+export function cookieValue(request: Request, name: string) {
+  const cookies = request.headers.get('cookie') ?? ''
+  return cookies
+    .split(';')
+    .map((c) => c.trim())
+    .find((c) => c.startsWith(`${name}=`))
+    ?.slice(name.length + 1)
+}
+
 function tokenOf(request: Request) {
   const bearer = /^Bearer (\S+)$/.exec(
     request.headers.get('authorization') ?? '',
   )
   if (bearer) return bearer[1]
-  const cookies = request.headers.get('cookie') ?? ''
-  return cookies
-    .split(';')
-    .map((c) => c.trim())
-    .find((c) => c.startsWith(`${cookieName}=`))
-    ?.slice(cookieName.length + 1)
+  return cookieValue(request, cookieName)
 }
 
 // Returns the session's user and, for an app session, moves its expiry forward in the same statement.

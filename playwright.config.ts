@@ -63,6 +63,8 @@ export default defineConfig({
           PORT: '3100',
           APP_VERSION: 'e2e',
           PII_HASH_KEY: 'e2e-only-pii-hash-key',
+          PUBLIC_URL: 'https://127.0.0.1:3100',
+          BANKID_FAKE_PORT: '3101',
           ...selfSignedCert(),
         },
         reuseExistingServer: false,
