@@ -4,9 +4,12 @@
 | [.prs[] | (.body // "") | scan("(?i)\\b(?:closes|fixes|resolves)\\s+([a-z]+-[0-9]+)") | .[0] | ascii_upcase] as $closed
 | if $d.ready.pageInfo.hasNextPage or any($d.ready.nodes[]; .inverseRelations.pageInfo.hasNextPage)
   then error("more Ready issues or relations than one page")
-  # The cloud's sessions: issues In Progress or In Review that the local worker didn't claim.
-  elif ([$d.inFlight.nodes[] | select(any(.labels.nodes[]; .name == "local") | not)] | length) >= .max
-  then "wait: \([$d.inFlight.nodes[] | select(any(.labels.nodes[]; .name == "local") | not) | .identifier] | join(", ")) in flight"
+  # The cloud's sessions: issues In Progress or In Review, a session watching its PR included,
+  # that the local worker doesn't hold.
+  elif ([$d.inFlight.nodes[] | select(.state.name == "In Progress" or .state.name == "In Review")
+         | select(any(.labels.nodes[]; .name == "local") | not)] | length) >= .max
+  then "wait: \([$d.inFlight.nodes[] | select(.state.name == "In Progress" or .state.name == "In Review")
+         | select(any(.labels.nodes[]; .name == "local") | not) | .identifier] | join(", ")) in flight"
   else
     [$d.ready.nodes | sort_by(.createdAt)[]
      | select(.identifier as $id | $closed | any(. == $id) | not)

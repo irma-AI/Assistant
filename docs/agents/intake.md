@@ -8,6 +8,5 @@ Each Intake run builds at most one Linear issue in team IRM. Two workers run it:
    - It holds anything else: stop.
 2. Read the issue's state.
    - Ready: stop if an issue short of Done blocks it or an open pull request closes it. Otherwise move it to In Progress, read it again and stop if anything besides its state changed since step 1.
-   - In Progress: resume it.
-   - Any other state: stop without changing it.
-3. Follow `.claude/skills/next-step/SKILL.md` for the issue, as a plain set of instructions. Its push claims the issue, so two workers never build the same one. As the local worker, add the `local` label once that push succeeds, which keeps the issue out of the cloud's count.
+   - Any other state, In Progress included: stop without changing it. Another worker holds an issue In Progress; the owner resumes a stuck one by moving it back to Ready.
+3. Follow `.claude/skills/next-step/SKILL.md` for the issue, as a plain set of instructions. Its push claims the issue: only one of two workers that read it as Ready can land it. Once your push lands, set the `local` label to match you, added as the local worker and removed as the cloud, so the cloud's count sees who holds it.

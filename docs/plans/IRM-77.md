@@ -30,12 +30,16 @@ Acceptance criteria:
 - The `local` label exists in IRM.
 - `guards/docs.sh` first failed on a backticked `/loop`, read as a path; it is plain text now. `guards/docs.sh`, zizmor and `make check` pass.
 
+- Review on PR 63: a worker fired for an issue another took meanwhile would see it In Progress, resume it and land a fast-forward. Fixed: intake stops on any state but Ready, so a stuck issue resumes only by moving back to Ready. The winner of the push now sets the `local` label to match itself (cloud removes it), so a stale label can't hide a cloud session. The selection reads each issue's state and counts In Progress and In Review; two new cases (In Review counts, Needs input doesn't). guardrails 2.20's older sentences match. 16 cases pass; `make check` passes.
+
 ## Decisions
 
 - No stall rule (owner): a dead worker's issue holds the cloud slot until the owner moves it.
 - The claim is a plain push of a new commit, not a branch-create, so it also serialises two workers resuming the same issue from Needs input.
 - The local worker labels its issue only after its push wins, so a lost race can't mislabel the cloud's issue.
 
+- Between moving an issue to In Progress and its label, the local worker's issue counts as the cloud's for seconds. That holds the cloud back and never starts an extra session; a local worker that dies there leaves the issue for the owner, as any dead worker does.
+
 ## Next step
 
-Open the PR.
+Wait for `policy` on PR 63.

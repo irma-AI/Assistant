@@ -10,11 +10,12 @@ ready() {
     inverseRelations:{pageInfo:{hasNextPage:false}, nodes:(if $b == "" then [] else
       [{type:"blocks", issue:{identifier:"IRM-1", state:{type:$b}}}, {type:"related", issue:{identifier:"IRM-2", state:{type:"started"}}}] end)}}'
 }
-# input IN_FLIGHT READY PR_BODIES: the jq program's input, with max 1. An in-flight ID ending in
-# "+local" carries the local label.
+# input IN_FLIGHT READY PR_BODIES: the jq program's input, with max 1. An in-flight entry is
+# "ID[/State][+label...]", In Progress unless a state is given.
 input() {
   jq -n --argjson p "$1" --argjson r "$2" --argjson b "$3" '{max:1, prs:[$b[] | {body:.}],
-    linear:{data:{inFlight:{nodes:[$p[] | (split("+")) as $x | {identifier:$x[0], labels:{nodes:[$x[1:][] | {name:.}]}}]},
+    linear:{data:{inFlight:{nodes:[$p[] | (split("+")) as $x | ($x[0] | split("/")) as $i
+      | {identifier:$i[0], state:{name:($i[1] // "In Progress")}, labels:{nodes:[$x[1:][] | {name:.}]}}]},
       ready:{pageInfo:{hasNextPage:false}, nodes:$r}}}}'
 }
 
@@ -27,6 +28,8 @@ expect "nothing Ready" "$(input '[]' '[]' '[]')" "wait: nothing in Ready qualifi
 expect "one Ready" "$(input '[]' "[$(ready IRM-12 10:00)]" '[]')" "fire IRM-12"
 expect "the oldest first" "$(input '[]' "[$(ready IRM-14 11:00), $(ready IRM-13 10:00)]" '[]')" "fire IRM-13"
 expect "one in flight" "$(input '["IRM-11"]' "[$(ready IRM-12 10:00)]" '[]')" "wait: IRM-11 in flight"
+expect "a session watching its PR In Review" "$(input '["IRM-11/In Review"]' "[$(ready IRM-12 10:00)]" '[]')" "wait: IRM-11 in flight"
+expect "another state the query returned doesn't count" "$(input '["IRM-11/Needs input"]' "[$(ready IRM-12 10:00)]" '[]')" "fire IRM-12"
 expect "the local worker's issue leaves the cloud slot free" "$(input '["IRM-11+local"]' "[$(ready IRM-12 10:00)]" '[]')" "fire IRM-12"
 expect "a cloud issue in flight beside a local one" "$(input '["IRM-10+local", "IRM-11+bug"]' "[$(ready IRM-12 10:00)]" '[]')" "wait: IRM-11 in flight"
 expect "closed by an open PR" "$(input '[]' "[$(ready IRM-12 10:00), $(ready IRM-13 11:00)]" '["Fixes #4\n\ncloses irm-12"]')" "fire IRM-13"
