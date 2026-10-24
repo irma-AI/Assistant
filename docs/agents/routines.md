@@ -19,7 +19,7 @@ Every routine:
 
 ## Local worker
 
-One local Claude Code session can work the same queue beside the cloud. Start it in a checkout used for nothing else, with PostgreSQL running and `DATABASE_URL` set, `gh` signed in, auto mode on and the machine kept awake, and give it:
+One local Claude Code session can work the same queue beside the cloud. Start it in a checkout used for nothing else, with its git identity set to `Claude <noreply@anthropic.com>` (`git config user.name Claude` and `user.email noreply@anthropic.com`), PostgreSQL running and `DATABASE_URL` set, `gh` signed in, auto mode on and the machine kept awake, and give it:
 
 ```text
 /loop 10m You are the local Intake worker. Read docs/agents/intake.md and follow it as a plain set of instructions. There is no routine-fire-payload: take the next issue yourself.

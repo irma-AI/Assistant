@@ -32,6 +32,8 @@ Acceptance criteria:
 
 - Review on PR 63: a worker fired for an issue another took meanwhile would see it In Progress, resume it and land a fast-forward. Fixed: intake stops on any state but Ready, so a stuck issue resumes only by moving back to Ready. The winner of the push now sets the `local` label to match itself (cloud removes it), so a stale label can't hide a cloud session. The selection reads each issue's state and counts In Progress and In Review; two new cases (In Review counts, Needs input doesn't). guardrails 2.20's older sentences match. 16 cases pass; `make check` passes.
 
+- Second review on PR 63: a worker that read Ready before another's move but fetched after its push took the resume path and landed a fast-forward. Fixed: intake notes the branch's tip (`git ls-remote`) before re-reading the issue as Ready, and next-step pushes with `--force-with-lease=refs/heads/irm-12:<noted tip>`, so the claim compares against what the worker saw before claiming. routines.md has the local worker set its git identity to Claude. The selection binds the cloud's issues once. next-step tightened again without dropping a fact: 5,993 characters. `make check` passes.
+
 ## Decisions
 
 - No stall rule (owner): a dead worker's issue holds the cloud slot until the owner moves it.
@@ -39,6 +41,8 @@ Acceptance criteria:
 - The local worker labels its issue only after its push wins, so a lost race can't mislabel the cloud's issue.
 
 - Between moving an issue to In Progress and its label, the local worker's issue counts as the cloud's for seconds. That holds the cloud back and never starts an extra session; a local worker that dies there leaves the issue for the owner, as any dead worker does.
+
+- No branch uses the old `irm-<n>-<slug>` naming: `git ls-remote --heads origin 'irm-*'` lists only `irm-77`, and the open issues (IRM-52, 53, 54) have none, so the rename needs no switch-over.
 
 ## Next step
 
