@@ -1,0 +1,22 @@
+[
+  {
+    "criterion": "Playwright (WebKit, iPhone profiles) against the fake: log in with QR, log in on the same device, cancel, and an expired order.",
+    "passes": false
+  },
+  {
+    "criterion": "Vitest: an IP mismatch, risk: high and a wrong nonce each refuse the session.",
+    "passes": true
+  },
+  {
+    "criterion": "A cross-site POST to /api/v1 with the session cookie is rejected.",
+    "passes": true
+  },
+  {
+    "criterion": "Login-attempt data is deleted once the order completes, fails or is cancelled, and at the latest after one hour.",
+    "passes": true
+  },
+  {
+    "criterion": "make check passes.",
+    "passes": false
+  }
+]

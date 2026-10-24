@@ -14,6 +14,9 @@ import { Route as AppRouteRouteImport } from './routes/app/route'
 import { Route as VersionRouteImport } from './routes/version'
 import { Route as ApiV1LogoutRouteImport } from './routes/api/v1/logout'
 import { Route as ApiV1MeRouteImport } from './routes/api/v1/me'
+import { Route as ApiV1AuthBankidCancelRouteImport } from './routes/api/v1/auth/bankid/cancel'
+import { Route as ApiV1AuthBankidStartRouteImport } from './routes/api/v1/auth/bankid/start'
+import { Route as ApiV1AuthBankidStatusRouteImport } from './routes/api/v1/auth/bankid/status'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -40,6 +43,21 @@ const ApiV1MeRoute = ApiV1MeRouteImport.update({
   path: '/api/v1/me',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiV1AuthBankidCancelRoute = ApiV1AuthBankidCancelRouteImport.update({
+  id: '/api/v1/auth/bankid/cancel',
+  path: '/api/v1/auth/bankid/cancel',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiV1AuthBankidStartRoute = ApiV1AuthBankidStartRouteImport.update({
+  id: '/api/v1/auth/bankid/start',
+  path: '/api/v1/auth/bankid/start',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiV1AuthBankidStatusRoute = ApiV1AuthBankidStatusRouteImport.update({
+  id: '/api/v1/auth/bankid/status',
+  path: '/api/v1/auth/bankid/status',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -47,6 +65,9 @@ export interface FileRoutesByFullPath {
   '/version': typeof VersionRoute
   '/api/v1/logout': typeof ApiV1LogoutRoute
   '/api/v1/me': typeof ApiV1MeRoute
+  '/api/v1/auth/bankid/cancel': typeof ApiV1AuthBankidCancelRoute
+  '/api/v1/auth/bankid/start': typeof ApiV1AuthBankidStartRoute
+  '/api/v1/auth/bankid/status': typeof ApiV1AuthBankidStatusRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -54,6 +75,9 @@ export interface FileRoutesByTo {
   '/version': typeof VersionRoute
   '/api/v1/logout': typeof ApiV1LogoutRoute
   '/api/v1/me': typeof ApiV1MeRoute
+  '/api/v1/auth/bankid/cancel': typeof ApiV1AuthBankidCancelRoute
+  '/api/v1/auth/bankid/start': typeof ApiV1AuthBankidStartRoute
+  '/api/v1/auth/bankid/status': typeof ApiV1AuthBankidStatusRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -62,13 +86,41 @@ export interface FileRoutesById {
   '/version': typeof VersionRoute
   '/api/v1/logout': typeof ApiV1LogoutRoute
   '/api/v1/me': typeof ApiV1MeRoute
+  '/api/v1/auth/bankid/cancel': typeof ApiV1AuthBankidCancelRoute
+  '/api/v1/auth/bankid/start': typeof ApiV1AuthBankidStartRoute
+  '/api/v1/auth/bankid/status': typeof ApiV1AuthBankidStatusRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/app' | '/version' | '/api/v1/logout' | '/api/v1/me'
+  fullPaths:
+    | '/'
+    | '/app'
+    | '/version'
+    | '/api/v1/logout'
+    | '/api/v1/me'
+    | '/api/v1/auth/bankid/cancel'
+    | '/api/v1/auth/bankid/start'
+    | '/api/v1/auth/bankid/status'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/app' | '/version' | '/api/v1/logout' | '/api/v1/me'
-  id: '__root__' | '/' | '/app' | '/version' | '/api/v1/logout' | '/api/v1/me'
+  to:
+    | '/'
+    | '/app'
+    | '/version'
+    | '/api/v1/logout'
+    | '/api/v1/me'
+    | '/api/v1/auth/bankid/cancel'
+    | '/api/v1/auth/bankid/start'
+    | '/api/v1/auth/bankid/status'
+  id:
+    | '__root__'
+    | '/'
+    | '/app'
+    | '/version'
+    | '/api/v1/logout'
+    | '/api/v1/me'
+    | '/api/v1/auth/bankid/cancel'
+    | '/api/v1/auth/bankid/start'
+    | '/api/v1/auth/bankid/status'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -77,6 +129,9 @@ export interface RootRouteChildren {
   VersionRoute: typeof VersionRoute
   ApiV1LogoutRoute: typeof ApiV1LogoutRoute
   ApiV1MeRoute: typeof ApiV1MeRoute
+  ApiV1AuthBankidCancelRoute: typeof ApiV1AuthBankidCancelRoute
+  ApiV1AuthBankidStartRoute: typeof ApiV1AuthBankidStartRoute
+  ApiV1AuthBankidStatusRoute: typeof ApiV1AuthBankidStatusRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -116,6 +171,27 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiV1MeRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/v1/auth/bankid/cancel': {
+      id: '/api/v1/auth/bankid/cancel'
+      path: '/api/v1/auth/bankid/cancel'
+      fullPath: '/api/v1/auth/bankid/cancel'
+      preLoaderRoute: typeof ApiV1AuthBankidCancelRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/v1/auth/bankid/start': {
+      id: '/api/v1/auth/bankid/start'
+      path: '/api/v1/auth/bankid/start'
+      fullPath: '/api/v1/auth/bankid/start'
+      preLoaderRoute: typeof ApiV1AuthBankidStartRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/v1/auth/bankid/status': {
+      id: '/api/v1/auth/bankid/status'
+      path: '/api/v1/auth/bankid/status'
+      fullPath: '/api/v1/auth/bankid/status'
+      preLoaderRoute: typeof ApiV1AuthBankidStatusRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -125,6 +201,9 @@ const rootRouteChildren: RootRouteChildren = {
   VersionRoute: VersionRoute,
   ApiV1LogoutRoute: ApiV1LogoutRoute,
   ApiV1MeRoute: ApiV1MeRoute,
+  ApiV1AuthBankidCancelRoute: ApiV1AuthBankidCancelRoute,
+  ApiV1AuthBankidStartRoute: ApiV1AuthBankidStartRoute,
+  ApiV1AuthBankidStatusRoute: ApiV1AuthBankidStatusRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

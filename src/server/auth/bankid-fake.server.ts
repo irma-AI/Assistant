@@ -3,6 +3,10 @@ import { createServer } from 'node:http'
 
 // An end user IP in TEST-NET-1 (RFC 5737) makes the fake's order fail with userCancel; any other IP completes.
 export const fakeCancelIp = '192.0.2.1'
+// Other TEST-NET-1 addresses make the order complete with high risk, expire, or complete from another IP.
+export const fakeHighRiskIp = '192.0.2.2'
+export const fakeExpiredIp = '192.0.2.3'
+export const fakeOtherIp = '192.0.2.4'
 
 const givenNames = ['Anna', 'Erik', 'Maja', 'Oskar', 'Saga', 'Nils']
 const surnames = ['Lind', 'Berg', 'Holm', 'Nyman', 'Sjö', 'Ek']
@@ -33,23 +37,46 @@ function makePerson() {
 }
 
 type Order = { ip: string; collects: number }
+type Fake = { orders: Map<string, Order>; returnUrl: string }
 
 const fail = (errorCode: string): [number, object] => [
   400,
   { errorCode, details: errorCode },
 ]
 
+// The last collect of an order: the IP decides how the made-up login ends.
+function finished(orderRef: string, ip: string) {
+  const failed = (hintCode: string) => ({
+    orderRef,
+    status: 'failed',
+    hintCode,
+  })
+  if (ip === fakeCancelIp) return failed('userCancel')
+  if (ip === fakeExpiredIp) return failed('expiredTransaction')
+  return {
+    orderRef,
+    status: 'complete',
+    completionData: {
+      user: makePerson(),
+      device: { ipAddress: ip === fakeOtherIp ? '198.51.100.9' : ip },
+      risk: ip === fakeHighRiskIp ? 'high' : 'low',
+    },
+  }
+}
+
 // Implements /auth, /collect and /cancel of BankID RP API v6.0 on a local port, in the app's own process.
 function handle(
-  orders: Map<string, Order>,
+  fake: Fake,
   url: string,
   body: Record<string, unknown>,
 ): [number, object] {
   {
+    const { orders } = fake
     if (url === '/rp/v6.0/auth') {
       if (typeof body.endUserIp !== 'string') return fail('invalidParameters')
       const orderRef = randomUUID()
       orders.set(orderRef, { ip: body.endUserIp, collects: 0 })
+      if (typeof body.returnUrl === 'string') fake.returnUrl = body.returnUrl
       return [
         200,
         {
@@ -79,24 +106,12 @@ function handle(
         },
       ]
     orders.delete(ref)
-    if (order.ip === fakeCancelIp)
-      return [200, { orderRef: ref, status: 'failed', hintCode: 'userCancel' }]
-    return [
-      200,
-      {
-        orderRef: ref,
-        status: 'complete',
-        completionData: {
-          user: makePerson(),
-          device: { ipAddress: order.ip },
-        },
-      },
-    ]
+    return [200, finished(ref, order.ip)]
   }
 }
 
 export function createFakeBankId(port = 0) {
-  const orders = new Map<string, Order>()
+  const fake: Fake = { orders: new Map<string, Order>(), returnUrl: '' }
   const server = createServer((req, res) => {
     const chunks: Buffer[] = []
     req.on('data', (c: Buffer) => chunks.push(c))
@@ -108,10 +123,13 @@ export function createFakeBankId(port = 0) {
       } catch {
         // an unparsable body is handled as no parameters
       }
+      // GET /last-return-url lets e2e follow the returnUrl of the latest auth, as the BankID app would.
       const [status, json] =
-        req.method === 'POST'
-          ? handle(orders, req.url ?? '', body)
-          : fail('methodNotAllowed')
+        req.method === 'GET' && req.url === '/last-return-url'
+          ? [200, { returnUrl: fake.returnUrl }]
+          : req.method === 'POST'
+            ? handle(fake, req.url ?? '', body)
+            : fail('methodNotAllowed')
       res.writeHead(status, { 'content-type': 'application/json' })
       res.end(JSON.stringify(json))
     })

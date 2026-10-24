@@ -36,16 +36,16 @@ export const qrData = (token: string, secret: string, seconds: number) =>
   `bankid.${token}.${String(seconds)}.${createHmac('sha256', secret).update(String(seconds)).digest('hex')}`
 
 const messages: Record<string, string> = {
-  outstandingTransaction: 'Open the BankID app.',
-  noClient: 'Open the BankID app.',
-  started: 'Searching for BankID. Open the app if nothing happens.',
-  userSign: 'Identify yourself in the BankID app.',
-  userCancel: 'The login was cancelled.',
-  cancelled: 'The login was cancelled.',
-  expiredTransaction: 'The BankID app did not respond. Try again.',
-  startFailed: 'The BankID app did not start. Try again.',
+  outstandingTransaction: 'Starta BankID-appen.',
+  noClient: 'Starta BankID-appen.',
+  started: 'Söker efter BankID. Starta appen om inget händer.',
+  userSign: 'Legitimera dig i BankID-appen.',
+  userCancel: 'Inloggningen avbröts.',
+  cancelled: 'Inloggningen avbröts.',
+  expiredTransaction: 'BankID-appen svarade inte. Försök igen.',
+  startFailed: 'BankID-appen startade inte. Försök igen.',
 }
-const general = 'Something went wrong with BankID. Try again.'
+const general = 'Något gick fel med BankID. Försök igen.'
 // BankID's general rules: an unknown hint or error code gets a general message.
 export const messageFor = (code: string | undefined) =>
   (code && messages[code]) || general
@@ -116,8 +116,18 @@ const isRecord = (v: unknown): v is Record<string, unknown> =>
 
 const str = (v: unknown) => (typeof v === 'string' ? v : '')
 
-export async function auth(endUserIp: string) {
-  const r = await call('auth', { endUserIp })
+export type Web = {
+  referringDomain: string
+  userAgent: string
+  deviceIdentifier: string
+}
+
+// returnRisk makes collect report the order's risk; web and returnUrl are sent for a browser login.
+export async function auth(
+  endUserIp: string,
+  options: { web?: Web; returnUrl?: string } = {},
+) {
+  const r = await call('auth', { endUserIp, returnRisk: true, ...options })
   if (!isRecord(r)) throw new Error(general)
   return {
     orderRef: str(r.orderRef),
@@ -137,6 +147,8 @@ export async function collect(orderRef: string) {
       status: 'complete' as const,
       personalNumber: str(user.personalNumber),
       name: str(user.name),
+      ip: isRecord(data.device) ? str(data.device.ipAddress) : '',
+      risk: str(data.risk),
     }
   }
   const hint = str(r.hintCode)
