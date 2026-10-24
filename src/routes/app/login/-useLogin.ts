@@ -8,6 +8,7 @@ import {
   poll,
   startLogin,
 } from './-bankid'
+import { isMobile } from './-isMobile'
 
 type Phase =
   | { name: 'idle'; message?: string }
@@ -74,7 +75,7 @@ export function useLogin() {
         setNonce(started.nonce)
         // The BankID app returns to /app/login/return, which finishes the login.
         // BankID's autostart guide: the app link on mobile, the bankid scheme on desktop.
-        const mobile = /Android|iPhone|iPad|iPod/.test(navigator.userAgent)
+        const mobile = isMobile(navigator.userAgent, navigator.maxTouchPoints)
         const link = document.createElement('a')
         link.href = `${mobile ? 'https://app.bankid.com/' : 'bankid:///'}?autostarttoken=${started.autoStartToken ?? ''}`
         link.referrerPolicy = 'origin'
