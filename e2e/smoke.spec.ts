@@ -11,6 +11,7 @@ test('/version serves the running version', async ({ request }) => {
   expect(response.ok()).toBe(true)
   expect(await response.json()).toEqual({
     version: process.env.APP_VERSION ?? 'e2e',
+    env: process.env.APP_ENV ?? null,
   })
 })
 
@@ -40,4 +41,13 @@ test('/ is server-rendered and /app is a client-only shell', async ({
 }) => {
   expect(await (await request.get('/')).text()).toContain('<h1>Assistant</h1>')
   expect(await (await request.get('/app')).text()).not.toContain('<h1>App</h1>')
+})
+
+// Locally APP_ENV is unset, so pages are kept out of search engines like on staging.
+test('/ is marked noindex outside production', async ({ request }) => {
+  const response = await request.get('/')
+  expect(response.headers()['x-robots-tag']).toBe('noindex')
+  expect(await response.text()).toContain(
+    '<meta name="robots" content="noindex">',
+  )
 })

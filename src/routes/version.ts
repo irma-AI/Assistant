@@ -4,7 +4,11 @@ import { createFileRoute } from '@tanstack/react-router'
 export const Route = createFileRoute('/version')({
   server: {
     handlers: {
-      GET: () => Response.json({ version: process.env.APP_VERSION ?? 'dev' }),
+      GET: () =>
+        Response.json({
+          version: process.env.APP_VERSION ?? 'dev',
+          env: process.env.APP_ENV ?? null,
+        }),
     },
   },
 })
