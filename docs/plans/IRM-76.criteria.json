@@ -1,0 +1,14 @@
+[
+  {
+    "criterion": "issue-tracker.md tells whoever readies an issue to start the dispatcher, with both ways to start it.",
+    "passes": false
+  },
+  {
+    "criterion": "guardrails 2.20 records the step, the schedule observation and the gap for issues readied outside Claude, marked not checked.",
+    "passes": false
+  },
+  {
+    "criterion": "make check passes.",
+    "passes": false
+  }
+]
