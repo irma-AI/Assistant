@@ -553,6 +553,15 @@ Size limits here count characters or words, and are enforced.
 - WebSockets inside TanStack Start are undocumented and reported broken in production builds, so a later feature that needs one, such as realtime voice, gets its own small Node service.
 - NOTIFY delivers only on commit, in order, with a payload under 8000 bytes, so it carries keys and the client fetches the rows.
 
+### 2.30 Personal data needs a row in the records
+
+**What it is.** `docs/privacy/records.md` is the Art. 30 record of processing, the cookie inventory, the DPIA decision and the supplier register. A change that adds analytics, a third-party script, a cookie or local-storage key, a new category of personal data, a new log of personal data or a new vendor adds its row to the records first, in the same PR. The AI review ([2.11](#211-ai-review-and-task-fit-judge-run-by-ci-on-the-subscription)) checks a PR that adds one against the records, and the file is a protected path ([2.12](#212-ci-as-the-authority)), so a change to it needs `ci-change`.
+
+**Why.**
+
+- The owner's bar is full GDPR compliance before the first real user ([IRM-94](https://linear.app/petters/issue/IRM-94)). Art. 30 requires the record and Art. 6 a legal basis per purpose, and a row written after the fact is a row nobody checked.
+- Nothing in code can see a new processor, so the review is the check. It can be wrong, and the records are a draft until the owner approves them.
+
 ---
 
 ## 3. Skills

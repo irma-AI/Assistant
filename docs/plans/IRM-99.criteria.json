@@ -1,0 +1,5 @@
+[
+  {"criterion": "docs/privacy/records.md covers every row in the issue, with a legal basis and a retention period for each", "passes": true},
+  {"criterion": "The guardrails entry exists, and guard:docs passes", "passes": true},
+  {"criterion": "The DPIA recommendation is written down with its reasoning", "passes": true}
+]
