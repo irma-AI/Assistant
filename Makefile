@@ -77,7 +77,7 @@ image-check:
 # The app on http://localhost:3000.
 dev: migrate
 	pnpm exec kysely seed run
-	pnpm dev
+	PII_HASH_KEY=dev-only-pii-hash-key pnpm dev
 
 # git hooks: pre-commit checks the repository and the staged files only; pre-push runs everything.
 STAGED = git diff --cached --name-only --diff-filter=ACMR

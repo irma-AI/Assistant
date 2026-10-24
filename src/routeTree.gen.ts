@@ -12,6 +12,7 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AppRouteRouteImport } from './routes/app/route'
 import { Route as VersionRouteImport } from './routes/version'
+import { Route as ApiV1LogoutRouteImport } from './routes/api/v1/logout'
 import { Route as ApiV1MeRouteImport } from './routes/api/v1/me'
 
 const IndexRoute = IndexRouteImport.update({
@@ -29,6 +30,11 @@ const VersionRoute = VersionRouteImport.update({
   path: '/version',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiV1LogoutRoute = ApiV1LogoutRouteImport.update({
+  id: '/api/v1/logout',
+  path: '/api/v1/logout',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiV1MeRoute = ApiV1MeRouteImport.update({
   id: '/api/v1/me',
   path: '/api/v1/me',
@@ -39,12 +45,14 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/app': typeof AppRouteRoute
   '/version': typeof VersionRoute
+  '/api/v1/logout': typeof ApiV1LogoutRoute
   '/api/v1/me': typeof ApiV1MeRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/app': typeof AppRouteRoute
   '/version': typeof VersionRoute
+  '/api/v1/logout': typeof ApiV1LogoutRoute
   '/api/v1/me': typeof ApiV1MeRoute
 }
 export interface FileRoutesById {
@@ -52,20 +60,22 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/app': typeof AppRouteRoute
   '/version': typeof VersionRoute
+  '/api/v1/logout': typeof ApiV1LogoutRoute
   '/api/v1/me': typeof ApiV1MeRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/app' | '/version' | '/api/v1/me'
+  fullPaths: '/' | '/app' | '/version' | '/api/v1/logout' | '/api/v1/me'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/app' | '/version' | '/api/v1/me'
-  id: '__root__' | '/' | '/app' | '/version' | '/api/v1/me'
+  to: '/' | '/app' | '/version' | '/api/v1/logout' | '/api/v1/me'
+  id: '__root__' | '/' | '/app' | '/version' | '/api/v1/logout' | '/api/v1/me'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AppRouteRoute: typeof AppRouteRoute
   VersionRoute: typeof VersionRoute
+  ApiV1LogoutRoute: typeof ApiV1LogoutRoute
   ApiV1MeRoute: typeof ApiV1MeRoute
 }
 
@@ -92,6 +102,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof VersionRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/v1/logout': {
+      id: '/api/v1/logout'
+      path: '/api/v1/logout'
+      fullPath: '/api/v1/logout'
+      preLoaderRoute: typeof ApiV1LogoutRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/v1/me': {
       id: '/api/v1/me'
       path: '/api/v1/me'
@@ -106,6 +123,7 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AppRouteRoute: AppRouteRoute,
   VersionRoute: VersionRoute,
+  ApiV1LogoutRoute: ApiV1LogoutRoute,
   ApiV1MeRoute: ApiV1MeRoute,
 }
 export const routeTree = rootRouteImport

@@ -27,7 +27,7 @@ export function sqlFileProvider(dir: string): MigrationProvider {
   }
 }
 
-export async function migrate(db: Kysely<unknown>, dir = 'migrations') {
+export async function migrate<T>(db: Kysely<T>, dir = 'migrations') {
   const migrator = new Migrator({ db, provider: sqlFileProvider(dir) })
   const { error, results } = await migrator.migrateToLatest()
   if (error)

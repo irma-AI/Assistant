@@ -7,3 +7,12 @@ export function createDb(connectionString: string) {
     dialect: new PostgresDialect({ pool: new pg.Pool({ connectionString }) }),
   })
 }
+
+let shared: Kysely<DB> | undefined
+
+// The app's one pool, opened on first use.
+export function getDb() {
+  const url = process.env.DATABASE_URL
+  if (!url) throw new Error('DATABASE_URL is not set')
+  return (shared ??= createDb(url))
+}
