@@ -10,12 +10,18 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as AppRouteRouteImport } from './routes/app/route'
 import { Route as VersionRouteImport } from './routes/version'
 import { Route as ApiV1MeRouteImport } from './routes/api/v1/me'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AppRouteRoute = AppRouteRouteImport.update({
+  id: '/app',
+  path: '/app',
   getParentRoute: () => rootRouteImport,
 } as any)
 const VersionRoute = VersionRouteImport.update({
@@ -31,30 +37,34 @@ const ApiV1MeRoute = ApiV1MeRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/app': typeof AppRouteRoute
   '/version': typeof VersionRoute
   '/api/v1/me': typeof ApiV1MeRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/app': typeof AppRouteRoute
   '/version': typeof VersionRoute
   '/api/v1/me': typeof ApiV1MeRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/app': typeof AppRouteRoute
   '/version': typeof VersionRoute
   '/api/v1/me': typeof ApiV1MeRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/version' | '/api/v1/me'
+  fullPaths: '/' | '/app' | '/version' | '/api/v1/me'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/version' | '/api/v1/me'
-  id: '__root__' | '/' | '/version' | '/api/v1/me'
+  to: '/' | '/app' | '/version' | '/api/v1/me'
+  id: '__root__' | '/' | '/app' | '/version' | '/api/v1/me'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AppRouteRoute: typeof AppRouteRoute
   VersionRoute: typeof VersionRoute
   ApiV1MeRoute: typeof ApiV1MeRoute
 }
@@ -66,6 +76,13 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/app': {
+      id: '/app'
+      path: '/app'
+      fullPath: '/app'
+      preLoaderRoute: typeof AppRouteRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/version': {
@@ -87,6 +104,7 @@ declare module '@tanstack/react-router' {
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AppRouteRoute: AppRouteRoute,
   VersionRoute: VersionRoute,
   ApiV1MeRoute: ApiV1MeRoute,
 }

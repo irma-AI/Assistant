@@ -29,3 +29,15 @@ test('the API answers a cross-origin call from the app origin', async ({
   )
   expect(status).toBe(401)
 })
+
+test('/app renders its placeholder screen in the browser', async ({ page }) => {
+  await page.goto('/app')
+  await expect(page.getByRole('heading', { level: 1 })).toHaveText('App')
+})
+
+test('/ is server-rendered and /app is a client-only shell', async ({
+  request,
+}) => {
+  expect(await (await request.get('/')).text()).toContain('<h1>Assistant</h1>')
+  expect(await (await request.get('/app')).text()).not.toContain('<h1>App</h1>')
+})

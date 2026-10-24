@@ -10,7 +10,15 @@ const config = defineConfig({
   plugins: [
     nitro({ rollupConfig: { external: [/^@sentry\//] } }),
 
-    tanstackStart(),
+    // Only the client-only /app shell is prerendered; / stays server-rendered per request.
+    tanstackStart({
+      pages: [{ path: '/app' }],
+      prerender: {
+        enabled: true,
+        autoStaticPathsDiscovery: false,
+        crawlLinks: false,
+      },
+    }),
     viteReact(),
   ],
 })
