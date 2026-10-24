@@ -1,0 +1,10 @@
+[
+  {
+    "criterion": "`docs/plans/<ID>.research.md` covers trust and secrets, hostnames and TLS limits, database isolation, slot lifecycle, gating, capacity and the rejected alternatives, citing each source with the date it was read.",
+    "passes": true
+  },
+  {
+    "criterion": "It lists what is still unverified and needs a live test.",
+    "passes": true
+  }
+]
