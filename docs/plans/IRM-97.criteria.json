@@ -1,0 +1,14 @@
+[
+  {
+    "criterion": "staging: header and meta tag on home page, tested",
+    "passes": true
+  },
+  {
+    "criterion": "production: neither present, tested",
+    "passes": true
+  },
+  {
+    "criterion": "/version returns env and smoke test passes",
+    "passes": true
+  }
+]
