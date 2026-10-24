@@ -1,0 +1,22 @@
+[
+  {
+    "criterion": "intake.md claims with In Progress as the first write, adds `local` for the local worker, and has the backstop's count check.",
+    "passes": true
+  },
+  {
+    "criterion": "The dispatcher's tests show In Review counting, other states not counting, and `local` issues leaving the cloud slot free.",
+    "passes": true
+  },
+  {
+    "criterion": "routines.md holds the local worker's prompt and requirements; issue-tracker.md names the `local` label.",
+    "passes": true
+  },
+  {
+    "criterion": "guardrails 2.20 describes the two workers, and the docs guard's message asks for a denser rewrite.",
+    "passes": true
+  },
+  {
+    "criterion": "next-step is unchanged, and make check passes.",
+    "passes": true
+  }
+]
