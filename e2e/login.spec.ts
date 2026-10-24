@@ -1,6 +1,9 @@
 import { expect, test } from '@playwright/test'
 import { z } from 'zod'
 
+// These specs need the in-process fake BankID, so they never run against a deployed URL.
+test.skip(!!process.env.PLAYWRIGHT_BASE_URL, 'needs the local fake BankID')
+
 const fakeBankId = 'http://127.0.0.1:3101'
 const sessionCookie = '__Host-session'
 

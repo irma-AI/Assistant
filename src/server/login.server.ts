@@ -15,14 +15,19 @@ import {
 import type { DB } from './db.gen'
 import { getDb } from './db.server'
 import { hashPnr } from './pii.server'
-import { cookieName, cookieValue, createSession } from './session.server'
+import {
+  cookieName,
+  cookieValue,
+  createSession,
+  webSeconds,
+} from './session.server'
 
 const loginCookie = '__Host-login'
 const deviceCookie = '__Host-device'
 const orderSeconds = 30
 const collectSeconds = 2
 const clearLogin = `${loginCookie}=; Path=/; HttpOnly; Secure; SameSite=Strict; Max-Age=0`
-const refused = 'Inloggningen kunde inte godkännas. Försök igen.'
+const refused = 'Något gick fel. Försök igen.' // RFA22
 
 const cookie = (name: string, value: string, maxAge?: number) =>
   `${name}=${value}; Path=/; HttpOnly; Secure; SameSite=Strict${maxAge === undefined ? '' : `; Max-Age=${String(maxAge)}`}`
@@ -167,7 +172,7 @@ async function complete(
   const token = await createSession(db, user.id, 'web')
   await db.deleteFrom('login_attempts').where('id', '=', row.id).execute()
   return respond({ status: 'complete' }, [
-    cookie(cookieName, token),
+    cookie(cookieName, token, webSeconds),
     clearLogin,
   ])
 }

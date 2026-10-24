@@ -9,7 +9,7 @@ import { getDb } from './db.server'
 type Kind = 'web' | 'app' | 'demo'
 
 export const cookieName = '__Host-session'
-const webSeconds = 12 * 60 * 60
+export const webSeconds = 12 * 60 * 60
 const appSeconds = 90 * 24 * 60 * 60
 
 const hash = (token: string) => createHash('sha256').update(token).digest()

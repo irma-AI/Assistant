@@ -12,8 +12,9 @@ const reply = z.discriminatedUnion('status', [
 ])
 export type Poll = z.infer<typeof reply>
 
-export const expiredMessage = 'BankID-ordern har gått ut. Försök igen.'
-export const failedMessage = 'Inloggningen kunde inte genomföras. Försök igen.'
+// RFA22, BankID's text for anything that went wrong.
+export const failedMessage = 'Något gick fel. Försök igen.'
+export const expiredMessage = failedMessage
 
 const post = (path: string, body: object) =>
   fetch(`/api/v1/auth/bankid/${path}`, {

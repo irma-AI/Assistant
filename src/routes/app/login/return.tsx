@@ -22,7 +22,7 @@ function Return() {
       poll(nonce).then(
         (next) => {
           if (next.status === 'pending') {
-            setHint(next.message)
+            if (next.message) setHint(next.message)
             return
           }
           clearInterval(timer)
