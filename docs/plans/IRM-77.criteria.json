@@ -1,0 +1,26 @@
+[
+  {
+    "criterion": "next-step claims by a non-force push to `irm-<n>` and ends on rejection, within 6,000 characters, with every rule it had before still present.",
+    "passes": false
+  },
+  {
+    "criterion": "intake.md has the local worker's label step and the backstop's check.",
+    "passes": false
+  },
+  {
+    "criterion": "The dispatcher's tests show In Review counting, `local` issues not counting, and a `local` issue leaving the cloud slot free.",
+    "passes": false
+  },
+  {
+    "criterion": "routines.md holds the local worker's prompt and requirements; issue-tracker.md names the `local` label.",
+    "passes": false
+  },
+  {
+    "criterion": "guardrails 2.20 describes the two workers, and the docs guard's message asks for a denser rewrite.",
+    "passes": false
+  },
+  {
+    "criterion": "make check passes.",
+    "passes": false
+  }
+]
