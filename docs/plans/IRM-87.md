@@ -16,4 +16,6 @@ Full issue text: https://linear.app/petters/issue/IRM-87 (users with `pnr_hmac` 
 
 ## Next step
 
+CI round 1 failed on e2e and image (the startup plugin needs PII_HASH_KEY in image-check.sh, no DATABASE_URL in e2e); fixed in f5c40d1 and the next commit. Watch the PR.
+
 `make check`, push, open the PR with auto-merge, comment on IRM-99, move IRM-87 to In Review.

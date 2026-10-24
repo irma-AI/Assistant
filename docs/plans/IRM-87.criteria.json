@@ -29,6 +29,6 @@
   },
   {
     "criterion": "make check passes.",
-    "passes": false
+    "passes": true
   }
 ]
