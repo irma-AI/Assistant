@@ -62,9 +62,41 @@ jobs:
           persist-credentials: false
       - run: make image-check VERSION=${{ github.sha }}
 
+  # Compile-only: debug and simulator builds, no signing or upload.
+  android:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: jdx/mise-action@8418fedb1110381a0d3ba51a7a415d7c1b884550 # v5.2.2
+        with:
+          install_args: node pnpm
+      - run: pnpm install --frozen-lockfile
+      - run: scripts/cap-sync.sh
+      - run: echo "JAVA_HOME=$JAVA_HOME_21_X64" >> "$GITHUB_ENV" # Capacitor 8 needs Java 21; the runner image preinstalls it
+      - run: ./gradlew assembleDebug
+        working-directory: android
+
+  ios:
+    runs-on: macos-26 # Xcode 26, which Apple requires for uploads
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: jdx/mise-action@8418fedb1110381a0d3ba51a7a415d7c1b884550 # v5.2.2
+        with:
+          install_args: node pnpm
+      - run: pnpm install --frozen-lockfile
+      - run: scripts/cap-sync.sh
+      - run: xcodebuild -version
+      - run: xcodebuild -project ios/App/App.xcodeproj -scheme App -configuration Debug -sdk iphonesimulator CODE_SIGNING_ALLOWED=NO build
+
   ci:
     name: ci
-    needs: [checks, e2e, image]
+    needs: [checks, e2e, image, android, ios]
     if: always()
     runs-on: ubuntu-24.04
     timeout-minutes: 2
