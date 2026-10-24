@@ -19,7 +19,7 @@ jobs:
       pull-requests: read
     env:
       LINEAR_TEAM: IRM
-      MAX_PARALLEL: 1
+      MAX_PARALLEL: 3
     steps:
       - name: Check out the default branch
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
@@ -39,20 +39,30 @@ jobs:
           decision=$(jq -n --argjson linear "$linear" --argjson prs "$prs" --argjson max "$MAX_PARALLEL" '{linear:$linear, prs:$prs, max:$max}' \
             | jq -r -f .github/scripts/intake-pick.jq)
           echo "$decision"
-          case $decision in "fire "*) echo "id=${decision#fire }" >> "$GITHUB_OUTPUT";; esac
+          case $decision in "fire "*) echo "ids=${decision#fire }" >> "$GITHUB_OUTPUT";; esac
       - name: Fire the Intake routine
-        if: steps.pick.outputs.id != ''
+        if: steps.pick.outputs.ids != ''
         env:
-          ID: ${{ steps.pick.outputs.id }}
+          IDS: ${{ steps.pick.outputs.ids }}
           INTAKE_FIRE_URL: ${{ vars.INTAKE_FIRE_URL }}
           INTAKE_FIRE_TOKEN: ${{ secrets.INTAKE_FIRE_TOKEN }}
+          LINEAR_API_TOKEN: ${{ secrets.LINEAR_API_TOKEN }}
         run: |
-          [[ $ID =~ ^IRM-[0-9]+$ ]] || { echo "::error::refusing to fire '$ID', which is not an IRM issue ID"; exit 1; }
           [ -n "$INTAKE_FIRE_URL" ] && [ -n "$INTAKE_FIRE_TOKEN" ] || { echo "::error::INTAKE_FIRE_URL or INTAKE_FIRE_TOKEN is missing from the checks environment"; exit 1; }
-          # One call, never retried: the endpoint has no idempotency key, so a retry could start a second session.
-          # The answer holds the session's URL and this repository's logs are public, so only the status is kept.
-          status=$(jq -n --arg t "$ID" '{text:$t}' | curl -sS -o /dev/null -w '%{http_code}' -X POST "$INTAKE_FIRE_URL" \
-            -H "Authorization: Bearer $INTAKE_FIRE_TOKEN" -H 'anthropic-version: 2026-10-21' \
-            -H 'anthropic-beta: experimental-cc-routine-2026-04-01' -H 'Content-Type: application/json' -d @-)
-          echo "fired $ID: HTTP $status"
-          [ "$status" = 200 ] || { echo "::error::the fire call answered HTTP $status"; exit 1; }
+          gql() { curl -sSf https://api.linear.app/graphql -H "Authorization: $LINEAR_API_TOKEN" -H 'Content-Type: application/json' -d @-; }
+          # Claimed right after each fire, so a run seconds later can't fire it again before its session claims it.
+          state=$(jq -n --arg k "$LINEAR_TEAM" '{query:"query($k:String!){workflowStates(filter:{team:{key:{eq:$k}},name:{eq:\"In Progress\"}}){nodes{id}}}",variables:{k:$k}}' | gql | jq -r '.data.workflowStates.nodes[0].id // empty') || state=
+          failed=0
+          for id in $IDS; do
+            [[ $id =~ ^IRM-[0-9]+$ ]] || { echo "::error::refusing to fire '$id', which is not an IRM issue ID"; failed=1; continue; }
+            # One call, never retried: the endpoint has no idempotency key, so a retry could start a second session.
+            # The answer holds the session's URL and this repository's logs are public, so only the status is kept.
+            status=$(jq -n --arg t "$id" '{text:$t}' | curl -sS -o /dev/null -w '%{http_code}' -X POST "$INTAKE_FIRE_URL" \
+              -H "Authorization: Bearer $INTAKE_FIRE_TOKEN" -H 'anthropic-version: 2026-10-21' \
+              -H 'anthropic-beta: experimental-cc-routine-2026-04-01' -H 'Content-Type: application/json' -d @-)
+            echo "fired $id: HTTP $status"
+            [ "$status" = 200 ] || { echo "::error::the fire call for $id answered HTTP $status"; failed=1; continue; }
+            [ -n "$state" ] && jq -n --arg id "$id" --arg s "$state" '{query:"mutation($id:String!,$s:String!){issueUpdate(id:$id,input:{stateId:$s}){success}}",variables:{id:$id,s:$s}}' | gql | jq -e '.data.issueUpdate.success' >/dev/null \
+              || echo "::warning::could not move $id to In Progress; its session claims it itself"
+          done
+          exit $failed
