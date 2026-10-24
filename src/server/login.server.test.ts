@@ -8,6 +8,7 @@ import {
   fakeHighRiskIp,
   fakeOtherIp,
 } from './auth/bankid-fake.server'
+import { cancel } from './auth/bankid.server'
 import { createDb } from './db.server'
 import {
   cancelLogin,
@@ -162,6 +163,20 @@ test('after 30 seconds no QR data is offered, but a login being signed still com
   expect(first.body.qr).toBeUndefined()
   expect((await poll(login, id)).body).toEqual({ status: 'complete' })
   expect(await attempts()).toBe(0)
+})
+
+test('a failing collect call keeps the attempt and answers pending', async () => {
+  const { login, id } = await begin('203.0.113.7')
+  const row = await db
+    .selectFrom('login_attempts')
+    .select('order_ref')
+    .where('id', '=', id)
+    .executeTakeFirstOrThrow()
+  await cancel(row.order_ref) // collect now errors, as it would on a network failure
+  const reply = await poll(login, id)
+  expect(reply.body).toMatchObject({ status: 'pending' })
+  expect(await attempts()).toBe(1)
+  await cancelLogin(post({ cookie: login }), db)
 })
 
 test('cancel deletes the attempt; the sweep deletes stale ones', async () => {

@@ -35,20 +35,47 @@ export function checkBankidConfig() {
 export const qrData = (token: string, secret: string, seconds: number) =>
   `bankid.${token}.${String(seconds)}.${createHmac('sha256', secret).update(String(seconds)).digest('hex')}`
 
-const messages: Record<string, string> = {
+// BankID's recommended user messages (RFA numbers), word for word; see docs/plans/IRM-110.md.
+const pending: Record<string, string> = {
   outstandingTransaction: 'Starta BankID-appen.',
   noClient: 'Starta BankID-appen.',
-  started: 'Försöker starta BankID-appen.',
-  userSign: 'Skriv in din säkerhetskod i BankID-appen och välj Legitimera.',
-  userCancel: 'Inloggningen avbröts.',
-  cancelled: 'Inloggningen avbröts.',
-  expiredTransaction: 'BankID-appen svarade inte. Försök igen.',
-  startFailed: 'BankID-appen startade inte. Försök igen.',
+  started:
+    'Söker efter BankID. Säkerställ att du har ett giltigt BankID på den här enheten.',
+  userSign:
+    'Skriv in din säkerhetskod i BankID-appen och välj Identifiera eller Skriv under.',
 }
-const general = 'Något gick fel med BankID. Försök igen.'
-// BankID's general rules: an unknown hint or error code gets a general message.
+const failed: Record<string, string> = {
+  expiredTransaction:
+    'BankID-appen svarar inte. Kontrollera att den är startad och att du har internetanslutning. Försök sedan igen.',
+  certificateErr:
+    'Ditt BankID är för gammalt eller spärrat. Använd ett annat BankID eller skaffa ett nytt hos din bank.',
+  userCancel: 'Åtgärden avbröts.',
+  cancelled: 'Åtgärden avbröts. Försök igen.',
+  alreadyInProgress:
+    'En identifiering eller underskrift pågår redan för ditt personnummer. Försök igen.',
+}
+const inProgress = 'En identifiering eller underskrift pågår.' // RFA21, also for unknown pending codes
+const wentWrong = 'Något gick fel. Försök igen.' // RFA22, also for unknown failed codes
+
+// A pending order's message; a same-device login that is still outstanding is starting the app (RFA13).
+export const pendingMessage = (
+  hint: string | undefined,
+  sameDevice: boolean,
+) =>
+  hint === 'outstandingTransaction' && sameDevice
+    ? 'Försöker starta BankID-appen.'
+    : ((hint && pending[hint]) ?? inProgress)
+
+export const failedMessage = (hint: string | undefined, sameDevice: boolean) =>
+  hint === 'startFailed'
+    ? sameDevice
+      ? 'Du verkar inte ha BankID-appen/programmet. Installera den och skaffa ett BankID hos din bank.'
+      : 'Misslyckades att läsa av QR-koden. Starta BankID-appen och läs av QR-koden.'
+    : ((hint && failed[hint]) ?? wentWrong)
+
+// An error from a BankID call that gave no usable reply (RFA22).
 export const messageFor = (code: string | undefined) =>
-  (code && messages[code]) || general
+  (code && failed[code]) || wentWrong
 
 let fakeUrl: Promise<string> | undefined
 function baseFor(mode: 'fake' | 'test' | 'production') {
@@ -93,7 +120,7 @@ async function call(path: string, body: object): Promise<unknown> {
           try {
             json = JSON.parse(Buffer.concat(chunks).toString() || '{}')
           } catch {
-            reject(new Error(general))
+            reject(new Error(wentWrong))
             return
           }
           if (res.statusCode === 200) {
@@ -105,7 +132,7 @@ async function call(path: string, body: object): Promise<unknown> {
         })
       },
     )
-    req.on('timeout', () => req.destroy(new Error(general)))
+    req.on('timeout', () => req.destroy(new Error(wentWrong)))
     req.on('error', reject)
     req.end(JSON.stringify(body))
   })
@@ -128,7 +155,7 @@ export async function auth(
   options: { web?: Web; returnUrl?: string } = {},
 ) {
   const r = await call('auth', { endUserIp, returnRisk: true, ...options })
-  if (!isRecord(r)) throw new Error(general)
+  if (!isRecord(r)) throw new Error(wentWrong)
   return {
     orderRef: str(r.orderRef),
     autoStartToken: str(r.autoStartToken),
@@ -137,9 +164,9 @@ export async function auth(
   }
 }
 
-export async function collect(orderRef: string) {
+export async function collect(orderRef: string, sameDevice: boolean) {
   const r = await call('collect', { orderRef })
-  if (!isRecord(r)) throw new Error(general)
+  if (!isRecord(r)) throw new Error(wentWrong)
   if (r.status === 'complete') {
     const data = isRecord(r.completionData) ? r.completionData : {}
     const user = isRecord(data.user) ? data.user : {}
@@ -153,7 +180,11 @@ export async function collect(orderRef: string) {
   }
   const hint = str(r.hintCode)
   const status = r.status === 'pending' ? 'pending' : 'failed'
-  return { status, hint, message: messageFor(hint) } as const
+  const message =
+    status === 'pending'
+      ? pendingMessage(hint, sameDevice)
+      : failedMessage(hint, sameDevice)
+  return { status, hint, message } as const
 }
 
 export async function cancel(orderRef: string) {

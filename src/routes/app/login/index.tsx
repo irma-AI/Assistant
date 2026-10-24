@@ -8,8 +8,16 @@ const qrImage = (qr: string) =>
   `data:image/svg+xml;utf8,${encodeURIComponent(renderSVG(qr))}`
 
 function Login() {
-  const { phase, big, testMode, toggleBig, sameDevice, otherDevice, cancel } =
-    useLogin()
+  const {
+    phase,
+    big,
+    testMode,
+    sameDeviceWaiting,
+    toggleBig,
+    sameDevice,
+    otherDevice,
+    cancel,
+  } = useLogin()
 
   return (
     <main>
@@ -33,7 +41,9 @@ function Login() {
         </>
       ) : (
         <>
-          <p>Öppna BankID-appen på din andra enhet och skanna QR-koden.</p>
+          {!sameDeviceWaiting && (
+            <p>Öppna BankID-appen på din andra enhet och skanna QR-koden.</p>
+          )}
           {phase.message && <p role="status">{phase.message}</p>}
           {phase.qr && (
             <button

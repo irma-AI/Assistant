@@ -9,6 +9,7 @@ import {
   cancel,
   collect,
   messageFor,
+  pendingMessage,
   qrData,
 } from './auth/bankid.server'
 import type { DB } from './db.gen'
@@ -99,7 +100,8 @@ export async function start(request: Request, db: Kysely<DB> = getDb()) {
     })
     .returning('id')
     .executeTakeFirstOrThrow()
-  return respond(nonce ? { autoStartToken: order.autoStartToken } : {}, [
+  // A same-device tab polls with the nonce too, as the return tab does.
+  return respond(nonce ? { autoStartToken: order.autoStartToken, nonce } : {}, [
     cookie(loginCookie, row.id, 3600),
     cookie(deviceCookie, device, 365 * 24 * 3600),
   ])
@@ -183,10 +185,14 @@ export async function pollLogin(request: Request, db: Kysely<DB> = getDb()) {
   }
   if (!(await claimCollect(db, row.id))) return pending('')
 
-  const result = await collect(row.order_ref).catch(() => undefined)
-  if (result?.status === 'pending') return pending(result.message)
-  if (result?.status !== 'complete')
-    return failed(db, row.id, result ? result.message : messageFor(undefined))
+  // A network error or timeout says nothing about the order, so the attempt stays and the client polls again.
+  const result = await collect(row.order_ref, row.nonce !== null).catch(
+    () => undefined,
+  )
+  if (!result)
+    return pending(pendingMessage('outstandingTransaction', row.nonce !== null))
+  if (result.status === 'pending') return pending(result.message)
+  if (result.status !== 'complete') return failed(db, row.id, result.message)
   const body = statusBody.safeParse(await request.json().catch(() => ({})))
   if (!body.success) return failed(db, row.id, refused)
   return complete(db, row, result, body.data.nonce)

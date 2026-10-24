@@ -26,7 +26,10 @@ export async function startLogin(sameDevice: boolean) {
   const response = await post('start', { sameDevice })
   if (!response.ok) throw new Error(failedMessage)
   return z
-    .object({ autoStartToken: z.string().optional() })
+    .object({
+      autoStartToken: z.string().optional(),
+      nonce: z.string().optional(),
+    })
     .parse(await response.json())
 }
 
