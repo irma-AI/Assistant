@@ -15,6 +15,8 @@ FROM base AS prod-deps
 RUN pnpm install --prod --frozen-lockfile
 
 FROM node:24.22.1-alpine@sha256:06d7adf3e0ef61a13f1d28682726366f97a15aa1888c934d3ecec86c33918b53
+# The server runs on node alone; the npm bundled in the base image carries its own copies of brace-expansion and undici, which the image scan flags.
+RUN rm -rf /usr/local/lib/node_modules/npm /usr/local/bin/npm /usr/local/bin/npx
 WORKDIR /app
 COPY --from=prod-deps /app/node_modules ./node_modules
 COPY --from=build /app/.output ./.output
