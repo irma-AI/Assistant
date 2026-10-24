@@ -75,7 +75,8 @@ image-check:
 	.github/scripts/image-check.sh $(VERSION)
 
 # The app on http://localhost:3000.
-dev:
+dev: migrate
+	pnpm exec kysely seed run
 	pnpm dev
 
 # git hooks: pre-commit checks the repository and the staged files only; pre-push runs everything.
