@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">Redo (dev)</string>
+    <string name="title_activity_main">Redo (dev)</string>
+    <string name="package_name">se.example.redo</string>
+    <string name="custom_url_scheme">se.example.redo</string>
+</resources>
