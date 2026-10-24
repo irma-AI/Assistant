@@ -1,0 +1,34 @@
+[
+  {
+    "criterion": "A valid cookie or bearer token returns the user, and GET /api/v1/me returns 200 with it. An expired, revoked or unknown one returns 401.",
+    "passes": true
+  },
+  {
+    "criterion": "A web session older than 12 hours returns 401; an app session used within 90 days stays valid and its expiry moves forward.",
+    "passes": true
+  },
+  {
+    "criterion": "After logout, the same token returns 401.",
+    "passes": true
+  },
+  {
+    "criterion": "No column in users holds the personal identity number or anything that decrypts to it, and no API response or log line contains it.",
+    "passes": true
+  },
+  {
+    "criterion": "Each case above is a Vitest test against the real database.",
+    "passes": true
+  },
+  {
+    "criterion": "guards/run.sh --self-test passes with IRM-53's new fixtures, and this PR's own migration passes the tightened guard.",
+    "passes": true
+  },
+  {
+    "criterion": "Ended sessions are deleted 30 days after they end, by a job that runs on startup and daily, covered by a test.",
+    "passes": true
+  },
+  {
+    "criterion": "make check passes.",
+    "passes": true
+  }
+]

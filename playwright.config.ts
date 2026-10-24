@@ -59,7 +59,12 @@ export default defineConfig({
         command: 'node .output/server/index.mjs',
         url: 'https://127.0.0.1:3100/version',
         ignoreHTTPSErrors: true,
-        env: { PORT: '3100', APP_VERSION: 'e2e', ...selfSignedCert() },
+        env: {
+          PORT: '3100',
+          APP_VERSION: 'e2e',
+          PII_HASH_KEY: 'e2e-only-pii-hash-key',
+          ...selfSignedCert(),
+        },
         reuseExistingServer: false,
       },
 })

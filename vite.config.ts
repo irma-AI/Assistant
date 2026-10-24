@@ -8,7 +8,10 @@ import { nitro } from 'nitro/vite'
 const config = defineConfig({
   resolve: { tsconfigPaths: true },
   plugins: [
-    nitro({ rollupConfig: { external: [/^@sentry\//] } }),
+    nitro({
+      rollupConfig: { external: [/^@sentry\//] },
+      plugins: ['./src/server/startup.server.ts'],
+    }),
 
     // Only the client-only /app shell is prerendered; / stays server-rendered per request.
     tanstackStart({

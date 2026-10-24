@@ -5,6 +5,8 @@
   ],
   "fail": [
     {"files": ["migrations/0002_status.sql", "src/server/status.server.ts"]},
+    {"files": ["migrations/0002_status.sql", "e2e/other.test.ts"]},
+    {"files": ["migrations/0002_status.sql", "src/routes/x.test.tsx"]},
     {"files": []}
   ]
 }

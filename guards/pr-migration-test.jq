@@ -2,5 +2,5 @@
 (.files // []) as $f
 | ([$f[] | select(test("^migrations/.*\\.sql$"))]) as $m
 | { scanned: ($f | length),
-    violations: (if ($m | length) > 0 and ([$f[] | select(test("\\.test\\.tsx?$"))] | length) == 0
-                 then ["pr-migration-test: \($m | join(", ")) changed with no test. Fix: add or change a test that tries the write the migration forbids or allows, against the real database."] else [] end) }
+    violations: (if ($m | length) > 0 and ([$f[] | select(test("^src/server/.*\\.test\\.ts$"))] | length) == 0
+                 then ["pr-migration-test: \($m | join(", ")) changed with no test. Fix: add or change a test under src/server/ (a file matching src/server/**/*.test.ts, the only place Vitest runs against the real database) that tries the write the migration forbids or allows, against the real database."] else [] end) }
