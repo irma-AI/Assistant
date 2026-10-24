@@ -1,0 +1,8 @@
+[
+  {"criterion": "npx cap sync succeeds on a clean checkout after pnpm build.", "passes": true},
+  {"criterion": "The root index.html in the synced native web folder is the client-only /app shell, not landing content.", "passes": true},
+  {"criterion": "src/platform tests cover both the native and the web branch of the base URL.", "passes": true},
+  {"criterion": "Only src/platform/ imports @capacitor/*, enforced by the layers rule.", "passes": true},
+  {"criterion": "ios/ declares iOS 16.0 as its deployment target, and android/ declares minSdkVersion 28. Both use the placeholder app ID.", "passes": true},
+  {"criterion": "src/platform reads VITE_API_ORIGIN only on native. A test shows the web build uses relative URLs.", "passes": true}
+]
