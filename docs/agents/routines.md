@@ -16,3 +16,13 @@ Every routine:
 - has only the Linear connector on, connected to the workspace that holds team IRM;
 - has "Auto-fix pull requests" on, so the run watches the CI and review comments of the PR it opens;
 - reads the named file by path, so it follows the reviewed copy whether or not the skill loader picks the skill up.
+
+## Local worker
+
+One local Claude Code session can work the same queue beside the cloud. Start it in a checkout used for nothing else, with PostgreSQL running and `DATABASE_URL` set, `gh` signed in, auto mode on and the machine kept awake, and give it:
+
+```text
+/loop 10m You are the local Intake worker. Read docs/agents/intake.md and follow it as a plain set of instructions. There is no routine-fire-payload: take the next issue yourself.
+```
+
+A loop only fires while the session is idle, so it builds one issue at a time. It expires 7 days after it starts, so start it again within a week.

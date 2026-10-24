@@ -23,10 +23,19 @@ Acceptance criteria:
 
 ## Progress
 
-- Plan written.
+- `next-step` 1.2 and 1.3: the branch is exactly `irm-12`; a resumed issue gets a claim line in **Progress**, a new one its plan; step 1.3 pushes without force before moving the issue to In Progress, and a rejected push ends the session. Tightened four sentences (the opening, the path line, step 1.1's text rule, the UI screenshots, the watch and the ask's last line) without dropping a fact: 5,963 of 6,000 characters.
+- `docs/agents/intake.md`: the two workers, the backstop's count check, and the local worker's `local` label after the claim push.
+- Dispatcher: `inFlight` counts In Progress and In Review without `local`; three new cases in `intake-pick.test.sh` (one in flight, a local issue leaves the slot free, a cloud issue beside a local one). The new query, run live against IRM, answered `wait: IRM-77 in flight`.
+- `docs/agents/routines.md`: the Local worker section with its `/loop` prompt and needs; `issue-tracker.md`: the `local` label; guardrails 2.20: the two workers, the claim and the count, and the first fire replacing the stale not-checked line; `guards/docs.sh`: the over-budget fix says rewrite denser.
+- The `local` label exists in IRM.
+- `guards/docs.sh` first failed on a backticked `/loop`, read as a path; it is plain text now. `guards/docs.sh`, zizmor and `make check` pass.
 
 ## Decisions
 
+- No stall rule (owner): a dead worker's issue holds the cloud slot until the owner moves it.
+- The claim is a plain push of a new commit, not a branch-create, so it also serialises two workers resuming the same issue from Needs input.
+- The local worker labels its issue only after its push wins, so a lost race can't mislabel the cloud's issue.
+
 ## Next step
 
-Rewrite next-step steps 1.2 and 1.3 with the claim.
+Open the PR.
