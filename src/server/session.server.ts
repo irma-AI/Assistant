@@ -47,10 +47,10 @@ function tokenOf(request: Request) {
 }
 
 // Returns the session's user and, for an app session, moves its expiry forward in the same statement.
-async function authenticate(db: Kysely<DB>, request: Request) {
+async function authenticate(db: Kysely<DB> | undefined, request: Request) {
   const token = tokenOf(request)
   if (!token) return undefined
-  const row = await db
+  const row = await (db ?? getDb())
     .updateTable('sessions')
     .set({
       last_used_at: sql<Date>`now()`,
@@ -69,7 +69,8 @@ const unauthorized = () => {
   return Response.json(body, { status: 401 })
 }
 
-export async function requireSession(request: Request, db = getDb()) {
+// db is only opened for a request that carries a token.
+export async function requireSession(request: Request, db?: Kysely<DB>) {
   const id = await authenticate(db, request)
   if (!id) return unauthorized()
   const body: z.infer<typeof me> = { id }
@@ -77,10 +78,10 @@ export async function requireSession(request: Request, db = getDb()) {
 }
 
 // Revokes the session behind the request and clears the cookie. Logging out twice is not an error.
-export async function logout(request: Request, db = getDb()) {
+export async function logout(request: Request, db?: Kysely<DB>) {
   const token = tokenOf(request)
   if (token)
-    await db
+    await (db ?? getDb())
       .updateTable('sessions')
       .set({ revoked_at: sql<Date>`now()` })
       .where('token_hash', '=', hash(token))

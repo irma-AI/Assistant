@@ -9,13 +9,16 @@ export default definePlugin(() => {
   if (process.env.TSS_PRERENDERING) return
   if (process.env.NODE_ENV === 'production' && !process.env.PII_HASH_KEY)
     throw new Error('PII_HASH_KEY is not set')
-  const sweep = () =>
-    deleteEndedSessions(getDb()).catch((e: unknown) => {
+  const sweep = async () => {
+    try {
+      await deleteEndedSessions(getDb())
+    } catch (e) {
       console.error(
         'session cleanup failed',
         e instanceof Error ? e.message : e,
       )
-    })
+    }
+  }
   void sweep()
   setInterval(() => void sweep(), day).unref()
 })
