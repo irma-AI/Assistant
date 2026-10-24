@@ -15,10 +15,15 @@ Acceptance criteria:
 
 ## Progress
 
-- Plan written.
+- `docs/agents/issue-tracker.md`: a **Ready an issue** convention (move to Ready, then `gh workflow run intake-dispatch.yml` or `actions_run_trigger`); the publish section points at it.
+- `docs/guardrails.md` 2.20: the step, the schedule's 2 runs in about 8.5 hours, and the gap for issues readied in Linear's app, not checked.
+- `guards/docs.sh` and `make check` pass.
 
 ## Decisions
 
+- The instruction lives in issue-tracker.md, the one file every session that touches Linear reads, rather than in a skill.
+- The schedule stays: it costs nothing and catches what it does run.
+
 ## Next step
 
-Edit issue-tracker.md.
+Open the PR.
