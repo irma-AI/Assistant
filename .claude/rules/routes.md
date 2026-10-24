@@ -18,7 +18,7 @@ Each file in `src/routes/` is one route, and the production build writes `src/ro
 | -components/ or -name.tsx | Ignored: helpers next to routes |
 
 - In the shell, put any path with `$` in single quotes, such as `'src/routes/posts/$id.tsx'`. Unquoted, the shell expands `$id` to nothing and the command acts on a file named .tsx.
-- A route's `loader` calls a server function from a `*.functions.ts` file; route files never import `*.server.ts`.
+- `/app/**` loaders call the typed client in `src/api/**`; only files under `src/routes/api/**` import `*.server.ts`; an SSR loader never fetches its own API.
 - Keep route options in TanStack's order (`params`, `validateSearch`, `loaderDeps`, `beforeLoad`, `loader`, then the rest), which its type inference depends on; the router lint rule checks it.
 
 For more, follow the `tanstack-router-core-path-params` and `tanstack-router-core-data-loading` skills.

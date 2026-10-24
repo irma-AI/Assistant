@@ -24,7 +24,7 @@ This learns from the scaffolding around that code: instructions for the agents (
 **The stack.** A web app with a realtime UI (autosave and live updates), in TypeScript end to end.
 
 - TypeScript in strict mode on Node LTS, with pnpm; mise pins both ([2.12](#212-ci-as-the-authority)).
-- [TanStack Start](https://tanstack.com/start) (React) for pages and server code, with server-side rendering and typed server functions, built into a Node server by Nitro.
+- [TanStack Start](https://tanstack.com/start) (React) for pages and server code, with server-side rendering and a versioned REST API at `/api/v1`, built into a Node server by Nitro.
 - [TanStack DB](https://tanstack.com/db) in the browser, with live updates over server-sent events ([2.29](#229-one-write-path-with-live-updates)).
 - PostgreSQL, with Kysely for typed queries, plain `.sql` migrations and types generated from the schema ([2.7](#27-invariants-in-the-database-tested-against-the-real-database), [2.9](#29-generated-artifacts)).
 - Vitest and Playwright for tests ([2.8](#28-declared-test-seams-swept)), and the AI model vendors' official TypeScript SDKs.
@@ -138,7 +138,8 @@ Size limits here count characters or words, and are enforced.
 **Stack guards.** Three guards target the mistakes agents make most with this stack:
 
 - **Wrong framework.** It fails on `src/pages/`, `app/layout.tsx`, `"use server"`, `getServerSideProps`, imports from `next/`, `react-router-dom` or the non-existent `@tanstack/start`, and `createServerFn` imported from `@tanstack/react-router`. Its fixtures come from TanStack's own list of agent failure modes.
-- **Server-function login.** Every `createServerFn` chains the login middleware or sits on an explicit public list ([2.8](#28-declared-test-seams-swept)). *Not built yet.*
+- **No server functions.** It fails any `createServerFn` in `src/`, with a fix message pointing to `/api/v1`; the pinned TanStack skills still teach server functions, and this guard redirects agents without editing the upstream copies.
+- **API login.** Every `/api/v1` handler requires a session or sits on an explicit public list ([2.8](#28-declared-test-seams-swept)). *Not built yet.*
 - **Secrets in the browser.** It fails on a `process.env` read at module scope and on a secret with a `VITE_` prefix, which Vite ships to the browser ([2.14](#214-permissions-and-network-replace-stop-and-ask)).
 
 **Why.**
@@ -215,9 +216,9 @@ Size limits here count characters or words, and are enforced.
 
 **What it is.** A test seam is where tests attach to the system and observe real behaviour.
 
-- There are three: server functions tested with Vitest against a real PostgreSQL, pure functions tested on stored sample records, and the browser tested through Playwright. `CLAUDE.md` states them.
+- There are three: API routes and server code tested with Vitest against a real PostgreSQL, pure functions tested on stored sample records, and the browser tested through Playwright. `CLAUDE.md` states them.
 - Tests don't mock the project's own modules, and small local servers that behave like external services, such as an AI model's API, may stand in for them.
-- Sweep tests check every member of a set, so a new member is tested automatically: every server function requires login or sits on an explicit public list ([2.3](#23-guard-framework)), and every value of a closed set is handled. Parity tests read both copies of any fact stored in two places and fail if they differ. *Not built yet.*
+- Sweep tests check every member of a set, so a new member is tested automatically: every `/api/v1` handler requires a session or sits on an explicit public list ([2.3](#23-guard-framework)), and every value of a closed set is handled. Parity tests read both copies of any fact stored in two places and fail if they differ. *Not built yet.*
 - A Playwright test with two browser contexts shows an edit in one appear in the other without a reload, and a write the database refuses roll back visibly ([2.29](#229-one-write-path-with-live-updates)). *Not built yet.*
 - Fake people come from libraries, not code of our own: [`@faker-js/faker`](https://fakerjs.dev) makes the values, with `faker.internet.exampleEmail()` for addresses at the domains RFC 2606 reserves, Swedish and other locales, phone numbers from a range the national regulator reserves for fiction (`faker.helpers.fromRegExp`), and a fixed seed so every run makes the same people. [kysely-ctl](https://github.com/kysely-org/kysely-ctl)'s seed files in `seeds/` insert them through Kysely, for `make dev`, the tests and the data in screenshots, so real personal data never goes into a fixture or a public PR. *Not set up yet:* the app stores no personal data so far.
 - `guards/synthetic-data.sh` holds that to the first table of people. It fails `make check` when a migration stores people while no file in `seeds/` imports `@faker-js/faker` and uses `exampleEmail`. It reads each migration as SQL, across line breaks, quotes, comments and `DO $$ ... $$` bodies, and counts as people any `name` or `mail` column, the usual words for emails, phones, addresses, personal numbers and birth dates in English, Swedish, German and Dutch, and tables of candidates, users, contacts, respondents and the like. A false hit only means setting up the seeds sooner; a people table that names nothing on the list, or a schema made outside `migrations/`, gets past it.
@@ -227,7 +228,7 @@ Size limits here count characters or words, and are enforced.
 
 - Tests were among the old repository's strongest parts: 1.7 times the size of the product code, a test with almost every fix, and sampled tests asserting real behaviour.
 - Its one production outage came from code no seam covered. Three untested PRs changed one browser page's JavaScript within 33 minutes, and the second broke that page on every iPhone. The maintainer noticed by testing on a phone, which nobody does here.
-- Login is swept on server functions, where the data is. TanStack's own guidance says a route's `beforeLoad` "is UX, not the data boundary".
+- Login is swept on `/api/v1` handlers, where the data is. TanStack's own guidance says a route's `beforeLoad` "is UX, not the data boundary".
 
 **Tools.** [Vitest](https://vitest.dev/) for server and pure functions, and [Playwright](https://playwright.dev/) for the browser seam and for before and after screenshots in the PR, run on WebKit with iPhone device profiles. WebKit on Linux is close to, but not the same as, iOS Safari.
 
@@ -247,12 +248,15 @@ Size limits here count characters or words, and are enforced.
 
 **What it is.** A dependency-cruiser config says which layers may import from which, and a guard in `policy` enforces it.
 
-- Server-only code lives in `*.server.ts` files, such as `db.server.ts`, and only `src/server/**` may import them.
-- Routes and components reach the server only through `*.functions.ts` files, which export `createServerFn` wrappers.
+- Server-only code lives in `*.server.ts` files, such as `db.server.ts`, and only `src/server/` and `src/routes/api/` may import them.
+- Every UI (landing page, `/app`, `src/features/`, `src/components/`, `src/platform/`) reaches the server only through `/api/v1`, whose handlers sit in `src/routes/api/v1/` and call `src/server/`. Server functions are banned.
+- `src/server/` never imports UI code, `src/api/` (the contract and typed client) imports no other app code, and only `src/platform/` imports `@capacitor/*`.
 - TanStack's import protection fails the build when a `*.server.*` file reaches the browser bundle, so the boundary is checked twice before the AI review sees it.
 
 **Why.**
 
+- The product is app-first: Capacitor apps and a PWA share one React SPA and one versioned API. Start's docs call server routes "meant for HTTP endpoints that need to be called from outside your TanStack Start application", a Capacitor web view's calls are all cross-origin, and installed apps keep old bundles for months, while a server function's ID is a hash of its file and name. One path means one place for auth and CSRF.
+- Checked on 2026-10-24: an API route importing `db.server.ts` built clean with no server code in the browser output, and the same import in a route `component` failed with "[import-protection] Import denied in client environment".
 - The old core service's layers held with no violations for the whole history.
 - Its web app was a single layer. Its main view file grew to 1,009 lines and became the de facto service layer, with other modules importing business logic from it.
 - TanStack Start runs code on both server and browser by default. dependency-cruiser reads imports before TanStack's compiler strips server code from the browser bundle, so the file convention is what makes the boundary checkable.
@@ -537,14 +541,14 @@ Size limits here count characters or words, and are enforced.
 
 **What it is.** The UI has no save buttons and no reloads: edits save as the user types and changes made elsewhere appear by themselves, while PostgreSQL stays the only judge of what is stored.
 
-- Every write is a server function running Kysely in a transaction, so the constraints and triggers of [2.7](#27-invariants-in-the-database-tested-against-the-real-database) decide. It returns the transaction ID (`pg_current_xact_id()`).
-- In the browser, [TanStack DB](https://tanstack.com/db) collections apply a write at once and call that server function, debounced for autosave. A write the database refuses rolls back in the UI with an error.
-- A trigger sends `pg_notify` with the tenant, table and row of each change. Each Node instance holds one LISTEN connection and streams the events as server-sent events from a streaming server function, with a 25-second keep-alive; Dokploy's Traefik doesn't cut idle streams, and the keep-alive is for other proxies and for clients to notice a dead connection. The client refetches the affected collection, and everything after a reconnect.
+- Every write is an `/api/v1` endpoint running Kysely in a transaction, so the constraints and triggers of [2.7](#27-invariants-in-the-database-tested-against-the-real-database) decide. It returns the transaction ID (`pg_current_xact_id()`).
+- In the browser, [TanStack DB](https://tanstack.com/db) collections apply a write at once and call that endpoint through `src/api/`, debounced for autosave. A write the database refuses rolls back in the UI with an error.
+- A trigger sends `pg_notify` with the tenant, table and row of each change. Each Node instance holds one LISTEN connection and streams the events as server-sent events from a server route, with a 25-second keep-alive; Dokploy's Traefik doesn't cut idle streams, and the keep-alive is for other proxies and for clients to notice a dead connection. The client refetches the affected collection, and everything after a reconnect.
 - The two-context Playwright test in [2.8](#28-declared-test-seams-swept) proves both directions. A stream through Dokploy's Traefik stayed open for 5 minutes over HTTPS, and LISTEN reconnected by itself about 11 seconds after a database restart. *Not built yet:* this waits for the first feature that writes data.
 
 **Why.**
 
-- One server function per write keeps the database the authority ([2.7](#27-invariants-in-the-database-tested-against-the-real-database)) while the UI updates at once.
+- One endpoint per write keeps the database the authority ([2.7](#27-invariants-in-the-database-tested-against-the-real-database)) while the UI updates at once.
 - It needs nothing beyond Node and PostgreSQL. Moving to Electric later changes only the client collection, because every write already returns the transaction ID it waits for.
 - WebSockets inside TanStack Start are undocumented and reported broken in production builds, so a later feature that needs one, such as realtime voice, gets its own small Node service.
 - NOTIFY delivers only on commit, in order, with a payload under 8000 bytes, so it carries keys and the client fetches the rows.
@@ -587,7 +591,7 @@ A skill is a Markdown file of instructions that Claude Code loads when it is cal
 | `ponytail`, `ponytail-audit`, `ponytail-debt`, `ponytail-help`, `ponytail-gain`, with ponytail's hooks | [DietrichGebert/ponytail](https://github.com/DietrichGebert/ponytail) | Every session | Always-on mode for the smallest complete change, a whole-repository audit, and the `shortcut:` debt ledger |
 | `research` | [mattpocock/skills](https://github.com/mattpocock/skills) | [Section 5](#5-maybe) | Writes research notes that cite primary sources |
 | `writing-for-agents` | [mattpocock/skills](https://github.com/mattpocock/skills) | [2.5](#25-instruction-layering-with-size-budgets) | Rules for editing `CLAUDE.md`, rule files and skills |
-| TanStack's skills for Start, Router and DB | Inside the TanStack npm packages ([TanStack Intent](https://tanstack.com/intent)) | [2.6](#26-strict-static-checks-from-the-first-commit), [2.10](#210-architecture-layers-enforced), [2.11](#211-ai-review-and-task-fit-judge-run-by-ci-on-the-subscription), [2.29](#229-one-write-path-with-live-updates) | TanStack's own rules: code runs on server and browser by default, server-only logic goes in `createServerFn`, types are inferred and never cast, and Next.js patterns are wrong here |
+| TanStack's skills for Start, Router and DB | Inside the TanStack npm packages ([TanStack Intent](https://tanstack.com/intent)) | [2.6](#26-strict-static-checks-from-the-first-commit), [2.10](#210-architecture-layers-enforced), [2.11](#211-ai-review-and-task-fit-judge-run-by-ci-on-the-subscription), [2.29](#229-one-write-path-with-live-updates) | TanStack's own rules: code runs on server and browser by default, server code is reached through `/api/v1` here, not the `createServerFn` the skills teach, types are inferred and never cast, and Next.js patterns are wrong here |
 
 **`next-step`.** Given one Linear issue ID, from a routine or from `/next-step ABC-12`, it runs the issue until its PR merges. It never waits on the owner: a question goes to Linear ([2.22](#222-asking-the-owner)) and the routine moves on.
 

@@ -5,7 +5,7 @@ Agents build this repository end to end; nobody reviews code by hand. CI on GitH
 ## Workflow
 
 - The app is TanStack Start (React) on Node, with pnpm; `make install` sets up the pinned tools and dependencies, and `make dev` serves it. `make check` needs `DATABASE_URL` pointing at a PostgreSQL 16 database it may migrate.
-- Tests attach at three seams: server functions with Vitest against a real PostgreSQL, pure functions on stored sample records, and the browser through Playwright in `e2e/` (WebKit, iPhone profiles).
+- Tests attach at three seams: API routes and server code with Vitest against a real PostgreSQL, pure functions on stored sample records, and the browser through Playwright in `e2e/` (WebKit, iPhone profiles).
 - Work starts from one Linear issue in the IRM team. Run it with the `next-step` skill (`.claude/skills/next-step/SKILL.md`), which keeps the issue's plan in `docs/plans/` on the branch.
 - Run `make check` before you open a PR. The git hooks run it too once `make setup` (or the SessionStart hook) has pointed git at `.githooks/`.
 - Open the PR, then turn on auto-merge. The merge queue retests and merges it.
@@ -26,7 +26,7 @@ Issues live in Linear, team IRM, with type labels `feature`, `bug`, `ui`, `chore
 - Every rule in this file names an existing check, and this file stays under 4000 characters. [enforced: guard:docs]
 - Skills copied from other repositories match the commit pinned in `.claude/skills.lock.json`. [enforced: path:.github/scripts/skills.sh]
 - A PR that adds or changes a file in `migrations/` also changes a test that exercises it against the real database. [enforced: guard:pr-migration-test]
-- Routes and server code use TanStack Start (`createServerFn` from `@tanstack/react-start`, routes in `src/routes/`), and server code reads environment variables inside the function that needs them. [enforced: guard:stack]
+- Routes and server code use TanStack Start (routes in `src/routes/`, API endpoints as server routes under `src/routes/api/v1/**`; server functions are banned), and server code reads environment variables inside the function that needs them. [enforced: guard:stack]
 - No secret is committed, and workflows pass zizmor's security audit; a deliberate exception carries a `zizmor: ignore[...]` comment with the reason. [enforced: make:check-repo]
-- Server-only code lives in `*.server.ts` files that only `src/server/` imports; routes and components reach the server through `*.functions.ts` files of `createServerFn` wrappers. [enforced: guard:layers]
+- Server-only code lives in `*.server.ts` files that only `src/server/` and `src/routes/api/**` import; every UI reaches the server through `/api/v1/**`. [enforced: guard:layers]
 - Types are inferred, never cast, and a lint or type-check suppression names its rule and gives the reason. [enforced: make:check-app]

@@ -1,0 +1,7 @@
+id: no-server-functions
+language: tsx
+severity: error
+message: 'Server functions are banned; add an endpoint under src/routes/api/v1/ and call it through src/api/.'
+rule:
+  kind: identifier
+  regex: ^createServerFn$
