@@ -43,11 +43,14 @@ test('/ is server-rendered and /app is a client-only shell', async ({
   expect(await (await request.get('/app')).text()).not.toContain('<h1>App</h1>')
 })
 
-// Locally APP_ENV is unset, so pages are kept out of search engines like on staging.
-test('/ is marked noindex outside production', async ({ request }) => {
+// Pages stay out of search engines everywhere but production (locally APP_ENV is unset).
+test('/ is marked noindex only outside production', async ({ request }) => {
   const response = await request.get('/')
-  expect(response.headers()['x-robots-tag']).toBe('noindex')
-  expect(await response.text()).toContain(
-    '<meta name="robots" content="noindex">',
+  const production = process.env.APP_ENV === 'production'
+  expect(response.headers()['x-robots-tag']).toBe(
+    production ? undefined : 'noindex',
   )
+  const meta = '<meta name="robots" content="noindex">'
+  if (production) expect(await response.text()).not.toContain(meta)
+  else expect(await response.text()).toContain(meta)
 })
