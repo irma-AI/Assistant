@@ -1,0 +1,18 @@
+[
+  {
+    "criterion": "pnpm build writes .output/public/app/index.html with no app content rendered, and writes no prerendered .output/public/index.html.",
+    "passes": true
+  },
+  {
+    "criterion": "GET / returns the landing content rendered by the server.",
+    "passes": true
+  },
+  {
+    "criterion": "Playwright (WebKit, iPhone profiles): / shows the landing page, and /app renders the placeholder screen in the browser.",
+    "passes": true
+  },
+  {
+    "criterion": "The deploy's /version and h1 checks still pass.",
+    "passes": true
+  }
+]
