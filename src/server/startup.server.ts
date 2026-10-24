@@ -1,4 +1,5 @@
 import { definePlugin } from 'nitro'
+import { checkBankidConfig } from './auth/bankid.server'
 import { getDb } from './db.server'
 import { deleteEndedSessions } from './session.server'
 
@@ -9,6 +10,7 @@ export default definePlugin(() => {
   if (process.env.TSS_PRERENDERING) return
   if (process.env.NODE_ENV === 'production' && !process.env.PII_HASH_KEY)
     throw new Error('PII_HASH_KEY is not set')
+  checkBankidConfig()
   const sweep = async () => {
     try {
       await deleteEndedSessions(getDb())

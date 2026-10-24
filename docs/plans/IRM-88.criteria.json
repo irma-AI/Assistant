@@ -1,6 +1,6 @@
 [
-  {"criterion": "The QR code for the documented example (67df3917-…, d28db9a7-…) at t=0, 1 and 2 matches BankID's published values.", "passes": false},
-  {"criterion": "Against the fake: pending, then complete; pending, then failed (userCancel); and cancel.", "passes": false},
-  {"criterion": "The server refuses to start when BANKID_MODE=production and any fake setting is present, and it logs the mode at startup (a warning in fake).", "passes": false},
-  {"criterion": "With BANKID_MODE unset, the client runs in fake.", "passes": false}
+  {"criterion": "The QR code for the documented example (67df3917-…, d28db9a7-…) at t=0, 1 and 2 matches BankID's published values.", "passes": true},
+  {"criterion": "Against the fake: pending, then complete; pending, then failed (userCancel); and cancel.", "passes": true},
+  {"criterion": "The server refuses to start when BANKID_MODE=production and any fake setting is present, and it logs the mode at startup (a warning in fake).", "passes": true},
+  {"criterion": "With BANKID_MODE unset, the client runs in fake.", "passes": true}
 ]
