@@ -20,7 +20,7 @@ for d in $docs; do
   [ -e "$f" ] || { [ "$f" = CLAUDE.md ] && bad "CLAUDE.md is missing. Fix: restore it."; continue; }
   files+=("$f")
   chars=$(wc -m < "$f" | tr -d ' ')
-  [ "$chars" -le "$budget" ] || bad "$f has $chars characters, over its $budget budget. Fix: move detail behind a pointer or cut it."
+  [ "$chars" -le "$budget" ] || bad "$f has $chars characters, over its $budget budget. Fix: rewrite it denser, keeping every fact, or move detail behind a pointer."
 done
 [ ${#files[@]} -gt 0 ] || exit 1
 

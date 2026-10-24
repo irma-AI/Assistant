@@ -8,6 +8,7 @@ Issues for this repository live in Linear, team **IRM**. Use the Linear connecto
 - **Read an issue**: by its identifier, such as `IRM-12`, with its description, labels and comments.
 - **Comment on an issue**: as a comment on the issue.
 - **Ready an issue**: move it to Ready, then start the Intake dispatcher with `gh workflow run intake-dispatch.yml`, or the GitHub tools' `actions_run_trigger` for that workflow where `gh` can't reach GitHub. Its schedule drops most runs, so without this the issue waits for the next merge or the daily backstop.
+- **Local work**: the local worker adds the `local` label to the issues it claims, which keeps them out of the cloud's one-session count.
 - **Ask the owner**: comment the question, then move the issue to Needs input.
 - **Blocking**: Linear's native "blocked by" relation between issues.
 - **Close**: a merged PR whose description says `Closes IRM-12` moves the issue to Done; every merge then archives closed issues.
