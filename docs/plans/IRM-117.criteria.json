@@ -1,0 +1,4 @@
+[
+  {"criterion": "jq test covers resume, commit after answer, local, and unchanged Ready pick", "passes": true},
+  {"criterion": "docs/agents/intake.md describes the resume rule", "passes": true}
+]

@@ -33,9 +33,9 @@ jobs:
         run: |
           gql() { curl -sSf https://api.linear.app/graphql -H "Authorization: $LINEAR_API_TOKEN" -H 'Content-Type: application/json' -d @-; }
           # The states' names, not their type: Needs input shares In Progress's and In Review's type (started).
-          linear=$(jq -n --arg k "$LINEAR_TEAM" '{query:"query($k:String!){inFlight:issues(first:50,filter:{team:{key:{eq:$k}},state:{name:{in:[\"In Progress\",\"In Review\"]}}}){nodes{identifier state{name} labels{nodes{name}}}} ready:issues(first:100,filter:{team:{key:{eq:$k}},state:{name:{eq:\"Ready\"}}}){pageInfo{hasNextPage} nodes{identifier createdAt inverseRelations(first:50){pageInfo{hasNextPage} nodes{type issue{identifier state{type}}}}}}}",variables:{k:$k}}' | gql)
+          linear=$(jq -n --arg k "$LINEAR_TEAM" '{query:"query($k:String!){inFlight:issues(first:50,filter:{team:{key:{eq:$k}},state:{name:{in:[\"In Progress\",\"In Review\"]}}}){nodes{identifier state{name} labels{nodes{name}} history(first:20){nodes{createdAt fromState{name} toState{name}}}}} ready:issues(first:100,filter:{team:{key:{eq:$k}},state:{name:{eq:\"Ready\"}}}){pageInfo{hasNextPage} nodes{identifier createdAt inverseRelations(first:50){pageInfo{hasNextPage} nodes{type issue{identifier state{type}}}}}}}",variables:{k:$k}}' | gql)
           # shortcut: the first 100 open PRs, page through them if that many are ever open at once.
-          prs=$(gh pr list --repo "$GITHUB_REPOSITORY" --state open --limit 100 --json body)
+          prs=$(gh pr list --repo "$GITHUB_REPOSITORY" --state open --limit 100 --json body,commits)
           decision=$(jq -n --argjson linear "$linear" --argjson prs "$prs" --argjson max "$MAX_PARALLEL" '{linear:$linear, prs:$prs, max:$max}' \
             | jq -r -f .github/scripts/intake-pick.jq)
           echo "$decision"

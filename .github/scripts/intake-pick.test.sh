@@ -45,5 +45,16 @@ expect "three of three in flight" "$(input '["IRM-9", "IRM-10", "IRM-11"]' "$thr
 expect "fewer qualify than slots" "$(input '[]' "[$(ready IRM-12 10:00)]" '[]' 3)" "fire IRM-12"
 expect "Linear answered an error" '{"max":1,"prs":[],"linear":{"errors":[{"message":"bad"}]}}' 'error: [{"message":"bad"}]'
 expect "more than one page" "$(input '[]' "[$(ready IRM-12 10:00)]" '[]' | jq '.linear.data.ready.pageInfo.hasNextPage=true')" "error: more Ready issues or relations than one page"
+# An answered issue: IRM-11 left Needs input at 12:00, and a PR closing it has one commit at the given hour.
+answered() {
+  jq --arg c "2026-10-23T$2:00:00Z" '.linear.data.inFlight.nodes[0].history.nodes = [{createdAt:"2026-10-23T12:00:00Z", fromState:{name:"Needs input"}, toState:{name:"In Progress"}}]
+    | .prs = [{body:"Closes IRM-11", commits:[{committedDate:$c}]}]' <<<"$1"
+}
+r12="[$(ready IRM-12 10:00)]"
+expect "an answered issue with an open PR resumes" "$(answered "$(input '["IRM-11"]' "$r12" '[]')" 11)" "fire IRM-11"
+expect "a PR commit after the answer" "$(answered "$(input '["IRM-11"]' "$r12" '[]')" 13)" "wait: IRM-11 in flight"
+expect "a local issue is not resumed" "$(answered "$(input '["IRM-11+local"]' "$r12" '[]')" 11)" "fire IRM-12"
+expect "resuming ignores a full house" "$(answered "$(input '["IRM-11", "IRM-10"]' "$r12" '[]' 2)" 11)" "fire IRM-11"
+expect "a later Needs input round" "$(answered "$(input '["IRM-11"]' "$r12" '[]')" 11 | jq '.linear.data.inFlight.nodes[0].history.nodes[0].fromState.name = "Ready"')" "wait: IRM-11 in flight"
 
 exit $fail
