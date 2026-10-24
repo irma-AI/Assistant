@@ -1,0 +1,2 @@
+# Known exceptions: each needs a statement saying why. See docs/guardrails.md, vulnerability management.
+vulnerabilities: []

@@ -26,6 +26,7 @@ jobs:
       - uses: jdx/mise-action@8418fedb1110381a0d3ba51a7a415d7c1b884550 # v5.2.2
       - run: pnpm install --frozen-lockfile
       - run: make check-repo check-app
+      - run: pnpm audit --json | .github/scripts/audit-gate.sh # needs the advisory database, so CI only
 
   # Playwright's image carries WebKit and its system libraries, so nothing comes from apt.
   e2e:
@@ -61,6 +62,15 @@ jobs:
         with:
           persist-credentials: false
       - run: make image-check VERSION=${{ github.sha }}
+      # Critical and high findings that have a fix fail the job; exceptions live in .trivyignore.yaml.
+      - uses: aquasecurity/trivy-action@ed142fd0673e97e23eac54620cfb913e5ce36c25 # v0.36.0
+        with:
+          image-ref: assistant:${{ github.sha }}
+          version: v0.69.3
+          severity: CRITICAL,HIGH
+          ignore-unfixed: true
+          exit-code: '1'
+          trivyignores: .trivyignore.yaml
 
   # Compile-only: debug and simulator builds, no signing or upload.
   android:

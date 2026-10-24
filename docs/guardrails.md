@@ -564,6 +564,15 @@ Size limits here count characters or words, and are enforced.
 
 ---
 
+### 2.31 Vulnerability scans
+
+**What it is.** `ci` scans for known vulnerabilities in the two places code from outside enters. ISO 27001 A.8.8 and SOC 2 CC7.1 ask for it.
+
+- **Dependencies.** The `checks` job pipes `pnpm audit --json` into `.github/scripts/audit-gate.sh`, which fails on a critical or high advisory with a patched version, unless `.github/vuln-exceptions.json` lists its GHSA id with a reason. `.github/scripts/audit-gate.test.sh` proves a critical advisory fails, in `make check-repo`.
+- **The image.** The `image` job scans the image it just built with Trivy (pinned by commit and version), failing on critical or high findings that have a fix. Exceptions go in `.trivyignore.yaml`, each with a statement. Merge-queue runs retest the exact content that lands on `main`, so a vulnerable image never reaches it.
+- **CI only.** Both scans need the advisory databases, which the routines can't reach, so `make check` doesn't run them.
+- **Fix-time targets.** Critical within 7 days, high within 30. Past that, the finding stays in the exceptions file with a reason or is fixed. A new advisory on an unchanged lockfile fails the next PR's `ci`, which is how it surfaces.
+
 ## 3. Skills
 
 A skill is a Markdown file of instructions that Claude Code loads when it is called. These are the skills the repository ships, and the pieces in [section 2](#2-must-have-pieces) link here where they use one.
