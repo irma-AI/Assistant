@@ -1,0 +1,10 @@
+[
+  {
+    "criterion": "`.github/workflows/release.yml` uses `https://redo.petterannerwall.se` for `APP_URL` (deploy and rollback) and `PLAYWRIGHT_BASE_URL` (smoke), and the sslip.io address appears nowhere else in the workflow.",
+    "passes": true
+  },
+  {
+    "criterion": "After the merge, the release workflow's deploy and smoke jobs pass against https://redo.petterannerwall.se.",
+    "passes": false
+  }
+]
