@@ -37,7 +37,7 @@ function makePerson() {
 }
 
 type Order = { ip: string; collects: number }
-type Fake = { orders: Map<string, Order>; returnUrl: string }
+type Fake = { orders: Map<string, Order>; returnUrls: Map<string, string> }
 
 const fail = (errorCode: string): [number, object] => [
   400,
@@ -76,7 +76,8 @@ function handle(
       if (typeof body.endUserIp !== 'string') return fail('invalidParameters')
       const orderRef = randomUUID()
       orders.set(orderRef, { ip: body.endUserIp, collects: 0 })
-      if (typeof body.returnUrl === 'string') fake.returnUrl = body.returnUrl
+      if (typeof body.returnUrl === 'string')
+        fake.returnUrls.set(body.endUserIp, body.returnUrl)
       return [
         200,
         {
@@ -110,8 +111,25 @@ function handle(
   }
 }
 
+// GET /last-return-url?ip= lets e2e follow the returnUrl of the latest auth from that IP, as the BankID app would.
+function route(
+  fake: Fake,
+  method: string | undefined,
+  url: string,
+  body: Record<string, unknown>,
+): [number, object] {
+  if (method === 'GET' && url.startsWith('/last-return-url')) {
+    const ip = new URL(url, 'http://fake').searchParams.get('ip') ?? ''
+    return [200, { returnUrl: fake.returnUrls.get(ip) ?? '' }]
+  }
+  return method === 'POST' ? handle(fake, url, body) : fail('methodNotAllowed')
+}
+
 export function createFakeBankId(port = 0) {
-  const fake: Fake = { orders: new Map<string, Order>(), returnUrl: '' }
+  const fake: Fake = {
+    orders: new Map<string, Order>(),
+    returnUrls: new Map<string, string>(),
+  }
   const server = createServer((req, res) => {
     const chunks: Buffer[] = []
     req.on('data', (c: Buffer) => chunks.push(c))
@@ -123,13 +141,7 @@ export function createFakeBankId(port = 0) {
       } catch {
         // an unparsable body is handled as no parameters
       }
-      // GET /last-return-url lets e2e follow the returnUrl of the latest auth, as the BankID app would.
-      const [status, json] =
-        req.method === 'GET' && req.url === '/last-return-url'
-          ? [200, { returnUrl: fake.returnUrl }]
-          : req.method === 'POST'
-            ? handle(fake, req.url ?? '', body)
-            : fail('methodNotAllowed')
+      const [status, json] = route(fake, req.method, req.url ?? '', body)
       res.writeHead(status, { 'content-type': 'application/json' })
       res.end(JSON.stringify(json))
     })

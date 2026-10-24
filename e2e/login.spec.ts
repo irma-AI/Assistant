@@ -26,10 +26,13 @@ test('logs in by scanning the QR code on another device', async ({ page }) => {
   expect(cookies.map((c) => c.name)).toContain(sessionCookie)
 })
 
+// Each project gets its own IP, because the fake keeps one returnUrl per IP and the projects run in parallel.
 test('logs in on the same device through the returnUrl', async ({
   page,
   request,
-}) => {
+}, testInfo) => {
+  const ip = `198.51.100.${String(10 + testInfo.workerIndex)}`
+  await page.context().setExtraHTTPHeaders({ 'x-forwarded-for': ip })
   await page.route('https://app.bankid.com/**', (route) =>
     route.fulfill({ contentType: 'text/html', body: '<title>BankID</title>' }),
   )
@@ -37,7 +40,7 @@ test('logs in on the same device through the returnUrl', async ({
   await page.getByRole('button', { name: /den här enheten/ }).click()
   await page.waitForURL('https://app.bankid.com/**')
   const { returnUrl } = returnUrlOf(
-    await (await request.get(`${fakeBankId}/last-return-url`)).json(),
+    await (await request.get(`${fakeBankId}/last-return-url?ip=${ip}`)).json(),
   )
   await page.goto(returnUrl)
   await expect(page).toHaveURL(/\/app$/, { timeout: 15_000 })
