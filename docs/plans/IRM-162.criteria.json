@@ -1,0 +1,6 @@
+[
+  {"criterion": "DESIGN.md's Touch section covers iOS and Android as one rule set, taking the rule that satisfies both where they differ", "passes": true},
+  {"criterion": "It covers Android's system back and back gesture, edge-to-edge layout, font scaling, dark theme, runtime permissions and notifications", "passes": true},
+  {"criterion": "No rule asks for a platform-specific look; platform-specific behaviour is stated as behaviour", "passes": true},
+  {"criterion": "Each rule names its source page, read on the date in docs/plans/IRM-162.research.md", "passes": true}
+]
