@@ -9,7 +9,7 @@ Agents build this repository end to end; nobody reviews code by hand. CI on GitH
 - Work starts from one Linear issue in the IRM team. Run it with the `next-step` skill (`.claude/skills/next-step/SKILL.md`), which keeps the issue's plan in `docs/plans/` on the branch.
 - Run `make check` before you open a PR. The git hooks run it too once `make setup` (or the SessionStart hook) has pointed git at `.githooks/`.
 - Open the PR, then turn on auto-merge. The merge queue retests and merges it.
-- Only taste and user-facing wording, money and new vendors, risk appetite, scope and owner-only context are the owner's to decide; what official docs, law or established practice answers is research (`shaping` skill). Comment an owner question on the Linear issue, move it to Needs input, then pick up other work.
+- Only taste and user wording, money and new vendors, risk appetite, scope and priority, owner-only context and an issue that reads two ways are the owner's; what official docs, law or established practice answers is research (`shaping` skill). Comment an owner question on the issue, move it to Needs input, then pick up other work.
 
 ## Agent skills
 
