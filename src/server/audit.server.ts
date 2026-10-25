@@ -36,6 +36,7 @@ export type AuditEvent = {
     | 'account_deleted'
     | 'data_exported'
     | 'demo_created'
+    | 'mcp_tool_called'
   userId?: string
   sessionKind?: string
   ip?: string

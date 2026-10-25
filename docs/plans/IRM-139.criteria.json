@@ -1,0 +1,7 @@
+[
+  {"criterion": "One endpoint under /api/v1/mcp speaks MCP over Streamable HTTP behind the existing session", "passes": true},
+  {"criterion": "Read-only tools for organisations and members, each stating its permission", "passes": true},
+  {"criterion": "A test proves every tool fails without a session and without membership", "passes": true},
+  {"criterion": "One audit row per tool call with client and tool", "passes": true},
+  {"criterion": "Demo sessions can call read tools only", "passes": true}
+]
