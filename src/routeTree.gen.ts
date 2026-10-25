@@ -20,6 +20,7 @@ import { Route as AppRaderaKontoRouteImport } from './routes/app/radera-konto'
 import { Route as ApiV1LogoutRouteImport } from './routes/api/v1/logout'
 import { Route as ApiV1MeRouteImport } from './routes/api/v1/me'
 import { Route as AppLoginIndexRouteImport } from './routes/app/login/index'
+import { Route as AppLoginDemoRouteImport } from './routes/app/login/demo'
 import { Route as AppLoginReturnRouteImport } from './routes/app/login/return'
 import { Route as ApiV1MeExportRouteImport } from './routes/api/v1/me.export'
 import { Route as ApiV1OrgsIndexRouteImport } from './routes/api/v1/orgs/index'
@@ -27,6 +28,8 @@ import { Route as ApiV1AuthBankidCancelRouteImport } from './routes/api/v1/auth/
 import { Route as ApiV1AuthBankidModeRouteImport } from './routes/api/v1/auth/bankid/mode'
 import { Route as ApiV1AuthBankidStartRouteImport } from './routes/api/v1/auth/bankid/start'
 import { Route as ApiV1AuthBankidStatusRouteImport } from './routes/api/v1/auth/bankid/status'
+import { Route as ApiV1AuthDemoIndexRouteImport } from './routes/api/v1/auth/demo/index'
+import { Route as ApiV1AuthDemoDeleteRouteImport } from './routes/api/v1/auth/demo/delete'
 import { Route as ApiV1OrgsOrgIdMeRouteImport } from './routes/api/v1/orgs/$orgId/me'
 import { Route as ApiV1OrgsOrgIdMembersIndexRouteImport } from './routes/api/v1/orgs/$orgId/members/index'
 import { Route as ApiV1OrgsOrgIdMembersUserIdRouteImport } from './routes/api/v1/orgs/$orgId/members/$userId'
@@ -90,6 +93,11 @@ const AppLoginIndexRoute = AppLoginIndexRouteImport.update({
   path: '/login/',
   getParentRoute: () => AppRouteRoute,
 } as any)
+const AppLoginDemoRoute = AppLoginDemoRouteImport.update({
+  id: '/login/demo',
+  path: '/login/demo',
+  getParentRoute: () => AppRouteRoute,
+} as any)
 const AppLoginReturnRoute = AppLoginReturnRouteImport.update({
   id: '/login/return',
   path: '/login/return',
@@ -123,6 +131,16 @@ const ApiV1AuthBankidStartRoute = ApiV1AuthBankidStartRouteImport.update({
 const ApiV1AuthBankidStatusRoute = ApiV1AuthBankidStatusRouteImport.update({
   id: '/api/v1/auth/bankid/status',
   path: '/api/v1/auth/bankid/status',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiV1AuthDemoIndexRoute = ApiV1AuthDemoIndexRouteImport.update({
+  id: '/api/v1/auth/demo/',
+  path: '/api/v1/auth/demo/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiV1AuthDemoDeleteRoute = ApiV1AuthDemoDeleteRouteImport.update({
+  id: '/api/v1/auth/demo/delete',
+  path: '/api/v1/auth/demo/delete',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ApiV1OrgsOrgIdMeRoute = ApiV1OrgsOrgIdMeRouteImport.update({
@@ -171,6 +189,7 @@ export interface FileRoutesByFullPath {
   '/app/': typeof AppIndexRoute
   '/api/v1/logout': typeof ApiV1LogoutRoute
   '/api/v1/me': typeof ApiV1MeRouteWithChildren
+  '/app/login/demo': typeof AppLoginDemoRoute
   '/app/login/return': typeof AppLoginReturnRoute
   '/app/login/': typeof AppLoginIndexRoute
   '/api/v1/me/export': typeof ApiV1MeExportRoute
@@ -179,7 +198,9 @@ export interface FileRoutesByFullPath {
   '/api/v1/auth/bankid/mode': typeof ApiV1AuthBankidModeRoute
   '/api/v1/auth/bankid/start': typeof ApiV1AuthBankidStartRoute
   '/api/v1/auth/bankid/status': typeof ApiV1AuthBankidStatusRoute
+  '/api/v1/auth/demo/delete': typeof ApiV1AuthDemoDeleteRoute
   '/api/v1/orgs/$orgId/me': typeof ApiV1OrgsOrgIdMeRoute
+  '/api/v1/auth/demo/': typeof ApiV1AuthDemoIndexRoute
   '/api/v1/orgs/$orgId/members/$userId': typeof ApiV1OrgsOrgIdMembersUserIdRoute
   '/api/v1/orgs/$orgId/members/me': typeof ApiV1OrgsOrgIdMembersMeRoute
   '/api/v1/orgs/$orgId/roles/$roleId': typeof ApiV1OrgsOrgIdRolesRoleIdRoute
@@ -196,6 +217,7 @@ export interface FileRoutesByTo {
   '/app': typeof AppIndexRoute
   '/api/v1/logout': typeof ApiV1LogoutRoute
   '/api/v1/me': typeof ApiV1MeRouteWithChildren
+  '/app/login/demo': typeof AppLoginDemoRoute
   '/app/login/return': typeof AppLoginReturnRoute
   '/app/login': typeof AppLoginIndexRoute
   '/api/v1/me/export': typeof ApiV1MeExportRoute
@@ -204,7 +226,9 @@ export interface FileRoutesByTo {
   '/api/v1/auth/bankid/mode': typeof ApiV1AuthBankidModeRoute
   '/api/v1/auth/bankid/start': typeof ApiV1AuthBankidStartRoute
   '/api/v1/auth/bankid/status': typeof ApiV1AuthBankidStatusRoute
+  '/api/v1/auth/demo/delete': typeof ApiV1AuthDemoDeleteRoute
   '/api/v1/orgs/$orgId/me': typeof ApiV1OrgsOrgIdMeRoute
+  '/api/v1/auth/demo': typeof ApiV1AuthDemoIndexRoute
   '/api/v1/orgs/$orgId/members/$userId': typeof ApiV1OrgsOrgIdMembersUserIdRoute
   '/api/v1/orgs/$orgId/members/me': typeof ApiV1OrgsOrgIdMembersMeRoute
   '/api/v1/orgs/$orgId/roles/$roleId': typeof ApiV1OrgsOrgIdRolesRoleIdRoute
@@ -223,6 +247,7 @@ export interface FileRoutesById {
   '/app/': typeof AppIndexRoute
   '/api/v1/logout': typeof ApiV1LogoutRoute
   '/api/v1/me': typeof ApiV1MeRouteWithChildren
+  '/app/login/demo': typeof AppLoginDemoRoute
   '/app/login/return': typeof AppLoginReturnRoute
   '/app/login/': typeof AppLoginIndexRoute
   '/api/v1/me/export': typeof ApiV1MeExportRoute
@@ -231,7 +256,9 @@ export interface FileRoutesById {
   '/api/v1/auth/bankid/mode': typeof ApiV1AuthBankidModeRoute
   '/api/v1/auth/bankid/start': typeof ApiV1AuthBankidStartRoute
   '/api/v1/auth/bankid/status': typeof ApiV1AuthBankidStatusRoute
+  '/api/v1/auth/demo/delete': typeof ApiV1AuthDemoDeleteRoute
   '/api/v1/orgs/$orgId/me': typeof ApiV1OrgsOrgIdMeRoute
+  '/api/v1/auth/demo/': typeof ApiV1AuthDemoIndexRoute
   '/api/v1/orgs/$orgId/members/$userId': typeof ApiV1OrgsOrgIdMembersUserIdRoute
   '/api/v1/orgs/$orgId/members/me': typeof ApiV1OrgsOrgIdMembersMeRoute
   '/api/v1/orgs/$orgId/roles/$roleId': typeof ApiV1OrgsOrgIdRolesRoleIdRoute
@@ -251,6 +278,7 @@ export interface FileRouteTypes {
     | '/app/'
     | '/api/v1/logout'
     | '/api/v1/me'
+    | '/app/login/demo'
     | '/app/login/return'
     | '/app/login/'
     | '/api/v1/me/export'
@@ -259,7 +287,9 @@ export interface FileRouteTypes {
     | '/api/v1/auth/bankid/mode'
     | '/api/v1/auth/bankid/start'
     | '/api/v1/auth/bankid/status'
+    | '/api/v1/auth/demo/delete'
     | '/api/v1/orgs/$orgId/me'
+    | '/api/v1/auth/demo/'
     | '/api/v1/orgs/$orgId/members/$userId'
     | '/api/v1/orgs/$orgId/members/me'
     | '/api/v1/orgs/$orgId/roles/$roleId'
@@ -276,6 +306,7 @@ export interface FileRouteTypes {
     | '/app'
     | '/api/v1/logout'
     | '/api/v1/me'
+    | '/app/login/demo'
     | '/app/login/return'
     | '/app/login'
     | '/api/v1/me/export'
@@ -284,7 +315,9 @@ export interface FileRouteTypes {
     | '/api/v1/auth/bankid/mode'
     | '/api/v1/auth/bankid/start'
     | '/api/v1/auth/bankid/status'
+    | '/api/v1/auth/demo/delete'
     | '/api/v1/orgs/$orgId/me'
+    | '/api/v1/auth/demo'
     | '/api/v1/orgs/$orgId/members/$userId'
     | '/api/v1/orgs/$orgId/members/me'
     | '/api/v1/orgs/$orgId/roles/$roleId'
@@ -302,6 +335,7 @@ export interface FileRouteTypes {
     | '/app/'
     | '/api/v1/logout'
     | '/api/v1/me'
+    | '/app/login/demo'
     | '/app/login/return'
     | '/app/login/'
     | '/api/v1/me/export'
@@ -310,7 +344,9 @@ export interface FileRouteTypes {
     | '/api/v1/auth/bankid/mode'
     | '/api/v1/auth/bankid/start'
     | '/api/v1/auth/bankid/status'
+    | '/api/v1/auth/demo/delete'
     | '/api/v1/orgs/$orgId/me'
+    | '/api/v1/auth/demo/'
     | '/api/v1/orgs/$orgId/members/$userId'
     | '/api/v1/orgs/$orgId/members/me'
     | '/api/v1/orgs/$orgId/roles/$roleId'
@@ -332,7 +368,9 @@ export interface RootRouteChildren {
   ApiV1AuthBankidModeRoute: typeof ApiV1AuthBankidModeRoute
   ApiV1AuthBankidStartRoute: typeof ApiV1AuthBankidStartRoute
   ApiV1AuthBankidStatusRoute: typeof ApiV1AuthBankidStatusRoute
+  ApiV1AuthDemoDeleteRoute: typeof ApiV1AuthDemoDeleteRoute
   ApiV1OrgsOrgIdMeRoute: typeof ApiV1OrgsOrgIdMeRoute
+  ApiV1AuthDemoIndexRoute: typeof ApiV1AuthDemoIndexRoute
   ApiV1OrgsOrgIdMembersUserIdRoute: typeof ApiV1OrgsOrgIdMembersUserIdRoute
   ApiV1OrgsOrgIdMembersMeRoute: typeof ApiV1OrgsOrgIdMembersMeRoute
   ApiV1OrgsOrgIdRolesRoleIdRoute: typeof ApiV1OrgsOrgIdRolesRoleIdRoute
@@ -419,6 +457,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppLoginIndexRouteImport
       parentRoute: typeof AppRouteRoute
     }
+    '/app/login/demo': {
+      id: '/app/login/demo'
+      path: '/login/demo'
+      fullPath: '/app/login/demo'
+      preLoaderRoute: typeof AppLoginDemoRouteImport
+      parentRoute: typeof AppRouteRoute
+    }
     '/app/login/return': {
       id: '/app/login/return'
       path: '/login/return'
@@ -466,6 +511,20 @@ declare module '@tanstack/react-router' {
       path: '/api/v1/auth/bankid/status'
       fullPath: '/api/v1/auth/bankid/status'
       preLoaderRoute: typeof ApiV1AuthBankidStatusRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/v1/auth/demo/': {
+      id: '/api/v1/auth/demo/'
+      path: '/api/v1/auth/demo'
+      fullPath: '/api/v1/auth/demo/'
+      preLoaderRoute: typeof ApiV1AuthDemoIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/v1/auth/demo/delete': {
+      id: '/api/v1/auth/demo/delete'
+      path: '/api/v1/auth/demo/delete'
+      fullPath: '/api/v1/auth/demo/delete'
+      preLoaderRoute: typeof ApiV1AuthDemoDeleteRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/api/v1/orgs/$orgId/me': {
@@ -516,6 +575,7 @@ declare module '@tanstack/react-router' {
 interface AppRouteRouteChildren {
   AppRaderaKontoRoute: typeof AppRaderaKontoRoute
   AppIndexRoute: typeof AppIndexRoute
+  AppLoginDemoRoute: typeof AppLoginDemoRoute
   AppLoginReturnRoute: typeof AppLoginReturnRoute
   AppLoginIndexRoute: typeof AppLoginIndexRoute
 }
@@ -523,6 +583,7 @@ interface AppRouteRouteChildren {
 const AppRouteRouteChildren: AppRouteRouteChildren = {
   AppRaderaKontoRoute: AppRaderaKontoRoute,
   AppIndexRoute: AppIndexRoute,
+  AppLoginDemoRoute: AppLoginDemoRoute,
   AppLoginReturnRoute: AppLoginReturnRoute,
   AppLoginIndexRoute: AppLoginIndexRoute,
 }
@@ -556,7 +617,9 @@ const rootRouteChildren: RootRouteChildren = {
   ApiV1AuthBankidModeRoute: ApiV1AuthBankidModeRoute,
   ApiV1AuthBankidStartRoute: ApiV1AuthBankidStartRoute,
   ApiV1AuthBankidStatusRoute: ApiV1AuthBankidStatusRoute,
+  ApiV1AuthDemoDeleteRoute: ApiV1AuthDemoDeleteRoute,
   ApiV1OrgsOrgIdMeRoute: ApiV1OrgsOrgIdMeRoute,
+  ApiV1AuthDemoIndexRoute: ApiV1AuthDemoIndexRoute,
   ApiV1OrgsOrgIdMembersUserIdRoute: ApiV1OrgsOrgIdMembersUserIdRoute,
   ApiV1OrgsOrgIdMembersMeRoute: ApiV1OrgsOrgIdMembersMeRoute,
   ApiV1OrgsOrgIdRolesRoleIdRoute: ApiV1OrgsOrgIdRolesRoleIdRoute,

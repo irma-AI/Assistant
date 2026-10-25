@@ -1,10 +1,12 @@
 import type { Kysely } from 'kysely'
 import type { DB } from './db.gen'
+import { demoUserId } from './demo.server'
 import type { Access, Audit } from './access.server'
 import {
   access,
   audited,
   effective,
+  HttpError,
   insertOrConflict,
   keepsOwner,
   lockOrg,
@@ -45,6 +47,9 @@ export const addMember = (
   base: Audit,
 ) =>
   db.transaction().execute(async (trx) => {
+    // The demo user is only ever reached through a demo session: it neither invites nor joins.
+    if (actorId === demoUserId || newUserId === demoUserId)
+      throw new HttpError(403, 'demo_session')
     await lockOrg(trx, orgId)
     const a = await require(trx, actorId, orgId, 'members.manage')
     const role = await roleIn(trx, orgId, roleId)

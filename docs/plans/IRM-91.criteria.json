@@ -1,0 +1,5 @@
+[
+  {"criterion": "Vitest covers demo data isolation, real user rejected, blocked side effect, DEMO_LOGIN_ENABLED=false 404, persistence, recreation after deletion, snapshot equality, throttle", "passes": true},
+  {"criterion": "DEMO_PASSWORD_HASH checked with Argon2id in constant time; wrong password gives 401 without revealing the username", "passes": true},
+  {"criterion": "@faker-js/faker is not imported from src/server/", "passes": true}
+]

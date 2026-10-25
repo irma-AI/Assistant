@@ -35,6 +35,7 @@ export type AuditEvent = {
     | 'authorization_refused'
     | 'account_deleted'
     | 'data_exported'
+    | 'demo_created'
   userId?: string
   sessionKind?: string
   ip?: string

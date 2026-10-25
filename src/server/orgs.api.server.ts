@@ -1,18 +1,19 @@
 import type { Kysely } from 'kysely'
 import { z } from 'zod'
 import type { Audit } from './access.server'
-import { HttpError } from './access.server'
+import { HttpError, refuseDemo } from './access.server'
 import { newOrganisation, newRole, roleChange, roleEdit } from '#/api/schemas'
 import { clientIp, recordAudit } from './audit.server'
 import type { DB } from './db.gen'
 import { getDb } from './db.server'
 import * as members from './members.server'
 import * as orgs from './orgs.server'
-import { authenticate } from './session.server'
+import { authenticateSession } from './session.server'
 
 type Ctx = {
   db: Kysely<DB>
   userId: string
+  kind: string
   base: Audit
 }
 
@@ -30,13 +31,14 @@ async function handle(
   run: (c: Ctx) => Promise<Response>,
   db: Kysely<DB> = getDb(),
 ) {
-  const userId = await authenticate(db, request)
-  if (!userId) return json({ error: 'unauthorized' }, 401)
+  const session = await authenticateSession(db, request)
+  if (!session) return json({ error: 'unauthorized' }, 401)
+  const { userId, kind } = session
   const base = { userId, ip: clientIp(request) }
   try {
     if (!ids.every((id) => z.uuid().safeParse(id).success))
       throw new HttpError(404, 'not_found', false)
-    return await run({ db, userId, base })
+    return await run({ db, userId, kind, base })
   } catch (e) {
     if (!(e instanceof HttpError)) throw e
     if (e.refused)
@@ -68,6 +70,7 @@ export const orgsApi = {
       request,
       [],
       async (c) => {
+        refuseDemo(c.kind)
         const { name } = await parse(request, newOrganisation)
         return json(
           await orgs.createOrganisation(c.db, c.userId, name, c.base),
