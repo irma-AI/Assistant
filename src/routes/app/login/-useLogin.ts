@@ -1,5 +1,5 @@
 import { useNavigate } from '@tanstack/react-router'
-import { useEffect, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import {
   cancelLogin,
   expiredMessage,
@@ -24,17 +24,27 @@ function launchBankId(token: string) {
   link.click()
 }
 
-function useDone(purpose: Purpose) {
+const otherTabMessage =
+  'Bekräftelsen avslutades i fliken där BankID öppnades. Se resultatet där.'
+
+// A same-device starting tab is told `complete` or `expired` whether or not the return tab succeeded,
+// so for a deletion it must not claim the account is gone.
+function useDone(purpose: Purpose, setPhase: (phase: Phase) => void) {
   const navigate = useNavigate()
-  return () =>
-    void (purpose === 'delete'
-      ? navigate({ to: '/app/radera-konto', search: { raderat: true } })
-      : navigate({ to: '/app' }))
+  return useCallback(
+    (startedOnThisDevice: boolean) => {
+      if (purpose === 'login') void navigate({ to: '/app' })
+      else if (startedOnThisDevice)
+        setPhase({ name: 'idle', message: otherTabMessage })
+      else void navigate({ to: '/app/radera-konto', search: { raderat: true } })
+    },
+    [navigate, purpose, setPhase],
+  )
 }
 
 export function useLogin(purpose: Purpose) {
-  const done = useDone(purpose)
   const [phase, setPhase] = useState<Phase>({ name: 'idle' })
+  const done = useDone(purpose, setPhase)
   const [big, setBig] = useState(false)
   const [sameDeviceTab, setSameDeviceTab] = useState(false)
   const [testMode, setTestMode] = useState(false)
@@ -48,7 +58,7 @@ export function useLogin(purpose: Purpose) {
       poll().then(
         (next) => {
           if (next.status === 'complete') {
-            done()
+            done(sameDeviceTab)
           } else if (next.status === 'pending') {
             setPhase((prev) => ({
               name: 'qr',
@@ -59,7 +69,7 @@ export function useLogin(purpose: Purpose) {
             }))
           } else if (next.status === 'expired' && sameDeviceTab) {
             // The return tab finished the login and removed the attempt.
-            done()
+            done(true)
           } else {
             setBig(false)
             setPhase({
@@ -74,7 +84,7 @@ export function useLogin(purpose: Purpose) {
     return () => {
       clearInterval(timer)
     }
-  }, [waiting, sameDeviceTab])
+  }, [waiting, sameDeviceTab, done])
 
   const fail = (e: unknown) => {
     setPhase({

@@ -5,13 +5,13 @@ import { z } from 'zod'
 import { publicUrl } from '#/api/csrf'
 import {
   auth,
-  bankidMode,
   cancel,
   collect,
   messageFor,
   pendingMessage,
   qrData,
 } from './auth/bankid.server'
+import { clientIp, recordAudit } from './audit.server'
 import type { DB } from './db.gen'
 import { getDb } from './db.server'
 import { hashPnr } from './pii.server'
@@ -40,13 +40,6 @@ const respond = (body: object | null, cookies: string[], status = 200) => {
   return new Response(JSON.stringify(body), { status, headers })
 }
 
-// The proxy appends the address it saw to X-Forwarded-For, so the last entry is the one to trust.
-// Without a proxy (fake mode only) the connection is local.
-function clientIp(request: Request) {
-  const last = request.headers.get('x-forwarded-for')?.split(',').at(-1)?.trim()
-  return last || (bankidMode() === 'fake' ? '127.0.0.1' : undefined)
-}
-
 // Removes the attempt and cancels its order at BankID, which may already be over.
 async function drop(db: Kysely<DB>, id: string) {
   const row = await db
@@ -57,8 +50,17 @@ async function drop(db: Kysely<DB>, id: string) {
   if (row) await cancel(row.order_ref).catch(() => undefined)
 }
 
-async function failed(db: Kysely<DB>, id: string, message: string) {
-  await drop(db, id)
+async function failed(
+  db: Kysely<DB>,
+  row: { id: string; end_user_ip: string },
+  message: string,
+) {
+  await drop(db, row.id)
+  await recordAudit(db, {
+    event: 'login_failure',
+    sessionKind: 'web',
+    ip: row.end_user_ip,
+  })
   return respond({ status: 'failed', message }, [clearLogin])
 }
 
@@ -165,12 +167,6 @@ const claimCollect = (db: Kysely<DB>, id: string) =>
 type Attempt = NonNullable<Awaited<ReturnType<typeof loadAttempt>>>
 type Done = Extract<Awaited<ReturnType<typeof collect>>, { status: 'complete' }>
 
-// Only the tab BankID returns to, holding the nonce, may finish a same-device login. The starting tab
-// is told `complete` without a session and the attempt stays for the return tab; it then reloads /app,
-// which has the cookie only in the browser that really logged in.
-// A completed order becomes a session only if BankID rated the risk below high and, for a same-device
-// login, saw our client's IP and the browser came back with the nonce from the returnUrl. In a QR login
-// BankID reports the scanning phone's IP, which is rightly not the browser's, so it is not compared.
 // The person has just proved with BankID who they are, so the account behind that identity goes at once;
 // sessions go with it (cascade). Bookkeeping records will reference users.id and decide what stays (docs/privacy/records.md).
 async function deleteAccount(db: Kysely<DB>, row: Attempt, result: Done) {
@@ -181,20 +177,27 @@ async function deleteAccount(db: Kysely<DB>, row: Attempt, result: Done) {
       .returning('id')
       .executeTakeFirst()
     if (user)
-      await trx
-        .insertInto('deleted_users')
-        .values({ user_id: user.id })
-        .execute()
+      await recordAudit(trx, {
+        event: 'account_deleted',
+        userId: user.id,
+        ip: row.end_user_ip,
+      })
     await trx.deleteFrom('login_attempts').where('id', '=', row.id).execute()
     return user
   })
-  if (!deleted) return failed(db, row.id, noAccount)
+  if (!deleted) return failed(db, row, noAccount)
   return respond({ status: 'complete' }, [
     cookie(cookieName, '', 0),
     clearLogin,
   ])
 }
 
+// Only the tab BankID returns to, holding the nonce, may finish a same-device login. The starting tab
+// is told `complete` without a session and the attempt stays for the return tab; it then reloads /app,
+// which has the cookie only in the browser that really logged in.
+// A completed order becomes a session only if BankID rated the risk below high and, for a same-device
+// login, saw our client's IP and the browser came back with the nonce from the returnUrl. In a QR login
+// BankID reports the scanning phone's IP, which is rightly not the browser's, so it is not compared.
 async function complete(
   db: Kysely<DB>,
   row: Attempt,
@@ -207,7 +210,7 @@ async function complete(
   const sameBrowser = row.nonce === null || nonce === row.nonce
   const sameIp = row.nonce === null || result.ip === row.end_user_ip
   if (!sameIp || result.risk === 'high' || !sameBrowser) {
-    return failed(db, row.id, refused)
+    return failed(db, row, refused)
   }
   if (row.purpose === 'delete') return deleteAccount(db, row, result)
   const user = await db
@@ -219,6 +222,12 @@ async function complete(
     .returning('id')
     .executeTakeFirstOrThrow()
   const token = await createSession(db, user.id, 'web')
+  await recordAudit(db, {
+    event: 'login_success',
+    userId: user.id,
+    sessionKind: 'web',
+    ip: row.end_user_ip,
+  })
   await db.deleteFrom('login_attempts').where('id', '=', row.id).execute()
   return respond({ status: 'complete' }, [
     cookie(cookieName, token, webSeconds),
@@ -246,9 +255,9 @@ export async function pollLogin(request: Request, db: Kysely<DB> = getDb()) {
   if (!result)
     return pending(pendingMessage('outstandingTransaction', row.nonce !== null))
   if (result.status === 'pending') return pending(result.message)
-  if (result.status !== 'complete') return failed(db, row.id, result.message)
+  if (result.status !== 'complete') return failed(db, row, result.message)
   const body = statusBody.safeParse(await request.json().catch(() => ({})))
-  if (!body.success) return failed(db, row.id, refused)
+  if (!body.success) return failed(db, row, refused)
   return complete(db, row, result, body.data.nonce)
 }
 

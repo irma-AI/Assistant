@@ -1,4 +1,5 @@
 import { definePlugin } from 'nitro'
+import { deleteExpiredAuditEvents } from './audit.server'
 import { checkBankidConfig } from './auth/bankid.server'
 import { getDb } from './db.server'
 import { deleteStaleLoginAttempts } from './login.server'
@@ -25,6 +26,18 @@ export default definePlugin(() => {
   }
   void sweep()
   setInterval(() => void sweep(), day).unref()
+  const sweepAudit = async () => {
+    try {
+      await deleteExpiredAuditEvents(getDb())
+    } catch (e) {
+      console.error(
+        'audit log cleanup failed',
+        e instanceof Error ? e.message : e,
+      )
+    }
+  }
+  void sweepAudit()
+  setInterval(() => void sweepAudit(), day).unref()
   const sweepAttempts = async () => {
     try {
       await deleteStaleLoginAttempts(getDb())

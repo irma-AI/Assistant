@@ -240,7 +240,7 @@ async function confirmDeletion(ip: string) {
 
 const users = () => db.selectFrom('users').selectAll().execute()
 
-test('deleting an account removes the user and every session, clears the cookie and records only the ID', async () => {
+test('deleting an account removes the user and every session, clears the cookie and records an audit event', async () => {
   const known = new Set((await users()).map((u) => u.id))
   const { login, id } = await begin('203.0.113.50')
   await poll(login, id)
@@ -263,20 +263,69 @@ test('deleting an account removes the user and every session, clears the cookie 
       .execute(),
   ).toEqual([])
   expect(
-    await db.selectFrom('deleted_users').select('user_id').execute(),
-  ).toContainEqual({ user_id: user?.id })
+    await db
+      .selectFrom('audit_events')
+      .select('detail')
+      .where('event', '=', 'account_deleted')
+      .where('user_id', '=', user?.id ?? '')
+      .execute(),
+  ).toHaveLength(1)
   expect(await attempts()).toBe(0)
 })
 
 test('confirming deletion for an identity with no account fails and deletes nothing', async () => {
-  const before = (await users()).length
+  const before = [(await users()).length, await sessionCount()]
   const done = await confirmDeletion('203.0.113.60')
   expect(done.body).toMatchObject({ status: 'failed' })
-  expect(await users()).toHaveLength(before)
+  expect([(await users()).length, await sessionCount()]).toEqual(before)
 })
 
-test('a deletion confirmation never creates a session', async () => {
-  const before = await sessionCount()
-  await confirmDeletion('203.0.113.61')
-  expect(await sessionCount()).toBe(before)
+test('a login prints no identity number, name, token or full IP to the logs', async () => {
+  const printed: string[] = []
+  const spies = (['log', 'info', 'warn', 'error', 'debug'] as const).map((m) =>
+    vi.spyOn(console, m).mockImplementation((...args: unknown[]) => {
+      printed.push(args.map(String).join(' '))
+    }),
+  )
+  const writes = [process.stdout, process.stderr].map((s) =>
+    vi.spyOn(s, 'write').mockImplementation((chunk: unknown) => {
+      printed.push(String(chunk))
+      return true
+    }),
+  )
+  const ip = '203.0.113.77'
+  const { login, id } = await begin(ip)
+  await poll(login, id)
+  const done = await poll(login, id)
+  // a failing collect is the path most likely to log an error
+  const failing = await begin(ip)
+  const row = await db
+    .selectFrom('login_attempts')
+    .select('order_ref')
+    .where('id', '=', failing.id)
+    .executeTakeFirstOrThrow()
+  await cancel(row.order_ref)
+  await poll(failing.login, failing.id)
+  await cancelLogin(post({ cookie: failing.login }), db)
+  ;[...spies, ...writes].forEach((s) => {
+    s.mockRestore()
+  })
+
+  const user = await db
+    .selectFrom('users')
+    .select('name')
+    .orderBy('created_at', 'desc')
+    .executeTakeFirstOrThrow()
+  const output = printed.join('\n')
+  const secrets = [
+    ip,
+    user.name,
+    login.split('=')[1] ?? '',
+    cookieOf(done.response, '__Host-session=')?.split('=')[1] ?? '',
+  ]
+  secrets.forEach((s) => {
+    expect(s).not.toBe('')
+    expect(output).not.toContain(s)
+  })
+  expect(output).not.toMatch(/\b(?:19|20)?\d{6}[-+]?\d{4}\b/)
 })

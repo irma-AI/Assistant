@@ -9,11 +9,32 @@ export type Generated<T> = T extends ColumnType<infer S, infer I, infer U>
   ? ColumnType<S, I | undefined, U>
   : ColumnType<T, T | undefined, T>;
 
+export type Int8 = ColumnType<string, bigint | number | string, bigint | number | string>;
+
+export type Json = JsonValue;
+
+export type JsonArray = JsonValue[];
+
+export type JsonObject = {
+  [x: string]: JsonValue | undefined;
+};
+
+export type JsonPrimitive = boolean | number | string | null;
+
+export type JsonValue = JsonArray | JsonObject | JsonPrimitive;
+
 export type Timestamp = ColumnType<Date, Date | string, Date | string>;
 
-export interface DeletedUsers {
-  deleted_at: Generated<Timestamp>;
-  user_id: string;
+export interface AuditEvents {
+  at: Generated<Timestamp>;
+  detail: Generated<Json>;
+  event: string;
+  hash: Buffer;
+  id: Generated<Int8>;
+  ip: string | null;
+  prev_hash: Buffer | null;
+  session_kind: string | null;
+  user_id: string | null;
 }
 
 export interface LoginAttempts {
@@ -46,7 +67,7 @@ export interface Users {
 }
 
 export interface DB {
-  deleted_users: DeletedUsers;
+  audit_events: AuditEvents;
   login_attempts: LoginAttempts;
   sessions: Sessions;
   users: Users;
