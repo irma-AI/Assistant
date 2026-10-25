@@ -5,13 +5,13 @@ import { z } from 'zod'
 import { publicUrl } from '#/api/csrf'
 import {
   auth,
-  bankidMode,
   cancel,
   collect,
   messageFor,
   pendingMessage,
   qrData,
 } from './auth/bankid.server'
+import { clientIp, recordAudit } from './audit.server'
 import type { DB } from './db.gen'
 import { getDb } from './db.server'
 import { hashPnr } from './pii.server'
@@ -40,13 +40,6 @@ const respond = (body: object | null, cookies: string[], status = 200) => {
   return new Response(JSON.stringify(body), { status, headers })
 }
 
-// The proxy appends the address it saw to X-Forwarded-For, so the last entry is the one to trust.
-// Without a proxy (fake mode only) the connection is local.
-function clientIp(request: Request) {
-  const last = request.headers.get('x-forwarded-for')?.split(',').at(-1)?.trim()
-  return last || (bankidMode() === 'fake' ? '127.0.0.1' : undefined)
-}
-
 // Removes the attempt and cancels its order at BankID, which may already be over.
 async function drop(db: Kysely<DB>, id: string) {
   const row = await db
@@ -57,8 +50,17 @@ async function drop(db: Kysely<DB>, id: string) {
   if (row) await cancel(row.order_ref).catch(() => undefined)
 }
 
-async function failed(db: Kysely<DB>, id: string, message: string) {
-  await drop(db, id)
+async function failed(
+  db: Kysely<DB>,
+  row: { id: string; end_user_ip: string },
+  message: string,
+) {
+  await drop(db, row.id)
+  await recordAudit(db, {
+    event: 'login_failure',
+    sessionKind: 'web',
+    ip: row.end_user_ip,
+  })
   return respond({ status: 'failed', message }, [clearLogin])
 }
 
@@ -174,7 +176,7 @@ async function complete(
   const sameBrowser = row.nonce === null || nonce === row.nonce
   const sameIp = row.nonce === null || result.ip === row.end_user_ip
   if (!sameIp || result.risk === 'high' || !sameBrowser) {
-    return failed(db, row.id, refused)
+    return failed(db, row, refused)
   }
   const user = await db
     .insertInto('users')
@@ -185,6 +187,12 @@ async function complete(
     .returning('id')
     .executeTakeFirstOrThrow()
   const token = await createSession(db, user.id, 'web')
+  await recordAudit(db, {
+    event: 'login_success',
+    userId: user.id,
+    sessionKind: 'web',
+    ip: row.end_user_ip,
+  })
   await db.deleteFrom('login_attempts').where('id', '=', row.id).execute()
   return respond({ status: 'complete' }, [
     cookie(cookieName, token, webSeconds),
@@ -212,9 +220,9 @@ export async function pollLogin(request: Request, db: Kysely<DB> = getDb()) {
   if (!result)
     return pending(pendingMessage('outstandingTransaction', row.nonce !== null))
   if (result.status === 'pending') return pending(result.message)
-  if (result.status !== 'complete') return failed(db, row.id, result.message)
+  if (result.status !== 'complete') return failed(db, row, result.message)
   const body = statusBody.safeParse(await request.json().catch(() => ({})))
-  if (!body.success) return failed(db, row.id, refused)
+  if (!body.success) return failed(db, row, refused)
   return complete(db, row, result, body.data.nonce)
 }
 
