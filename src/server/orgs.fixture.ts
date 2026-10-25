@@ -10,7 +10,7 @@ import { createSession } from './session.server'
 
 const name = `test_${randomUUID().replaceAll('-', '')}`
 const adminUrl = () => process.env.DATABASE_URL ?? ''
-const testUrl = () => {
+export const testUrl = () => {
   const url = new URL(adminUrl())
   url.pathname = `/${name}`
   return url.href

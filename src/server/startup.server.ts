@@ -2,11 +2,10 @@ import { definePlugin } from 'nitro'
 import { deleteExpiredAuditEvents } from './audit.server'
 import { checkBankidConfig } from './auth/bankid.server'
 import { getDb } from './db.server'
-import { deleteStaleLoginAttempts } from './login.server'
+import { startJobs } from './jobs.server'
 import { deleteEndedSessions } from './session.server'
 
 const day = 24 * 60 * 60 * 1000
-const quarterHour = 15 * 60 * 1000
 
 // Runs once when the server starts; the build's prerender starts it too, with no secrets or database.
 export default definePlugin(() => {
@@ -38,16 +37,12 @@ export default definePlugin(() => {
   }
   void sweepAudit()
   setInterval(() => void sweepAudit(), day).unref()
-  const sweepAttempts = async () => {
-    try {
-      await deleteStaleLoginAttempts(getDb())
-    } catch (e) {
+  const url = process.env.DATABASE_URL
+  if (url)
+    startJobs(getDb(), url).catch((e: unknown) => {
       console.error(
-        'login attempt cleanup failed',
+        'job queue failed to start',
         e instanceof Error ? e.message : e,
       )
-    }
-  }
-  void sweepAttempts()
-  setInterval(() => void sweepAttempts(), quarterHour).unref()
+    })
 })
