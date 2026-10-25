@@ -188,3 +188,42 @@ test('offers more time near the end of the QR display, by button or space bar', 
   await expect(page.getByText('Tid kvar: 5:00')).toBeVisible()
   expect(extendCalls).toBe(2)
 })
+
+test('an admin invites a second user by link, who logs in and joins', async ({
+  page,
+  browser,
+}, testInfo) => {
+  // The fake gives one IP one person, so the invitee needs its own IP.
+  const n = String(testInfo.workerIndex)
+  await page.context().setExtraHTTPHeaders({
+    'x-forwarded-for': `198.51.100.${String(200 + testInfo.workerIndex)}`,
+  })
+  await page.goto('/app/login')
+  await page.getByRole('button', { name: /annan enhet/ }).click()
+  await expect(page).toHaveURL(/\/app$/, { timeout: 15_000 })
+  await page.getByLabel('Namn').fill(`Inbjudan AB ${n}`)
+  await page.getByRole('button', { name: 'Skapa organisation' }).click()
+  await page.getByRole('button', { name: 'Skapa inbjudningslänk' }).click()
+  const link = await page.getByLabel(/Länk/).inputValue()
+  expect(link).toContain('/app/invite/')
+
+  const guest = await browser.newContext({
+    ...testInfo.project.use,
+    extraHTTPHeaders: {
+      'x-forwarded-for': `198.51.100.${String(220 + testInfo.workerIndex)}`,
+    },
+  })
+  const second = await guest.newPage()
+  await second.goto(link)
+  await expect(
+    second.getByRole('heading', { name: `Inbjudan till Inbjudan AB ${n}` }),
+  ).toBeVisible()
+  await second.getByRole('button', { name: /annan enhet/ }).click()
+  await expect(second).toHaveURL(/\/app$/, { timeout: 15_000 })
+  await expect(second.getByText(`Inbjudan AB ${n} (Medlem)`)).toBeVisible()
+
+  // The link is single-use.
+  await second.goto(link)
+  await expect(second.getByRole('alert')).toBeVisible()
+  await guest.close()
+})

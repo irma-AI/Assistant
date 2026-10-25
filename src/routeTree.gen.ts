@@ -20,9 +20,11 @@ import { Route as AppRaderaKontoRouteImport } from './routes/app/radera-konto'
 import { Route as ApiV1LogoutRouteImport } from './routes/api/v1/logout'
 import { Route as ApiV1McpRouteImport } from './routes/api/v1/mcp'
 import { Route as ApiV1MeRouteImport } from './routes/api/v1/me'
+import { Route as AppInviteTokenRouteImport } from './routes/app/invite/$token'
 import { Route as AppLoginIndexRouteImport } from './routes/app/login/index'
 import { Route as AppLoginDemoRouteImport } from './routes/app/login/demo'
 import { Route as AppLoginReturnRouteImport } from './routes/app/login/return'
+import { Route as ApiV1InvitesTokenRouteImport } from './routes/api/v1/invites/$token'
 import { Route as ApiV1MeExportRouteImport } from './routes/api/v1/me.export'
 import { Route as ApiV1OrgsIndexRouteImport } from './routes/api/v1/orgs/index'
 import { Route as ApiV1AuthBankidCancelRouteImport } from './routes/api/v1/auth/bankid/cancel'
@@ -32,7 +34,10 @@ import { Route as ApiV1AuthBankidStartRouteImport } from './routes/api/v1/auth/b
 import { Route as ApiV1AuthBankidStatusRouteImport } from './routes/api/v1/auth/bankid/status'
 import { Route as ApiV1AuthDemoIndexRouteImport } from './routes/api/v1/auth/demo/index'
 import { Route as ApiV1AuthDemoDeleteRouteImport } from './routes/api/v1/auth/demo/delete'
+import { Route as ApiV1InvitesTokenAcceptRouteImport } from './routes/api/v1/invites/$token/accept'
 import { Route as ApiV1OrgsOrgIdMeRouteImport } from './routes/api/v1/orgs/$orgId/me'
+import { Route as ApiV1OrgsOrgIdInvitesIndexRouteImport } from './routes/api/v1/orgs/$orgId/invites/index'
+import { Route as ApiV1OrgsOrgIdInvitesInviteIdRouteImport } from './routes/api/v1/orgs/$orgId/invites/$inviteId'
 import { Route as ApiV1OrgsOrgIdMembersIndexRouteImport } from './routes/api/v1/orgs/$orgId/members/index'
 import { Route as ApiV1OrgsOrgIdMembersUserIdRouteImport } from './routes/api/v1/orgs/$orgId/members/$userId'
 import { Route as ApiV1OrgsOrgIdMembersMeRouteImport } from './routes/api/v1/orgs/$orgId/members/me'
@@ -95,6 +100,11 @@ const ApiV1MeRoute = ApiV1MeRouteImport.update({
   path: '/api/v1/me',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AppInviteTokenRoute = AppInviteTokenRouteImport.update({
+  id: '/invite/$token',
+  path: '/invite/$token',
+  getParentRoute: () => AppRouteRoute,
+} as any)
 const AppLoginIndexRoute = AppLoginIndexRouteImport.update({
   id: '/login/',
   path: '/login/',
@@ -109,6 +119,11 @@ const AppLoginReturnRoute = AppLoginReturnRouteImport.update({
   id: '/login/return',
   path: '/login/return',
   getParentRoute: () => AppRouteRoute,
+} as any)
+const ApiV1InvitesTokenRoute = ApiV1InvitesTokenRouteImport.update({
+  id: '/api/v1/invites/$token',
+  path: '/api/v1/invites/$token',
+  getParentRoute: () => rootRouteImport,
 } as any)
 const ApiV1MeExportRoute = ApiV1MeExportRouteImport.update({
   id: '/export',
@@ -155,11 +170,28 @@ const ApiV1AuthDemoDeleteRoute = ApiV1AuthDemoDeleteRouteImport.update({
   path: '/api/v1/auth/demo/delete',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiV1InvitesTokenAcceptRoute = ApiV1InvitesTokenAcceptRouteImport.update({
+  id: '/accept',
+  path: '/accept',
+  getParentRoute: () => ApiV1InvitesTokenRoute,
+} as any)
 const ApiV1OrgsOrgIdMeRoute = ApiV1OrgsOrgIdMeRouteImport.update({
   id: '/api/v1/orgs/$orgId/me',
   path: '/api/v1/orgs/$orgId/me',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiV1OrgsOrgIdInvitesIndexRoute =
+  ApiV1OrgsOrgIdInvitesIndexRouteImport.update({
+    id: '/api/v1/orgs/$orgId/invites/',
+    path: '/api/v1/orgs/$orgId/invites/',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const ApiV1OrgsOrgIdInvitesInviteIdRoute =
+  ApiV1OrgsOrgIdInvitesInviteIdRouteImport.update({
+    id: '/api/v1/orgs/$orgId/invites/$inviteId',
+    path: '/api/v1/orgs/$orgId/invites/$inviteId',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 const ApiV1OrgsOrgIdMembersIndexRoute =
   ApiV1OrgsOrgIdMembersIndexRouteImport.update({
     id: '/api/v1/orgs/$orgId/members/',
@@ -202,9 +234,11 @@ export interface FileRoutesByFullPath {
   '/api/v1/logout': typeof ApiV1LogoutRoute
   '/api/v1/mcp': typeof ApiV1McpRoute
   '/api/v1/me': typeof ApiV1MeRouteWithChildren
+  '/app/invite/$token': typeof AppInviteTokenRoute
   '/app/login/demo': typeof AppLoginDemoRoute
   '/app/login/return': typeof AppLoginReturnRoute
   '/app/login/': typeof AppLoginIndexRoute
+  '/api/v1/invites/$token': typeof ApiV1InvitesTokenRouteWithChildren
   '/api/v1/me/export': typeof ApiV1MeExportRoute
   '/api/v1/orgs/': typeof ApiV1OrgsIndexRoute
   '/api/v1/auth/bankid/cancel': typeof ApiV1AuthBankidCancelRoute
@@ -213,11 +247,14 @@ export interface FileRoutesByFullPath {
   '/api/v1/auth/bankid/start': typeof ApiV1AuthBankidStartRoute
   '/api/v1/auth/bankid/status': typeof ApiV1AuthBankidStatusRoute
   '/api/v1/auth/demo/delete': typeof ApiV1AuthDemoDeleteRoute
+  '/api/v1/invites/$token/accept': typeof ApiV1InvitesTokenAcceptRoute
   '/api/v1/orgs/$orgId/me': typeof ApiV1OrgsOrgIdMeRoute
   '/api/v1/auth/demo/': typeof ApiV1AuthDemoIndexRoute
+  '/api/v1/orgs/$orgId/invites/$inviteId': typeof ApiV1OrgsOrgIdInvitesInviteIdRoute
   '/api/v1/orgs/$orgId/members/$userId': typeof ApiV1OrgsOrgIdMembersUserIdRoute
   '/api/v1/orgs/$orgId/members/me': typeof ApiV1OrgsOrgIdMembersMeRoute
   '/api/v1/orgs/$orgId/roles/$roleId': typeof ApiV1OrgsOrgIdRolesRoleIdRoute
+  '/api/v1/orgs/$orgId/invites/': typeof ApiV1OrgsOrgIdInvitesIndexRoute
   '/api/v1/orgs/$orgId/members/': typeof ApiV1OrgsOrgIdMembersIndexRoute
   '/api/v1/orgs/$orgId/roles/': typeof ApiV1OrgsOrgIdRolesIndexRoute
 }
@@ -232,9 +269,11 @@ export interface FileRoutesByTo {
   '/api/v1/logout': typeof ApiV1LogoutRoute
   '/api/v1/mcp': typeof ApiV1McpRoute
   '/api/v1/me': typeof ApiV1MeRouteWithChildren
+  '/app/invite/$token': typeof AppInviteTokenRoute
   '/app/login/demo': typeof AppLoginDemoRoute
   '/app/login/return': typeof AppLoginReturnRoute
   '/app/login': typeof AppLoginIndexRoute
+  '/api/v1/invites/$token': typeof ApiV1InvitesTokenRouteWithChildren
   '/api/v1/me/export': typeof ApiV1MeExportRoute
   '/api/v1/orgs': typeof ApiV1OrgsIndexRoute
   '/api/v1/auth/bankid/cancel': typeof ApiV1AuthBankidCancelRoute
@@ -243,11 +282,14 @@ export interface FileRoutesByTo {
   '/api/v1/auth/bankid/start': typeof ApiV1AuthBankidStartRoute
   '/api/v1/auth/bankid/status': typeof ApiV1AuthBankidStatusRoute
   '/api/v1/auth/demo/delete': typeof ApiV1AuthDemoDeleteRoute
+  '/api/v1/invites/$token/accept': typeof ApiV1InvitesTokenAcceptRoute
   '/api/v1/orgs/$orgId/me': typeof ApiV1OrgsOrgIdMeRoute
   '/api/v1/auth/demo': typeof ApiV1AuthDemoIndexRoute
+  '/api/v1/orgs/$orgId/invites/$inviteId': typeof ApiV1OrgsOrgIdInvitesInviteIdRoute
   '/api/v1/orgs/$orgId/members/$userId': typeof ApiV1OrgsOrgIdMembersUserIdRoute
   '/api/v1/orgs/$orgId/members/me': typeof ApiV1OrgsOrgIdMembersMeRoute
   '/api/v1/orgs/$orgId/roles/$roleId': typeof ApiV1OrgsOrgIdRolesRoleIdRoute
+  '/api/v1/orgs/$orgId/invites': typeof ApiV1OrgsOrgIdInvitesIndexRoute
   '/api/v1/orgs/$orgId/members': typeof ApiV1OrgsOrgIdMembersIndexRoute
   '/api/v1/orgs/$orgId/roles': typeof ApiV1OrgsOrgIdRolesIndexRoute
 }
@@ -264,9 +306,11 @@ export interface FileRoutesById {
   '/api/v1/logout': typeof ApiV1LogoutRoute
   '/api/v1/mcp': typeof ApiV1McpRoute
   '/api/v1/me': typeof ApiV1MeRouteWithChildren
+  '/app/invite/$token': typeof AppInviteTokenRoute
   '/app/login/demo': typeof AppLoginDemoRoute
   '/app/login/return': typeof AppLoginReturnRoute
   '/app/login/': typeof AppLoginIndexRoute
+  '/api/v1/invites/$token': typeof ApiV1InvitesTokenRouteWithChildren
   '/api/v1/me/export': typeof ApiV1MeExportRoute
   '/api/v1/orgs/': typeof ApiV1OrgsIndexRoute
   '/api/v1/auth/bankid/cancel': typeof ApiV1AuthBankidCancelRoute
@@ -275,11 +319,14 @@ export interface FileRoutesById {
   '/api/v1/auth/bankid/start': typeof ApiV1AuthBankidStartRoute
   '/api/v1/auth/bankid/status': typeof ApiV1AuthBankidStatusRoute
   '/api/v1/auth/demo/delete': typeof ApiV1AuthDemoDeleteRoute
+  '/api/v1/invites/$token/accept': typeof ApiV1InvitesTokenAcceptRoute
   '/api/v1/orgs/$orgId/me': typeof ApiV1OrgsOrgIdMeRoute
   '/api/v1/auth/demo/': typeof ApiV1AuthDemoIndexRoute
+  '/api/v1/orgs/$orgId/invites/$inviteId': typeof ApiV1OrgsOrgIdInvitesInviteIdRoute
   '/api/v1/orgs/$orgId/members/$userId': typeof ApiV1OrgsOrgIdMembersUserIdRoute
   '/api/v1/orgs/$orgId/members/me': typeof ApiV1OrgsOrgIdMembersMeRoute
   '/api/v1/orgs/$orgId/roles/$roleId': typeof ApiV1OrgsOrgIdRolesRoleIdRoute
+  '/api/v1/orgs/$orgId/invites/': typeof ApiV1OrgsOrgIdInvitesIndexRoute
   '/api/v1/orgs/$orgId/members/': typeof ApiV1OrgsOrgIdMembersIndexRoute
   '/api/v1/orgs/$orgId/roles/': typeof ApiV1OrgsOrgIdRolesIndexRoute
 }
@@ -297,9 +344,11 @@ export interface FileRouteTypes {
     | '/api/v1/logout'
     | '/api/v1/mcp'
     | '/api/v1/me'
+    | '/app/invite/$token'
     | '/app/login/demo'
     | '/app/login/return'
     | '/app/login/'
+    | '/api/v1/invites/$token'
     | '/api/v1/me/export'
     | '/api/v1/orgs/'
     | '/api/v1/auth/bankid/cancel'
@@ -308,11 +357,14 @@ export interface FileRouteTypes {
     | '/api/v1/auth/bankid/start'
     | '/api/v1/auth/bankid/status'
     | '/api/v1/auth/demo/delete'
+    | '/api/v1/invites/$token/accept'
     | '/api/v1/orgs/$orgId/me'
     | '/api/v1/auth/demo/'
+    | '/api/v1/orgs/$orgId/invites/$inviteId'
     | '/api/v1/orgs/$orgId/members/$userId'
     | '/api/v1/orgs/$orgId/members/me'
     | '/api/v1/orgs/$orgId/roles/$roleId'
+    | '/api/v1/orgs/$orgId/invites/'
     | '/api/v1/orgs/$orgId/members/'
     | '/api/v1/orgs/$orgId/roles/'
   fileRoutesByTo: FileRoutesByTo
@@ -327,9 +379,11 @@ export interface FileRouteTypes {
     | '/api/v1/logout'
     | '/api/v1/mcp'
     | '/api/v1/me'
+    | '/app/invite/$token'
     | '/app/login/demo'
     | '/app/login/return'
     | '/app/login'
+    | '/api/v1/invites/$token'
     | '/api/v1/me/export'
     | '/api/v1/orgs'
     | '/api/v1/auth/bankid/cancel'
@@ -338,11 +392,14 @@ export interface FileRouteTypes {
     | '/api/v1/auth/bankid/start'
     | '/api/v1/auth/bankid/status'
     | '/api/v1/auth/demo/delete'
+    | '/api/v1/invites/$token/accept'
     | '/api/v1/orgs/$orgId/me'
     | '/api/v1/auth/demo'
+    | '/api/v1/orgs/$orgId/invites/$inviteId'
     | '/api/v1/orgs/$orgId/members/$userId'
     | '/api/v1/orgs/$orgId/members/me'
     | '/api/v1/orgs/$orgId/roles/$roleId'
+    | '/api/v1/orgs/$orgId/invites'
     | '/api/v1/orgs/$orgId/members'
     | '/api/v1/orgs/$orgId/roles'
   id:
@@ -358,9 +415,11 @@ export interface FileRouteTypes {
     | '/api/v1/logout'
     | '/api/v1/mcp'
     | '/api/v1/me'
+    | '/app/invite/$token'
     | '/app/login/demo'
     | '/app/login/return'
     | '/app/login/'
+    | '/api/v1/invites/$token'
     | '/api/v1/me/export'
     | '/api/v1/orgs/'
     | '/api/v1/auth/bankid/cancel'
@@ -369,11 +428,14 @@ export interface FileRouteTypes {
     | '/api/v1/auth/bankid/start'
     | '/api/v1/auth/bankid/status'
     | '/api/v1/auth/demo/delete'
+    | '/api/v1/invites/$token/accept'
     | '/api/v1/orgs/$orgId/me'
     | '/api/v1/auth/demo/'
+    | '/api/v1/orgs/$orgId/invites/$inviteId'
     | '/api/v1/orgs/$orgId/members/$userId'
     | '/api/v1/orgs/$orgId/members/me'
     | '/api/v1/orgs/$orgId/roles/$roleId'
+    | '/api/v1/orgs/$orgId/invites/'
     | '/api/v1/orgs/$orgId/members/'
     | '/api/v1/orgs/$orgId/roles/'
   fileRoutesById: FileRoutesById
@@ -388,6 +450,7 @@ export interface RootRouteChildren {
   ApiV1LogoutRoute: typeof ApiV1LogoutRoute
   ApiV1McpRoute: typeof ApiV1McpRoute
   ApiV1MeRoute: typeof ApiV1MeRouteWithChildren
+  ApiV1InvitesTokenRoute: typeof ApiV1InvitesTokenRouteWithChildren
   ApiV1OrgsIndexRoute: typeof ApiV1OrgsIndexRoute
   ApiV1AuthBankidCancelRoute: typeof ApiV1AuthBankidCancelRoute
   ApiV1AuthBankidExtendRoute: typeof ApiV1AuthBankidExtendRoute
@@ -397,9 +460,11 @@ export interface RootRouteChildren {
   ApiV1AuthDemoDeleteRoute: typeof ApiV1AuthDemoDeleteRoute
   ApiV1OrgsOrgIdMeRoute: typeof ApiV1OrgsOrgIdMeRoute
   ApiV1AuthDemoIndexRoute: typeof ApiV1AuthDemoIndexRoute
+  ApiV1OrgsOrgIdInvitesInviteIdRoute: typeof ApiV1OrgsOrgIdInvitesInviteIdRoute
   ApiV1OrgsOrgIdMembersUserIdRoute: typeof ApiV1OrgsOrgIdMembersUserIdRoute
   ApiV1OrgsOrgIdMembersMeRoute: typeof ApiV1OrgsOrgIdMembersMeRoute
   ApiV1OrgsOrgIdRolesRoleIdRoute: typeof ApiV1OrgsOrgIdRolesRoleIdRoute
+  ApiV1OrgsOrgIdInvitesIndexRoute: typeof ApiV1OrgsOrgIdInvitesIndexRoute
   ApiV1OrgsOrgIdMembersIndexRoute: typeof ApiV1OrgsOrgIdMembersIndexRoute
   ApiV1OrgsOrgIdRolesIndexRoute: typeof ApiV1OrgsOrgIdRolesIndexRoute
 }
@@ -483,6 +548,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiV1MeRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/app/invite/$token': {
+      id: '/app/invite/$token'
+      path: '/invite/$token'
+      fullPath: '/app/invite/$token'
+      preLoaderRoute: typeof AppInviteTokenRouteImport
+      parentRoute: typeof AppRouteRoute
+    }
     '/app/login/': {
       id: '/app/login/'
       path: '/login'
@@ -503,6 +575,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/app/login/return'
       preLoaderRoute: typeof AppLoginReturnRouteImport
       parentRoute: typeof AppRouteRoute
+    }
+    '/api/v1/invites/$token': {
+      id: '/api/v1/invites/$token'
+      path: '/api/v1/invites/$token'
+      fullPath: '/api/v1/invites/$token'
+      preLoaderRoute: typeof ApiV1InvitesTokenRouteImport
+      parentRoute: typeof rootRouteImport
     }
     '/api/v1/me/export': {
       id: '/api/v1/me/export'
@@ -567,11 +646,32 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiV1AuthDemoDeleteRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/v1/invites/$token/accept': {
+      id: '/api/v1/invites/$token/accept'
+      path: '/accept'
+      fullPath: '/api/v1/invites/$token/accept'
+      preLoaderRoute: typeof ApiV1InvitesTokenAcceptRouteImport
+      parentRoute: typeof ApiV1InvitesTokenRoute
+    }
     '/api/v1/orgs/$orgId/me': {
       id: '/api/v1/orgs/$orgId/me'
       path: '/api/v1/orgs/$orgId/me'
       fullPath: '/api/v1/orgs/$orgId/me'
       preLoaderRoute: typeof ApiV1OrgsOrgIdMeRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/v1/orgs/$orgId/invites/': {
+      id: '/api/v1/orgs/$orgId/invites/'
+      path: '/api/v1/orgs/$orgId/invites'
+      fullPath: '/api/v1/orgs/$orgId/invites/'
+      preLoaderRoute: typeof ApiV1OrgsOrgIdInvitesIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/v1/orgs/$orgId/invites/$inviteId': {
+      id: '/api/v1/orgs/$orgId/invites/$inviteId'
+      path: '/api/v1/orgs/$orgId/invites/$inviteId'
+      fullPath: '/api/v1/orgs/$orgId/invites/$inviteId'
+      preLoaderRoute: typeof ApiV1OrgsOrgIdInvitesInviteIdRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/api/v1/orgs/$orgId/members/': {
@@ -615,6 +715,7 @@ declare module '@tanstack/react-router' {
 interface AppRouteRouteChildren {
   AppRaderaKontoRoute: typeof AppRaderaKontoRoute
   AppIndexRoute: typeof AppIndexRoute
+  AppInviteTokenRoute: typeof AppInviteTokenRoute
   AppLoginDemoRoute: typeof AppLoginDemoRoute
   AppLoginReturnRoute: typeof AppLoginReturnRoute
   AppLoginIndexRoute: typeof AppLoginIndexRoute
@@ -623,6 +724,7 @@ interface AppRouteRouteChildren {
 const AppRouteRouteChildren: AppRouteRouteChildren = {
   AppRaderaKontoRoute: AppRaderaKontoRoute,
   AppIndexRoute: AppIndexRoute,
+  AppInviteTokenRoute: AppInviteTokenRoute,
   AppLoginDemoRoute: AppLoginDemoRoute,
   AppLoginReturnRoute: AppLoginReturnRoute,
   AppLoginIndexRoute: AppLoginIndexRoute,
@@ -643,6 +745,17 @@ const ApiV1MeRouteChildren: ApiV1MeRouteChildren = {
 const ApiV1MeRouteWithChildren =
   ApiV1MeRoute._addFileChildren(ApiV1MeRouteChildren)
 
+interface ApiV1InvitesTokenRouteChildren {
+  ApiV1InvitesTokenAcceptRoute: typeof ApiV1InvitesTokenAcceptRoute
+}
+
+const ApiV1InvitesTokenRouteChildren: ApiV1InvitesTokenRouteChildren = {
+  ApiV1InvitesTokenAcceptRoute: ApiV1InvitesTokenAcceptRoute,
+}
+
+const ApiV1InvitesTokenRouteWithChildren =
+  ApiV1InvitesTokenRoute._addFileChildren(ApiV1InvitesTokenRouteChildren)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AppRouteRoute: AppRouteRouteWithChildren,
@@ -653,6 +766,7 @@ const rootRouteChildren: RootRouteChildren = {
   ApiV1LogoutRoute: ApiV1LogoutRoute,
   ApiV1McpRoute: ApiV1McpRoute,
   ApiV1MeRoute: ApiV1MeRouteWithChildren,
+  ApiV1InvitesTokenRoute: ApiV1InvitesTokenRouteWithChildren,
   ApiV1OrgsIndexRoute: ApiV1OrgsIndexRoute,
   ApiV1AuthBankidCancelRoute: ApiV1AuthBankidCancelRoute,
   ApiV1AuthBankidExtendRoute: ApiV1AuthBankidExtendRoute,
@@ -662,9 +776,11 @@ const rootRouteChildren: RootRouteChildren = {
   ApiV1AuthDemoDeleteRoute: ApiV1AuthDemoDeleteRoute,
   ApiV1OrgsOrgIdMeRoute: ApiV1OrgsOrgIdMeRoute,
   ApiV1AuthDemoIndexRoute: ApiV1AuthDemoIndexRoute,
+  ApiV1OrgsOrgIdInvitesInviteIdRoute: ApiV1OrgsOrgIdInvitesInviteIdRoute,
   ApiV1OrgsOrgIdMembersUserIdRoute: ApiV1OrgsOrgIdMembersUserIdRoute,
   ApiV1OrgsOrgIdMembersMeRoute: ApiV1OrgsOrgIdMembersMeRoute,
   ApiV1OrgsOrgIdRolesRoleIdRoute: ApiV1OrgsOrgIdRolesRoleIdRoute,
+  ApiV1OrgsOrgIdInvitesIndexRoute: ApiV1OrgsOrgIdInvitesIndexRoute,
   ApiV1OrgsOrgIdMembersIndexRoute: ApiV1OrgsOrgIdMembersIndexRoute,
   ApiV1OrgsOrgIdRolesIndexRoute: ApiV1OrgsOrgIdRolesIndexRoute,
 }

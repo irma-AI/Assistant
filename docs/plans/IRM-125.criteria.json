@@ -1,0 +1,30 @@
+[
+  {
+    "criterion": "An expired, revoked or used link is refused, with one identical answer",
+    "passes": true
+  },
+  {
+    "criterion": "A non-admin and a demo session can't create an invite; an invite can't name Ägare",
+    "passes": true
+  },
+  {
+    "criterion": "Accepting adds exactly one membership, also for two parallel accepts; an existing member gets a no-op",
+    "passes": true
+  },
+  {
+    "criterion": "Only the SHA-256 of the token is stored; create, accept and revoke each write an audit event",
+    "passes": true
+  },
+  {
+    "criterion": "The pre-login endpoint returns the organisation name only",
+    "passes": true
+  },
+  {
+    "criterion": "Playwright: an admin creates an invite link, a second user opens it, logs in and lands in the organisation",
+    "passes": true
+  },
+  {
+    "criterion": "docs/privacy/records.md has an invites row",
+    "passes": true
+  }
+]

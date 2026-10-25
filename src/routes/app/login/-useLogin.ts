@@ -31,16 +31,22 @@ const otherTabMessage =
 
 // A same-device starting tab is told `complete` or `expired` whether or not the return tab succeeded,
 // so for a deletion it must not claim the account is gone.
-function useDone(purpose: Purpose, setPhase: (phase: Phase) => void) {
+function useDone(
+  purpose: Purpose,
+  setPhase: (phase: Phase) => void,
+  loggedIn?: () => void,
+) {
   const navigate = useNavigate()
   return useCallback(
     (startedOnThisDevice: boolean) => {
-      if (purpose === 'login') void navigate({ to: '/app' })
-      else if (startedOnThisDevice)
+      if (purpose === 'login') {
+        if (loggedIn) loggedIn()
+        else void navigate({ to: '/app' })
+      } else if (startedOnThisDevice)
         setPhase({ name: 'idle', message: otherTabMessage })
       else void navigate({ to: '/app/radera-konto', search: { raderat: true } })
     },
-    [navigate, purpose, setPhase],
+    [navigate, purpose, setPhase, loggedIn],
   )
 }
 
@@ -88,9 +94,9 @@ function usePoll(
   }, [waiting, sameDeviceTab, done])
 }
 
-export function useLogin(purpose: Purpose) {
+export function useLogin(purpose: Purpose, loggedIn?: () => void) {
   const [phase, setPhase] = useState<Phase>({ name: 'idle' })
-  const done = useDone(purpose, setPhase)
+  const done = useDone(purpose, setPhase, loggedIn)
   const [big, setBig] = useState(false)
   const [sameDeviceTab, setSameDeviceTab] = useState(false)
   const [testMode, setTestMode] = useState(false)
