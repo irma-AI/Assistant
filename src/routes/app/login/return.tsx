@@ -3,12 +3,16 @@ import { useEffect, useState } from 'react'
 import { expiredMessage, failedMessage, poll } from './-bankid'
 
 export const Route = createFileRoute('/app/login/return')({
+  validateSearch: (search) => ({
+    purpose: search.purpose === 'delete' ? ('delete' as const) : undefined,
+  }),
   component: Return,
 })
 
 // The BankID app sends the browser back here with the nonce from the returnUrl in the fragment.
 function Return() {
   const navigate = useNavigate()
+  const { purpose } = Route.useSearch()
   const [message, setMessage] = useState<string>()
   const [hint, setHint] = useState('')
 
@@ -26,7 +30,10 @@ function Return() {
             return
           }
           clearInterval(timer)
-          if (next.status === 'complete') void navigate({ to: '/app' })
+          if (next.status === 'complete')
+            void (purpose === 'delete'
+              ? navigate({ to: '/app/radera-konto', search: { raderat: true } })
+              : navigate({ to: '/app' }))
           else
             setMessage(next.status === 'failed' ? next.message : expiredMessage)
         },
@@ -36,7 +43,7 @@ function Return() {
     return () => {
       clearInterval(timer)
     }
-  }, [navigate])
+  }, [navigate, purpose])
 
   return (
     <main>

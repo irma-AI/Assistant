@@ -44,6 +44,7 @@ export interface LoginAttempts {
   last_collect_at: Timestamp | null;
   nonce: string | null;
   order_ref: string;
+  purpose: Generated<string>;
   qr_start_secret: string;
   qr_start_token: string;
 }

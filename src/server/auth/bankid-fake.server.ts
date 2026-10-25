@@ -23,7 +23,7 @@ const luhn = (digits: string) => {
 
 const pad = (n: number, width: number) => String(n).padStart(width, '0')
 
-// A fresh made-up person per completed order: random birth date and serial with a valid check digit.
+// A made-up person: random birth date and serial with a valid check digit.
 function makePerson() {
   const year = 1940 + randomInt(60)
   const body = `${pad(year % 100, 2)}${pad(1 + randomInt(12), 2)}${pad(1 + randomInt(28), 2)}${pad(randomInt(1000), 3)}`
@@ -45,6 +45,9 @@ const fail = (errorCode: string): [number, object] => [
   { errorCode, details: errorCode },
 ]
 
+// The same IP is the same person every time, so a later confirmation can find the account it logged in to.
+const people = new Map<string, ReturnType<typeof makePerson>>()
+
 // The last collect of an order: the IP decides how the made-up login ends.
 function finished(orderRef: string, ip: string) {
   const failed = (hintCode: string) => ({
@@ -58,7 +61,7 @@ function finished(orderRef: string, ip: string) {
     orderRef,
     status: 'complete',
     completionData: {
-      user: makePerson(),
+      user: people.get(ip) ?? people.set(ip, makePerson()).get(ip),
       device: { ipAddress: ip === fakeOtherIp ? '198.51.100.9' : ip },
       risk: ip === fakeHighRiskIp ? 'high' : 'low',
     },

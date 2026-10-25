@@ -1,0 +1,4 @@
+[
+  {"criterion": "A Vitest test logs in through the fake BankID and finds none of the fields in the captured log output", "passes": true},
+  {"criterion": "docs/privacy/records.md says app logs leave out the fields, with no retention period", "passes": true}
+]

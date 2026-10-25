@@ -1,0 +1,10 @@
+[
+  {
+    "criterion": "Vitest against the real database: the export contains every field records.md lists for the user (users, sessions, audit events) and no session token, and another user's session gets only its own data.",
+    "passes": true
+  },
+  {
+    "criterion": "Playwright against the fake BankID: log in, download the export, and the file parses as JSON.",
+    "passes": true
+  }
+]

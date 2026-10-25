@@ -108,6 +108,9 @@
     "path": "skills/engineering/research",
     "sha256": "e45255278d5affc53e4b7e84955cd5fc749a8f4a805f47fa0bb5fefbfcac09a2"
   },
+  "shaping": {
+    "source": "local"
+  },
   "skeptic-pass": {
     "source": "local"
   },

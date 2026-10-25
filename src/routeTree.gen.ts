@@ -16,10 +16,12 @@ import { Route as PersonuppgiftsbitradesavtalRouteImport } from './routes/person
 import { Route as VersionRouteImport } from './routes/version'
 import { Route as VillkorRouteImport } from './routes/villkor'
 import { Route as AppIndexRouteImport } from './routes/app/index'
+import { Route as AppRaderaKontoRouteImport } from './routes/app/radera-konto'
 import { Route as ApiV1LogoutRouteImport } from './routes/api/v1/logout'
 import { Route as ApiV1MeRouteImport } from './routes/api/v1/me'
 import { Route as AppLoginIndexRouteImport } from './routes/app/login/index'
 import { Route as AppLoginReturnRouteImport } from './routes/app/login/return'
+import { Route as ApiV1MeExportRouteImport } from './routes/api/v1/me.export'
 import { Route as ApiV1OrgsIndexRouteImport } from './routes/api/v1/orgs/index'
 import { Route as ApiV1AuthBankidCancelRouteImport } from './routes/api/v1/auth/bankid/cancel'
 import { Route as ApiV1AuthBankidModeRouteImport } from './routes/api/v1/auth/bankid/mode'
@@ -68,6 +70,11 @@ const AppIndexRoute = AppIndexRouteImport.update({
   path: '/',
   getParentRoute: () => AppRouteRoute,
 } as any)
+const AppRaderaKontoRoute = AppRaderaKontoRouteImport.update({
+  id: '/radera-konto',
+  path: '/radera-konto',
+  getParentRoute: () => AppRouteRoute,
+} as any)
 const ApiV1LogoutRoute = ApiV1LogoutRouteImport.update({
   id: '/api/v1/logout',
   path: '/api/v1/logout',
@@ -87,6 +94,11 @@ const AppLoginReturnRoute = AppLoginReturnRouteImport.update({
   id: '/login/return',
   path: '/login/return',
   getParentRoute: () => AppRouteRoute,
+} as any)
+const ApiV1MeExportRoute = ApiV1MeExportRouteImport.update({
+  id: '/export',
+  path: '/export',
+  getParentRoute: () => ApiV1MeRoute,
 } as any)
 const ApiV1OrgsIndexRoute = ApiV1OrgsIndexRouteImport.update({
   id: '/api/v1/orgs/',
@@ -155,11 +167,13 @@ export interface FileRoutesByFullPath {
   '/personuppgiftsbitradesavtal': typeof PersonuppgiftsbitradesavtalRoute
   '/version': typeof VersionRoute
   '/villkor': typeof VillkorRoute
+  '/app/radera-konto': typeof AppRaderaKontoRoute
   '/app/': typeof AppIndexRoute
   '/api/v1/logout': typeof ApiV1LogoutRoute
-  '/api/v1/me': typeof ApiV1MeRoute
+  '/api/v1/me': typeof ApiV1MeRouteWithChildren
   '/app/login/return': typeof AppLoginReturnRoute
   '/app/login/': typeof AppLoginIndexRoute
+  '/api/v1/me/export': typeof ApiV1MeExportRoute
   '/api/v1/orgs/': typeof ApiV1OrgsIndexRoute
   '/api/v1/auth/bankid/cancel': typeof ApiV1AuthBankidCancelRoute
   '/api/v1/auth/bankid/mode': typeof ApiV1AuthBankidModeRoute
@@ -178,11 +192,13 @@ export interface FileRoutesByTo {
   '/personuppgiftsbitradesavtal': typeof PersonuppgiftsbitradesavtalRoute
   '/version': typeof VersionRoute
   '/villkor': typeof VillkorRoute
+  '/app/radera-konto': typeof AppRaderaKontoRoute
   '/app': typeof AppIndexRoute
   '/api/v1/logout': typeof ApiV1LogoutRoute
-  '/api/v1/me': typeof ApiV1MeRoute
+  '/api/v1/me': typeof ApiV1MeRouteWithChildren
   '/app/login/return': typeof AppLoginReturnRoute
   '/app/login': typeof AppLoginIndexRoute
+  '/api/v1/me/export': typeof ApiV1MeExportRoute
   '/api/v1/orgs': typeof ApiV1OrgsIndexRoute
   '/api/v1/auth/bankid/cancel': typeof ApiV1AuthBankidCancelRoute
   '/api/v1/auth/bankid/mode': typeof ApiV1AuthBankidModeRoute
@@ -203,11 +219,13 @@ export interface FileRoutesById {
   '/personuppgiftsbitradesavtal': typeof PersonuppgiftsbitradesavtalRoute
   '/version': typeof VersionRoute
   '/villkor': typeof VillkorRoute
+  '/app/radera-konto': typeof AppRaderaKontoRoute
   '/app/': typeof AppIndexRoute
   '/api/v1/logout': typeof ApiV1LogoutRoute
-  '/api/v1/me': typeof ApiV1MeRoute
+  '/api/v1/me': typeof ApiV1MeRouteWithChildren
   '/app/login/return': typeof AppLoginReturnRoute
   '/app/login/': typeof AppLoginIndexRoute
+  '/api/v1/me/export': typeof ApiV1MeExportRoute
   '/api/v1/orgs/': typeof ApiV1OrgsIndexRoute
   '/api/v1/auth/bankid/cancel': typeof ApiV1AuthBankidCancelRoute
   '/api/v1/auth/bankid/mode': typeof ApiV1AuthBankidModeRoute
@@ -229,11 +247,13 @@ export interface FileRouteTypes {
     | '/personuppgiftsbitradesavtal'
     | '/version'
     | '/villkor'
+    | '/app/radera-konto'
     | '/app/'
     | '/api/v1/logout'
     | '/api/v1/me'
     | '/app/login/return'
     | '/app/login/'
+    | '/api/v1/me/export'
     | '/api/v1/orgs/'
     | '/api/v1/auth/bankid/cancel'
     | '/api/v1/auth/bankid/mode'
@@ -252,11 +272,13 @@ export interface FileRouteTypes {
     | '/personuppgiftsbitradesavtal'
     | '/version'
     | '/villkor'
+    | '/app/radera-konto'
     | '/app'
     | '/api/v1/logout'
     | '/api/v1/me'
     | '/app/login/return'
     | '/app/login'
+    | '/api/v1/me/export'
     | '/api/v1/orgs'
     | '/api/v1/auth/bankid/cancel'
     | '/api/v1/auth/bankid/mode'
@@ -276,11 +298,13 @@ export interface FileRouteTypes {
     | '/personuppgiftsbitradesavtal'
     | '/version'
     | '/villkor'
+    | '/app/radera-konto'
     | '/app/'
     | '/api/v1/logout'
     | '/api/v1/me'
     | '/app/login/return'
     | '/app/login/'
+    | '/api/v1/me/export'
     | '/api/v1/orgs/'
     | '/api/v1/auth/bankid/cancel'
     | '/api/v1/auth/bankid/mode'
@@ -302,7 +326,7 @@ export interface RootRouteChildren {
   VersionRoute: typeof VersionRoute
   VillkorRoute: typeof VillkorRoute
   ApiV1LogoutRoute: typeof ApiV1LogoutRoute
-  ApiV1MeRoute: typeof ApiV1MeRoute
+  ApiV1MeRoute: typeof ApiV1MeRouteWithChildren
   ApiV1OrgsIndexRoute: typeof ApiV1OrgsIndexRoute
   ApiV1AuthBankidCancelRoute: typeof ApiV1AuthBankidCancelRoute
   ApiV1AuthBankidModeRoute: typeof ApiV1AuthBankidModeRoute
@@ -367,6 +391,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppIndexRouteImport
       parentRoute: typeof AppRouteRoute
     }
+    '/app/radera-konto': {
+      id: '/app/radera-konto'
+      path: '/radera-konto'
+      fullPath: '/app/radera-konto'
+      preLoaderRoute: typeof AppRaderaKontoRouteImport
+      parentRoute: typeof AppRouteRoute
+    }
     '/api/v1/logout': {
       id: '/api/v1/logout'
       path: '/api/v1/logout'
@@ -394,6 +425,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/app/login/return'
       preLoaderRoute: typeof AppLoginReturnRouteImport
       parentRoute: typeof AppRouteRoute
+    }
+    '/api/v1/me/export': {
+      id: '/api/v1/me/export'
+      path: '/export'
+      fullPath: '/api/v1/me/export'
+      preLoaderRoute: typeof ApiV1MeExportRouteImport
+      parentRoute: typeof ApiV1MeRoute
     }
     '/api/v1/orgs/': {
       id: '/api/v1/orgs/'
@@ -476,12 +514,14 @@ declare module '@tanstack/react-router' {
 }
 
 interface AppRouteRouteChildren {
+  AppRaderaKontoRoute: typeof AppRaderaKontoRoute
   AppIndexRoute: typeof AppIndexRoute
   AppLoginReturnRoute: typeof AppLoginReturnRoute
   AppLoginIndexRoute: typeof AppLoginIndexRoute
 }
 
 const AppRouteRouteChildren: AppRouteRouteChildren = {
+  AppRaderaKontoRoute: AppRaderaKontoRoute,
   AppIndexRoute: AppIndexRoute,
   AppLoginReturnRoute: AppLoginReturnRoute,
   AppLoginIndexRoute: AppLoginIndexRoute,
@@ -491,6 +531,17 @@ const AppRouteRouteWithChildren = AppRouteRoute._addFileChildren(
   AppRouteRouteChildren,
 )
 
+interface ApiV1MeRouteChildren {
+  ApiV1MeExportRoute: typeof ApiV1MeExportRoute
+}
+
+const ApiV1MeRouteChildren: ApiV1MeRouteChildren = {
+  ApiV1MeExportRoute: ApiV1MeExportRoute,
+}
+
+const ApiV1MeRouteWithChildren =
+  ApiV1MeRoute._addFileChildren(ApiV1MeRouteChildren)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AppRouteRoute: AppRouteRouteWithChildren,
@@ -499,7 +550,7 @@ const rootRouteChildren: RootRouteChildren = {
   VersionRoute: VersionRoute,
   VillkorRoute: VillkorRoute,
   ApiV1LogoutRoute: ApiV1LogoutRoute,
-  ApiV1MeRoute: ApiV1MeRoute,
+  ApiV1MeRoute: ApiV1MeRouteWithChildren,
   ApiV1OrgsIndexRoute: ApiV1OrgsIndexRoute,
   ApiV1AuthBankidCancelRoute: ApiV1AuthBankidCancelRoute,
   ApiV1AuthBankidModeRoute: ApiV1AuthBankidModeRoute,

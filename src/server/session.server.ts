@@ -72,7 +72,7 @@ export async function authenticate(
   return row?.user_id
 }
 
-const unauthorized = () => {
+export const unauthorized = () => {
   const body: z.infer<typeof errorBody> = { error: 'unauthorized' }
   return Response.json(body, { status: 401 })
 }

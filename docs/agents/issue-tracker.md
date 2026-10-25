@@ -10,7 +10,7 @@ Issues for this repository live in Linear, team **IRM**. Use the Linear connecto
 - **Ready an issue**: move it to Ready. Intake checks Linear every 2 minutes, so nothing else is needed.
 - **Answer a question**: reply on the issue and move it from Needs input to Ready. If it already has a pull request, the next session continues on it.
 - **Local work**: the local worker adds the `local` label to the issues it claims, which keeps them out of the cloud's one-session count.
-- **Ask the owner**: comment the question, then move the issue to Needs input.
+- **Ask the owner**: comment the question, then move the issue to Needs input. A question that official docs, law or established practice answers is research, not an owner question (`.claude/skills/shaping/SKILL.md`). Decisions sections use that skill's record fields: drivers, options, choice with source, accepted risks, revisit trigger.
 - **Blocking**: Linear's native "blocked by" relation between issues.
 - **Close**: a merged PR whose description says `Closes IRM-12` moves the issue to Done; every merge then archives closed issues.
 

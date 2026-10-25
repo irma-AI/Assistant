@@ -18,9 +18,9 @@ Two roles:
 | Users (`users`, IRM-87) | Identify the account holder | Contract (Art. 6(1)(b)) | Name, keyed HMAC of the personal identity number (never the number), created time | Users | HostUp (server, Sweden) | Until the account is deleted (IRM-92) | HMAC key held apart from the database; TLS; access limited to the app |
 | Sessions (`sessions`, IRM-87) | Keep a user logged in | Contract | Hash of the session token, user, kind (web, app, demo), created, expiry, last used, revoked | Users | HostUp | Web 12 hours, app 90 days; ended sessions deleted after 30 days (`deleteEndedSessions`) | Token stored only as SHA-256; cookie `HttpOnly`, `Secure`, `SameSite=Strict` |
 | BankID login attempts (IRM-110) | Authenticate the user; prevent fraud | Contract for the login; legitimate interest (Art. 6(1)(f)) for abuse prevention | `endUserIp`, user agent and `deviceIdentifier` sent to BankID; order reference; outcome; time | Users and anyone attempting a login | BankID's bank, as a separate controller for its own processing; HostUp | Deleted when the order completes, fails or is cancelled, and swept within an hour at the latest | TLS to BankID; no personal identity number stored in clear |
-| Traefik and container logs | Operate the service, find faults and attacks | Legitimate interest | Request path, IP address, user agent, status, timing; any personal data the app prints | Visitors and users | HostUp, Dokploy (self-hosted) | 14 days (*proposed*, awaiting the owner's approval). Traefik's access log is off, so Traefik writes no per-request IP log. Container logs (Docker `json-file`, no size or age limit of its own) for the Assistant's app and database and for Traefik are cut to the last 14 days daily at 03:17 UTC by the Dokploy schedule "Assistant: 14-day log retention", whose script is `scripts/log-retention.sh` (IRM-115). Keeping personal data out of app logs is IRM-100 | Server access limited to the owner's deploy user |
+| Traefik and container logs | Operate the service, find faults and attacks | Legitimate interest | Request path, IP address, user agent, status, timing; any personal data the app prints | Visitors and users | HostUp, Dokploy (self-hosted) | 14 days (*proposed*, awaiting the owner's approval). Traefik's access log is off, so Traefik writes no per-request IP log. Container logs (Docker `json-file`, no size or age limit of its own) for the Assistant's app and database and for Traefik are cut to the last 14 days daily at 03:17 UTC by the Dokploy schedule "Assistant: 14-day log retention", whose script is `scripts/log-retention.sh` (IRM-115). The app's own log output (`console.*`) leaves out the personal identity number, names, session and login tokens and full IP addresses; a test in `login.server.test.ts` checks this through a fake BankID login (IRM-100) | Server access limited to the owner's deploy user |
 | Demo accounts (*planned*, IRM-91) | Let store reviewers try the app | Legitimate interest | Made-up name, no identity number; sessions of kind `demo` | Reviewers | HostUp | Sessions as above; demo data reset regularly | No real person's data in a demo account |
-| Account deletion (*planned*, IRM-92) | Honour erasure (Art. 17) | Legal obligation (Art. 6(1)(c)) | The deletion request and the time; the user and session rows are removed | Users | HostUp | Deletion record *proposed* 12 months, with no identity data | Needs a live session; sessions cascade with the user |
+| Account deletion (IRM-92) | Honour erasure (Art. 17) | Legal obligation (Art. 6(1)(c)) | The user and its sessions are removed; the audit log keeps an `account_deleted` event with the internal user ID, time and truncated IP | Users | HostUp | The audit event follows the audit log's retention | The person confirms with a fresh BankID login; the user and its sessions are removed in one transaction |
 | Backups (*planned*, IRM-98) | Restore after loss | Legitimate interest | Copies of the tables above | As above | Backup vendor (IRM-98, to be chosen), HostUp | *Proposed:* 30 days. A deleted account leaves backups when they expire | Encrypted before leaving the server; EU storage |
 | Audit log (`audit_events`, IRM-109) | Show who logged in or out, and later exported or administered | Legitimate interest; legal obligation where a rule requires it | Internal user ID, session kind, event, time, IP truncated to /24 (IPv6 /48), no identity number or token | Users, admins | HostUp | 12 months *proposed*; `deleteExpiredAuditEvents` runs daily | Append-only by trigger, rows hash-chained to show tampering |
 
@@ -33,6 +33,18 @@ Transfers outside the EU or EEA: none planned. A vendor that would cause one get
 | Bookkeeping data of a customer organisation (*not built yet*) | Provide the bookkeeping service | The customer decides: contract with its own customers and suppliers, and legal obligation for records the Bookkeeping Act (bokföringslagen) keeps seven years | Vouchers, invoices, counterparties' names and contact details, amounts | The customer's staff, customers, suppliers | HostUp; backup vendor (IRM-98) | The customer's instruction; at least seven years for records under the Bookkeeping Act, then deleted or returned on request | As section 1; data kept apart per organisation |
 
 Account holders in section 1 may also appear in section 2 as the customer's staff. Section 1 rows cover their login; section 2 covers the work they do.
+
+### Account deletion and organisations' records
+
+"Radera mitt konto" in `/app` (and the public web address `/app/radera-konto`, which Google Play's Data safety form asks for as the account-deletion link) deletes at once the keyed hash of the personal identity number, the name, every session and every login, after a fresh BankID confirmation. This is the rule for records an organisation keeps, which features that create them must follow:
+
+- Entries, corrections and completions reference `users.id`.
+- Deleting the account keeps that row's ID and name while bookkeeping records reference it, and deletes everything else at once. The deletion code must be changed to do so when the first such record exists; today none does, so the whole row goes.
+- The kept name is used only to show who made an entry, never for search, contact or analytics.
+- It is purged at the end of the seventh calendar year after the last financial year whose records reference it.
+- Only the organisation (an admin, or by instruction under the DPA) or the expiry purge may erase it earlier. An Art. 17 request about bookkeeping data goes to the organisation, which is its controller.
+
+Why the name stays: BFL 5 kap. 5 § requires a correction to state "när rättelsen har skett och vem som har gjort den", and BFNAR 2013:2 p. 5.7 says the same for completions. BFL 7 kap. 2 § keeps records to the end of the seventh year after the calendar year in which the financial year closed (SFL 39 kap. 3 § with SFF 9 kap. 1 § also gives seven years). GDPR Art. 17(3)(b) exempts data kept for compliance with a legal obligation, and IMY accepts refusing erasure "för att uppfylla en rättslig förpliktelse", while the organisation may not use the data "för annat än bokföring". Not legal advice; whether a display name alone is enough for "vem" is for a lawyer (IRM-54).
 
 ## 3. Cookies and local storage
 
@@ -55,7 +67,7 @@ Reasoning:
 - A DPIA is cheap now: the stored data is small (a keyed hash, not the number).
 - Reasons to skip: today only the HMAC is stored and the user count is small. If so, record why here.
 
-Decision: **[PENDING: owner, date]**
+Decision: **DPIA: yes, decided by the owner 2026-10-24.** See [dpia.md](dpia.md).
 
 ## 5. Supplier register
 

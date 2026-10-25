@@ -64,22 +64,30 @@ async function failed(
   return respond({ status: 'failed', message }, [clearLogin])
 }
 
-const startBody = z.object({ sameDevice: z.boolean() })
+const startBody = z.object({
+  sameDevice: z.boolean(),
+  purpose: z.enum(['login', 'delete']).default('login'),
+})
+
+const deleteText = 'Bekräfta att du vill radera ditt konto'
+const noAccount = 'Det finns inget konto för det här BankID:t.'
 
 const placeOrder = (
   request: Request,
   ip: string,
   device: string,
   nonce: string | null,
+  purpose: 'login' | 'delete',
 ) =>
   auth(ip, {
+    ...(purpose === 'delete' && { userVisibleData: deleteText }),
     web: {
       referringDomain: new URL(publicUrl()).hostname,
       userAgent: request.headers.get('user-agent') ?? '',
       deviceIdentifier: device,
     },
     ...(nonce && {
-      returnUrl: `${publicUrl()}/app/login/return#nonce=${nonce}`,
+      returnUrl: `${publicUrl()}/app/login/return?purpose=${purpose}#nonce=${nonce}`,
     }),
   }).then(
     (order) => ({ order }),
@@ -97,7 +105,7 @@ export async function start(request: Request, db: Kysely<DB> = getDb()) {
   const nonce = body.data.sameDevice
     ? randomBytes(16).toString('base64url')
     : null
-  const placed = await placeOrder(request, ip, device, nonce)
+  const placed = await placeOrder(request, ip, device, nonce, body.data.purpose)
   if ('error' in placed) {
     // RFA4 is the only BankID error the user can act on; anything else is RFA22.
     const known = messageFor('alreadyInProgress')
@@ -112,6 +120,7 @@ export async function start(request: Request, db: Kysely<DB> = getDb()) {
       qr_start_token: order.qrStartToken,
       qr_start_secret: order.qrStartSecret,
       nonce,
+      purpose: body.data.purpose,
       end_user_ip: ip,
     })
     .returning('id')
@@ -158,6 +167,31 @@ const claimCollect = (db: Kysely<DB>, id: string) =>
 type Attempt = NonNullable<Awaited<ReturnType<typeof loadAttempt>>>
 type Done = Extract<Awaited<ReturnType<typeof collect>>, { status: 'complete' }>
 
+// The person has just proved with BankID who they are, so the account behind that identity goes at once;
+// sessions go with it (cascade). Bookkeeping records will reference users.id and decide what stays (docs/privacy/records.md).
+async function deleteAccount(db: Kysely<DB>, row: Attempt, result: Done) {
+  const deleted = await db.transaction().execute(async (trx) => {
+    const user = await trx
+      .deleteFrom('users')
+      .where('pnr_hmac', '=', hashPnr(result.personalNumber))
+      .returning('id')
+      .executeTakeFirst()
+    if (user)
+      await recordAudit(trx, {
+        event: 'account_deleted',
+        userId: user.id,
+        ip: row.end_user_ip,
+      })
+    await trx.deleteFrom('login_attempts').where('id', '=', row.id).execute()
+    return user
+  })
+  if (!deleted) return failed(db, row, noAccount)
+  return respond({ status: 'complete' }, [
+    cookie(cookieName, '', 0),
+    clearLogin,
+  ])
+}
+
 // Only the tab BankID returns to, holding the nonce, may finish a same-device login. The starting tab
 // is told `complete` without a session and the attempt stays for the return tab; it then reloads /app,
 // which has the cookie only in the browser that really logged in.
@@ -178,6 +212,7 @@ async function complete(
   if (!sameIp || result.risk === 'high' || !sameBrowser) {
     return failed(db, row, refused)
   }
+  if (row.purpose === 'delete') return deleteAccount(db, row, result)
   const user = await db
     .insertInto('users')
     .values({ pnr_hmac: hashPnr(result.personalNumber), name: result.name })

@@ -33,6 +33,8 @@ export type AuditEvent = {
     | 'role_updated'
     | 'role_deleted'
     | 'authorization_refused'
+    | 'account_deleted'
+    | 'data_exported'
   userId?: string
   sessionKind?: string
   ip?: string
