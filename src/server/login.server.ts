@@ -178,7 +178,6 @@ async function deleteAccount(db: Kysely<DB>, row: Attempt, result: Done) {
       .selectFrom('users')
       .select('id')
       .where('pnr_hmac', '=', hashPnr(result.personalNumber))
-      .forUpdate()
       .executeTakeFirst()
     if (!user) return 'no_account'
     if (!(await deleteUser(trx, user.id))) return 'sole_owner'

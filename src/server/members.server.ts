@@ -165,6 +165,19 @@ export const soleOwnerOf = (db: Kysely<DB>, userId: string) =>
 // Account deletion (IRM-92): refused while the user is some organisation's only Ägare, so none is left
 // without one (IRM-111); otherwise the memberships go first, then the user. Run inside a transaction.
 export async function deleteUser(trx: Kysely<DB>, userId: string) {
+  // Same lock as lockOrg, on every organisation the user is in, in id order so two deletions can't deadlock.
+  await trx
+    .selectFrom('organisations')
+    .select('id')
+    .where('id', 'in', (eb) =>
+      eb
+        .selectFrom('memberships')
+        .select('organisation_id')
+        .where('user_id', '=', userId),
+    )
+    .orderBy('id')
+    .forUpdate()
+    .execute()
   if ((await soleOwnerOf(trx, userId)).length) return false
   await trx.deleteFrom('memberships').where('user_id', '=', userId).execute()
   await trx.deleteFrom('users').where('id', '=', userId).execute()

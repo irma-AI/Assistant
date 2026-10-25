@@ -1,4 +1,5 @@
 import { expect, test } from 'vitest'
+import { lockOrg } from './access.server'
 import { deleteUser, soleOwnerOf } from './members.server'
 import { orgsApi } from './orgs.api.server'
 import {
@@ -174,4 +175,39 @@ test('deleting a user is refused for the only Ägare, and removes a plain member
       .where('id', 'in', [owner.id, member.id])
       .execute(),
   ).toEqual([{ id: owner.id }])
+})
+
+test('deleting a user waits for the lock on its organisations, like every other Ägare change', async () => {
+  const owner = await person()
+  const other = await person()
+  const org = await newOrg(owner)
+  await addMember(owner, org.id, other, 'Ägare')
+
+  let release = () => {}
+  const held = new Promise<void>((resolve) => {
+    release = resolve
+  })
+  let locked = () => {}
+  const isLocked = new Promise<void>((resolve) => {
+    locked = resolve
+  })
+  const holder = db.transaction().execute(async (trx) => {
+    await lockOrg(trx, org.id)
+    locked()
+    await held
+  })
+  await isLocked
+  let finished = false
+  const deletion = db
+    .transaction()
+    .execute((trx) => deleteUser(trx, owner.id))
+    .then((r) => {
+      finished = true
+      return r
+    })
+  await new Promise((r) => setTimeout(r, 200))
+  expect(finished).toBe(false)
+  release()
+  await holder
+  expect(await deletion).toBe(true)
 })
