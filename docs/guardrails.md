@@ -202,6 +202,7 @@ Size limits here count characters or words, and are enforced.
 - Tests run against a real PostgreSQL, never a mock: a GitHub Actions service container in CI, and the PostgreSQL preinstalled in the cloud VM during a session. One major version runs everywhere: the VM's (16 today) is pinned in CI and on Dokploy. Each test tries the forbidden write and asserts that the database refuses it.
 - Migrations are plain `.sql` files. Kysely's migrator runs them through one small provider that reads the files, all pending ones in a single transaction under an advisory lock, and that provider has its own test.
 - A guard requires a PR that adds a migration to change a test.
+- Every migration works with the previous release's code (expand, then contract), so a rollback can run on the newer schema: an image whose database is ahead of it logs `migrations_ahead` and serves. A release that breaks the rule also breaks its own rollback; revisit at the first dropped or renamed column.
 
 **Why.**
 
@@ -210,7 +211,7 @@ Size limits here count characters or words, and are enforced.
 - The old migration guard was this simple, and all 28 migration commits came with a related test. The AI review ([2.11](#211-ai-review-and-task-fit-judge-run-by-ci-on-the-subscription)) checks that the test fits the migration.
 - Plain SQL keeps constraints and triggers readable and lets squawk lint them.
 
-**Tools.** [Kysely](https://kysely.dev/) for typed queries, and [squawk](https://squawkhq.com/), installed from npm as `squawk-cli`, to flag migrations that lock or rewrite tables, which matters when every merge deploys. squawk assumes each migration runs in a transaction, and an index built `CONCURRENTLY` gets a migration run of its own outside one.
+**Tools.** [Kysely](https://kysely.dev/) for typed queries, and [squawk](https://squawkhq.com/), installed from npm as `squawk-cli`, to flag migrations that lock or rewrite tables, which matters when every merge deploys. squawk assumes each migration runs in a transaction, and PostgreSQL forbids `CREATE INDEX CONCURRENTLY` inside a transaction and the provider has no path outside one, so such an index needs its own issue first.
 
 ### 2.8 Declared test seams, swept
 
@@ -292,6 +293,7 @@ Size limits here count characters or words, and are enforced.
 **What it is.** CI on GitHub Actions decides what merges.
 
 - **Public repository in a free organization**, which unlocks rulesets, the merge queue, auto-merge and unlimited Actions minutes on GitHub Free.
+- **Only collaborators open PRs.** The repository setting Pull requests → "Collaborators only" (GitHub, 2026-02-13) lets only users with write access open one; others can read and comment. The owner adds anyone else by granting write access (owner decision 2026-10-25, IRM-183). It replaced a "Refuse fork PRs" step in `policy`, which ran a script before the checkout and failed every PR; `fix-rounds` still skips a PR whose head isn't this repository.
 - **Two required checks**, pinned to GitHub Actions as their source, so a status posted by hand doesn't count.
   - `ci` runs on `pull_request` and `merge_group` as parallel jobs (the repository and app checks with PostgreSQL, the browser tests in Playwright's image, the release image check) and ends in an always-run job named `ci` that passes only if every other job did. A run takes about 45 seconds.
   - `policy` runs on `pull_request_target` from the target branch's copy of the workflow, and reads the PR's diff as data without running it. It holds the guards ([2.3](#23-guard-framework)) and the AI checks ([2.11](#211-ai-review-and-task-fit-judge-run-by-ci-on-the-subscription)), and runs again when the PR is edited, so a title or description changed after a green run is judged again.
