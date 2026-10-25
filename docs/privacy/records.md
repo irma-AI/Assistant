@@ -22,7 +22,7 @@ Two roles:
 | Demo accounts (*planned*, IRM-91) | Let store reviewers try the app | Legitimate interest | Made-up name, no identity number; sessions of kind `demo` | Reviewers | HostUp | Sessions as above; demo data reset regularly | No real person's data in a demo account |
 | Account deletion (*planned*, IRM-92) | Honour erasure (Art. 17) | Legal obligation (Art. 6(1)(c)) | The deletion request and the time; the user and session rows are removed | Users | HostUp | Deletion record *proposed* 12 months, with no identity data | Needs a live session; sessions cascade with the user |
 | Backups (*planned*, IRM-98) | Restore after loss | Legitimate interest | Copies of the tables above | As above | Backup vendor (IRM-98, to be chosen), HostUp | *Proposed:* 30 days. A deleted account leaves backups when they expire | Encrypted before leaving the server; EU storage |
-| Audit log (*planned*, IRM-109) | Show who logged in, exported or administered | Legitimate interest; legal obligation where a rule requires it | User, action, time, IP | Users, admins | HostUp | To be set in IRM-109 | Append-only |
+| Audit log (`audit_events`, IRM-109) | Show who logged in or out, and later exported or administered | Legitimate interest; legal obligation where a rule requires it | Internal user ID, session kind, event, time, IP truncated to /24 (IPv6 /48), no identity number or token | Users, admins | HostUp | 12 months *proposed*; `deleteExpiredAuditEvents` runs daily | Append-only by trigger, rows hash-chained to show tampering |
 
 Transfers outside the EU or EEA: none planned. A vendor that would cause one gets a row here first.
 

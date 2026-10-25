@@ -1,0 +1,1 @@
+[{"criterion":"Each event (login success, login failure, logout) writes one row","passes":true},{"criterion":"An UPDATE or DELETE from the app fails; the retention job removes only expired rows","passes":true},{"criterion":"No row contains a personal identity number, token or full IP address","passes":true}]

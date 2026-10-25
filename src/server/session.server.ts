@@ -3,6 +3,7 @@ import { sql } from 'kysely'
 import type { Kysely } from 'kysely'
 import type { z } from 'zod'
 import type { errorBody, me } from '#/api/schemas'
+import { clientIp, recordAudit } from './audit.server'
 import type { DB } from './db.gen'
 import { getDb } from './db.server'
 
@@ -84,13 +85,23 @@ export async function requireSession(request: Request, db?: Kysely<DB>) {
 // Revokes the session behind the request and clears the cookie. Logging out twice is not an error.
 export async function logout(request: Request, db?: Kysely<DB>) {
   const token = tokenOf(request)
-  if (token)
-    await (db ?? getDb())
+  if (token) {
+    const conn = db ?? getDb()
+    const ended = await conn
       .updateTable('sessions')
       .set({ revoked_at: sql<Date>`now()` })
       .where('token_hash', '=', hash(token))
       .where('revoked_at', 'is', null)
-      .execute()
+      .returning(['user_id', 'kind'])
+      .executeTakeFirst()
+    if (ended)
+      await recordAudit(conn, {
+        event: 'logout',
+        userId: ended.user_id,
+        sessionKind: ended.kind,
+        ip: clientIp(request),
+      })
+  }
   return new Response(null, {
     status: 204,
     headers: {
