@@ -1,3 +1,4 @@
+import { readFileSync } from 'node:fs'
 import { expect, test } from '@playwright/test'
 import { z } from 'zod'
 
@@ -118,4 +119,22 @@ test('deletes the account after a fresh BankID confirmation', async ({
   expect((await page.context().cookies()).map((c) => c.name)).not.toContain(
     sessionCookie,
   )
+})
+
+test('downloads the export as JSON', async ({ page }, testInfo) => {
+  const ip = `198.51.100.${String(150 + testInfo.workerIndex)}`
+  await page.context().setExtraHTTPHeaders({ 'x-forwarded-for': ip })
+  await page.goto('/app/login')
+  await page.getByRole('button', { name: /annan enhet/ }).click()
+  await expect(page).toHaveURL(/\/app$/, { timeout: 15_000 })
+  const download = page.waitForEvent('download')
+  await page.getByRole('link', { name: 'Ladda ner mina uppgifter' }).click()
+  const path = await (await download).path()
+  const body = z
+    .object({
+      account: z.object({ id: z.string() }),
+      sessions: z.array(z.unknown()),
+    })
+    .parse(JSON.parse(readFileSync(path, 'utf8')))
+  expect(body.sessions).toHaveLength(1)
 })

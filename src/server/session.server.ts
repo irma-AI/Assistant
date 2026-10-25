@@ -52,7 +52,10 @@ function tokenOf(request: Request) {
 }
 
 // Returns the session's user and, for an app session, moves its expiry forward in the same statement.
-async function authenticate(db: Kysely<DB> | undefined, request: Request) {
+export async function authenticate(
+  db: Kysely<DB> | undefined,
+  request: Request,
+) {
   const token = tokenOf(request)
   if (!token) return undefined
   const row = await (db ?? getDb())
@@ -69,7 +72,7 @@ async function authenticate(db: Kysely<DB> | undefined, request: Request) {
   return row?.user_id
 }
 
-const unauthorized = () => {
+export const unauthorized = () => {
   const body: z.infer<typeof errorBody> = { error: 'unauthorized' }
   return Response.json(body, { status: 401 })
 }
