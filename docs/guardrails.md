@@ -293,6 +293,7 @@ Size limits here count characters or words, and are enforced.
 **What it is.** CI on GitHub Actions decides what merges.
 
 - **Public repository in a free organization**, which unlocks rulesets, the merge queue, auto-merge and unlimited Actions minutes on GitHub Free.
+- **Only collaborators open PRs.** The repository setting Pull requests → "Collaborators only" (GitHub, 2026-02-13) lets only users with write access open one; others can read and comment. The owner adds anyone else by granting write access (owner decision 2026-10-25, IRM-183). It replaced a "Refuse fork PRs" step in `policy`, which ran a script before the checkout and failed every PR; `fix-rounds` still skips a PR whose head isn't this repository.
 - **Two required checks**, pinned to GitHub Actions as their source, so a status posted by hand doesn't count.
   - `ci` runs on `pull_request` and `merge_group` as parallel jobs (the repository and app checks with PostgreSQL, the browser tests in Playwright's image, the release image check) and ends in an always-run job named `ci` that passes only if every other job did. A run takes about 45 seconds.
   - `policy` runs on `pull_request_target` from the target branch's copy of the workflow, and reads the PR's diff as data without running it. It holds the guards ([2.3](#23-guard-framework)) and the AI checks ([2.11](#211-ai-review-and-task-fit-judge-run-by-ci-on-the-subscription)), and runs again when the PR is edited, so a title or description changed after a green run is judged again.

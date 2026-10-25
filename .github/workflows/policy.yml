@@ -19,11 +19,6 @@ jobs:
     outputs:
       usage: ${{ steps.usage.outputs.usage }}
     steps:
-      # Every contributor is an agent pushing branches here, so a fork PR is never expected.
-      - name: Refuse fork PRs
-        env:
-          HEAD: ${{ github.event.pull_request.head.repo.full_name }}
-        run: .github/scripts/fork-pr.sh "$HEAD" "$GITHUB_REPOSITORY"
       - name: Check out the default branch (trusted)
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
