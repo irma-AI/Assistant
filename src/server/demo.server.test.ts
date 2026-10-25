@@ -1,5 +1,5 @@
 import { readdirSync, readFileSync } from 'node:fs'
-import { beforeAll, expect, test } from 'vitest'
+import { beforeAll, expect, test, vi } from 'vitest'
 import { makeDemo } from '../../seeds/demo.ts'
 import { refuseDemo } from './access.server'
 import {
@@ -177,6 +177,20 @@ test('many failed logins throttle that IP only', async () => {
   expect((await login(ip, 'nope')).status).toBe(429)
   expect((await login(ip)).status).toBe(429)
   expect((await login(freshIp())).status).toBe(200)
+})
+
+test('the throttle covers the /24 and holds for a fresh server instance on the same database', async () => {
+  const ip = freshIp()
+  for (let i = 0; i < 10; i++)
+    expect((await login(ip, 'nope')).status).toBe(401)
+  vi.resetModules()
+  const fresh = await import('./demo.server')
+  const other = ip.replace(/\.1$/, '.77')
+  const r = await fresh.demoLogin(
+    call(other, { username: 'demo', password }),
+    db,
+  )
+  expect(r.status).toBe(429)
 })
 
 test('the snapshot equals the factory output for the fixed seed', () => {

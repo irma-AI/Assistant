@@ -1,0 +1,3 @@
+[
+  {"criterion": "Vitest: many failed demo logins from one /24 throttle that range, the throttle holds after a fresh server instance on the same database, and a correct login from another IP still works", "passes": true}
+]

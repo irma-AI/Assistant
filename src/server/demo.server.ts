@@ -1,7 +1,7 @@
 import type { Kysely } from 'kysely'
 import { sql } from 'kysely'
 import { z } from 'zod'
-import { clientIp, recordAudit } from './audit.server'
+import { clientIp, recordAudit, truncate } from './audit.server'
 import type { DB } from './db.gen'
 import { getDb } from './db.server'
 import { insertDefaultRoles } from './orgs.server'
@@ -21,24 +21,18 @@ const demoIds = [demoUserId, ...snapshot.members.map((m) => m.id)]
 
 const maxFailures = 10
 const windowMs = 15 * 60 * 1000
-// shortcut: per process, forgotten on restart; one Dokploy instance runs the app, so move it to PostgreSQL if that changes.
-const failures = new Map<string, { n: number; since: number }>()
 
-const throttled = (ip: string) => {
-  const f = failures.get(ip)
-  if (!f || Date.now() - f.since > windowMs) return false
-  return f.n >= maxFailures
-}
-
-function fail(ip: string) {
-  for (const [k, v] of failures)
-    if (Date.now() - v.since > windowMs) failures.delete(k)
-  const f = failures.get(ip)
-  const fresh = !f || Date.now() - f.since > windowMs
-  failures.set(ip, {
-    n: fresh ? 1 : f.n + 1,
-    since: fresh ? Date.now() : f.since,
-  })
+// Counts the audit rows of failed demo logins from the caller's network, so a restart or a second instance keeps the count.
+async function throttled(db: Kysely<DB>, ip: string) {
+  const { n } = await db
+    .selectFrom('audit_events')
+    .select((eb) => eb.fn.countAll<string>().as('n'))
+    .where('event', '=', 'login_failure')
+    .where('session_kind', '=', 'demo')
+    .where('ip', '=', truncate(ip))
+    .where('at', '>', new Date(Date.now() - windowMs))
+    .executeTakeFirstOrThrow()
+  return Number(n) >= maxFailures
 }
 
 const json = (body: object | null, status = 200, headers?: HeadersInit) =>
@@ -95,9 +89,8 @@ export async function ensureDemo(db: Kysely<DB>) {
   })
 }
 
-// Counts against the IP, audits, and logs the alert line without the submitted username or password.
+// Audits (which counts against the network) and logs the alert line without the submitted username or password.
 async function failedAttempt(db: Kysely<DB>, ip: string) {
-  fail(ip)
   await recordAudit(db, { event: 'login_failure', sessionKind: 'demo', ip })
   console.warn(JSON.stringify({ event: 'demo_login_failed' }))
   return json({ error: 'unauthorized' }, 401)
@@ -113,7 +106,7 @@ export async function demoLogin(request: Request, db: Kysely<DB> = getDb()) {
   const ip = clientIp(request)
   const input = body.safeParse(await request.json().catch(() => null))
   if (!input.success || !ip) return json({ error: 'bad_request' }, 400)
-  if (throttled(ip)) return json({ error: 'too_many_attempts' }, 429)
+  if (await throttled(db, ip)) return json({ error: 'too_many_attempts' }, 429)
 
   // Always run the hash, so a wrong username takes as long as a wrong password.
   const passwordOk = await verifyPassword(input.data.password, hash)
@@ -152,7 +145,7 @@ export async function deleteDemoAccount(
     .object({ password: z.string() })
     .safeParse(await request.json().catch(() => null))
   if (!input.success || !ip) return json({ error: 'bad_request' }, 400)
-  if (throttled(ip)) return json({ error: 'too_many_attempts' }, 429)
+  if (await throttled(db, ip)) return json({ error: 'too_many_attempts' }, 429)
   if (
     !(await verifyPassword(input.data.password, process.env.DEMO_PASSWORD_HASH))
   ) {
