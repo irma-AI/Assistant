@@ -1,10 +1,11 @@
 import { randomUUID } from 'node:crypto'
 import { sql } from 'kysely'
-import { expect, test } from 'vitest'
+import { beforeAll, expect, test } from 'vitest'
 import { db, useDatabase } from './orgs.fixture'
 import { inOrganisation } from './tenant.server'
 
 useDatabase()
+beforeAll(setup)
 
 const a = randomUUID()
 const b = randomUUID()
@@ -17,7 +18,7 @@ async function setup() {
   )
   await sql`alter table scratch enable row level security`.execute(db)
   await sql`alter table scratch force row level security`.execute(db)
-  await sql`create policy tenant on scratch using (organisation_id = current_organisation_id())`.execute(
+  await sql`create policy tenant on scratch using (organisation_id = current_organisation_id()) with check (organisation_id = current_organisation_id())`.execute(
     db,
   )
   await sql`grant select, insert on scratch to assistant_app`.execute(db)
@@ -44,7 +45,6 @@ test('the app role cannot bypass row level security', async () => {
 })
 
 test('a transaction sees only its organisation, and without one sees nothing', async () => {
-  await setup()
   const notes = (q: typeof db) =>
     sql<{ note: string }>`select note from scratch`
       .execute(q)

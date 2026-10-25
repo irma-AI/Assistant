@@ -9,7 +9,7 @@ Decided in IRM-133 (2026-10-25). Every item is one-way once books hold data, so 
 
 ## Tenant isolation
 
-- Every tenant table has `organisation_id`, composite foreign keys that carry it, `ENABLE` and `FORCE ROW LEVEL SECURITY`, and the policy `organisation_id = current_organisation_id()` (with check). Grant it to `assistant_app` table by table.
+- Every tenant table has `organisation_id`, composite foreign keys that carry it, `ENABLE` and `FORCE ROW LEVEL SECURITY`, and the policy `organisation_id = current_organisation_id()` (`USING` and an explicit `WITH CHECK`). Grant it to `assistant_app` table by table.
 - The app connects as `assistant_app`; migrations keep the owner login. Deployment (Dokploy, a `ci-change` step) gives the role `LOGIN` and a password from a second secret.
 - Each request runs through `inOrganisation`. No setting means no rows.
 - Foreign-key and unique checks bypass RLS, which is why the composite keys stay.
@@ -37,7 +37,7 @@ One series per fiscal year. One database function assigns the number at posting 
 
 ## Processing history (BFL 5 kap. 11 §)
 
-It is räkenskapsinformation (BFN comment to 9.16): kept per organisation like the records, append-only. Each entry stores its registration time and the app version; changes to the chart of accounts and VAT codes are logged per organisation; releases that change posting rules are listed with dates.
+It is räkenskapsinformation (BFN comment to 9.16): kept per organisation like the records. The audit log and the processing history both reject `UPDATE` and `DELETE`, like `audit_events` today (IRM-109). Each entry stores its registration time and the app version; changes to the chart of accounts and VAT codes are logged per organisation; releases that change posting rules are listed with dates.
 
 ## No bypass
 
