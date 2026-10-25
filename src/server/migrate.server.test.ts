@@ -4,7 +4,7 @@ import { join } from 'node:path'
 import { randomUUID } from 'node:crypto'
 import { Kysely, PostgresDialect, sql } from 'kysely'
 import pg from 'pg'
-import { afterAll, beforeEach, expect, test } from 'vitest'
+import { afterAll, beforeEach, expect, test, vi } from 'vitest'
 import { migrate } from './migrate.server'
 
 // Each test gets a fresh database on the real PostgreSQL that DATABASE_URL points at.
@@ -69,4 +69,33 @@ test('a failing migration applies none of the pending ones', async () => {
   })
   await expect(migrate(db, dir)).rejects.toThrow(/syntax error/)
   expect(await tables()).not.toContain('a')
+})
+
+test('a database ahead of the image (a rollback) starts without migrating', async () => {
+  const newer = await dirWith({
+    '0001_a.sql': 'create table a (id int);',
+    '0002_b.sql': 'create table b (id int);',
+  })
+  await migrate(db, newer)
+  const older = await dirWith({ '0001_a.sql': 'create table a (id int);' })
+  const warn = vi.spyOn(console, 'warn').mockImplementation(() => {})
+  expect(await migrate(db, older)).toEqual([])
+  expect(warn).toHaveBeenCalledWith(
+    JSON.stringify({ event: 'migrations_ahead', names: ['0002_b'] }),
+  )
+  warn.mockRestore()
+})
+
+test('a database missing one migration and an image adding another still throws', async () => {
+  const newer = await dirWith({
+    '0001_a.sql': 'create table a (id int);',
+    '0002_b.sql': 'create table b (id int);',
+  })
+  await migrate(db, newer)
+  const forked = await dirWith({
+    '0001_a.sql': 'create table a (id int);',
+    '0003_c.sql': 'create table c (id int);',
+  })
+  await expect(migrate(db, forked)).rejects.toThrow(/corrupted migrations/)
+  expect(await tables()).not.toContain('c')
 })

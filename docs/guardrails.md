@@ -202,6 +202,7 @@ Size limits here count characters or words, and are enforced.
 - Tests run against a real PostgreSQL, never a mock: a GitHub Actions service container in CI, and the PostgreSQL preinstalled in the cloud VM during a session. One major version runs everywhere: the VM's (16 today) is pinned in CI and on Dokploy. Each test tries the forbidden write and asserts that the database refuses it.
 - Migrations are plain `.sql` files. Kysely's migrator runs them through one small provider that reads the files, all pending ones in a single transaction under an advisory lock, and that provider has its own test.
 - A guard requires a PR that adds a migration to change a test.
+- Every migration works with the previous release's code (expand, then contract), so a rollback can run on the newer schema: an image whose database is ahead of it logs `migrations_ahead` and serves. A release that breaks the rule also breaks its own rollback; revisit at the first dropped or renamed column.
 
 **Why.**
 
@@ -210,7 +211,7 @@ Size limits here count characters or words, and are enforced.
 - The old migration guard was this simple, and all 28 migration commits came with a related test. The AI review ([2.11](#211-ai-review-and-task-fit-judge-run-by-ci-on-the-subscription)) checks that the test fits the migration.
 - Plain SQL keeps constraints and triggers readable and lets squawk lint them.
 
-**Tools.** [Kysely](https://kysely.dev/) for typed queries, and [squawk](https://squawkhq.com/), installed from npm as `squawk-cli`, to flag migrations that lock or rewrite tables, which matters when every merge deploys. squawk assumes each migration runs in a transaction, and an index built `CONCURRENTLY` gets a migration run of its own outside one.
+**Tools.** [Kysely](https://kysely.dev/) for typed queries, and [squawk](https://squawkhq.com/), installed from npm as `squawk-cli`, to flag migrations that lock or rewrite tables, which matters when every merge deploys. squawk assumes each migration runs in a transaction, and PostgreSQL forbids `CREATE INDEX CONCURRENTLY` inside a transaction and the provider has no path outside one, so such an index needs its own issue first.
 
 ### 2.8 Declared test seams, swept
 
