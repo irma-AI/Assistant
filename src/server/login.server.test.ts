@@ -226,6 +226,60 @@ test('start without a body or a client IP is a bad request', async () => {
   expect((await start(post({}), db)).status).toBe(400)
 })
 
+// A fresh BankID confirmation from the same IP is the same fake person, so it finds the account to delete.
+async function confirmDeletion(ip: string) {
+  const response = await start(
+    post({ 'x-forwarded-for': ip }, { sameDevice: false, purpose: 'delete' }),
+    db,
+  )
+  const login = cookieOf(response, '__Host-login') ?? ''
+  const id = login.split('=')[1] ?? ''
+  await poll(login, id)
+  return poll(login, id)
+}
+
+const users = () => db.selectFrom('users').selectAll().execute()
+
+test('deleting an account removes the user and every session, clears the cookie and records an audit event', async () => {
+  const known = new Set((await users()).map((u) => u.id))
+  const { login, id } = await begin('203.0.113.50')
+  await poll(login, id)
+  await poll(login, id)
+  const [user] = (await users()).filter((u) => !known.has(u.id))
+  const other = await begin('203.0.113.51')
+  await poll(other.login, other.id)
+  await poll(other.login, other.id)
+  const before = (await users()).length
+
+  const done = await confirmDeletion('203.0.113.50')
+  expect(done.body).toEqual({ status: 'complete' })
+  expect(cookieOf(done.response, '__Host-session=')).toBe('__Host-session=')
+  expect(await users()).toHaveLength(before - 1)
+  expect(
+    await db
+      .selectFrom('sessions')
+      .select('user_id')
+      .where('user_id', '=', user?.id ?? '')
+      .execute(),
+  ).toEqual([])
+  expect(
+    await db
+      .selectFrom('audit_events')
+      .select('detail')
+      .where('event', '=', 'account_deleted')
+      .where('user_id', '=', user?.id ?? '')
+      .execute(),
+  ).toHaveLength(1)
+  expect(await attempts()).toBe(0)
+})
+
+test('confirming deletion for an identity with no account fails and deletes nothing', async () => {
+  const before = [(await users()).length, await sessionCount()]
+  const done = await confirmDeletion('203.0.113.60')
+  expect(done.body).toMatchObject({ status: 'failed' })
+  expect([(await users()).length, await sessionCount()]).toEqual(before)
+})
+
 test('a login prints no identity number, name, token or full IP to the logs', async () => {
   const printed: string[] = []
   const spies = (['log', 'info', 'warn', 'error', 'debug'] as const).map((m) =>

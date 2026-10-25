@@ -89,3 +89,33 @@ test('a cross-site POST with the session cookie is rejected', async ({
   )
   expect(response.status()).toBe(403)
 })
+
+test('deletes the account after a fresh BankID confirmation', async ({
+  page,
+  request,
+  baseURL,
+}, testInfo) => {
+  // The fake gives one IP one person, so this IP's login and confirmation are the same account.
+  const ip = `198.51.100.${String(100 + testInfo.workerIndex)}`
+  await page.context().setExtraHTTPHeaders({ 'x-forwarded-for': ip })
+  await page.goto('/app/login')
+  await page.getByRole('button', { name: /annan enhet/ }).click()
+  await expect(page).toHaveURL(/\/app$/, { timeout: 15_000 })
+  const cookie = (await page.context().cookies())
+    .map((c) => `${c.name}=${c.value}`)
+    .join('; ')
+  const me = () =>
+    request.get(`${baseURL ?? ''}/api/v1/me`, { headers: { cookie } })
+  expect((await me()).status()).toBe(200)
+
+  await page.getByRole('link', { name: 'Radera mitt konto' }).click()
+  await expect(page.getByText(/bokföringslagen/)).toBeVisible()
+  await page.getByRole('button', { name: /annan enhet/ }).click()
+  await expect(page.getByText('Ditt konto är raderat.')).toBeVisible({
+    timeout: 15_000,
+  })
+  expect((await me()).status()).toBe(401)
+  expect((await page.context().cookies()).map((c) => c.name)).not.toContain(
+    sessionCookie,
+  )
+})

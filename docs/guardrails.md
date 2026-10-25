@@ -563,6 +563,8 @@ Size limits here count characters or words, and are enforced.
 - The owner's bar is full GDPR compliance before the first real user ([IRM-94](https://linear.app/petters/issue/IRM-94)). Art. 30 requires the record and Art. 6 a legal basis per purpose, and a row written after the fact is a row nobody checked.
 - Nothing in code can see a new processor, so the review is the check. It can be wrong, and the records are a draft until the owner approves them.
 
+- **Organisations' records.** The rule for who made an entry, and when a deleted account's name may stay, is in [`docs/privacy/records.md`](privacy/records.md) under "Account deletion and organisations' records". A feature that stores entries, corrections or completions reads it first and changes `deleteAccount` in `src/server/login.server.ts` to keep `users.id` and the name while records reference the user.
+
 ---
 
 ### 2.31 Vulnerability scans

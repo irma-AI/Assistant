@@ -1,0 +1,14 @@
+[
+  {
+    "criterion": "After deletion, every one of the user's sessions returns 401, and their personal-identity-number hash, contact data and memberships are gone. Their name is gone too while no bookkeeping record references them.",
+    "passes": true
+  },
+  {
+    "criterion": "docs/privacy/records.md states the organisation-record rule with the BFL, BFNAR and IMY references above.",
+    "passes": true
+  },
+  {
+    "criterion": "Playwright covers deleting an account, confirmed through IRM-110's BankID login against the fake BankID.",
+    "passes": true
+  }
+]
