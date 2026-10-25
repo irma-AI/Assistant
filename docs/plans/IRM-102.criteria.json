@@ -1,0 +1,6 @@
+[
+  {"criterion": "Vitest against the real database: the export contains every field records.md lists for the user (users, sessions, audit events) and no session token, and another user's session gets only its own data.", "passes": false},
+  {"criterion": "Playwright against the fake BankID: log in, download the export, and the file parses as JSON.", "passes": false},
+  {"criterion": "The export explains the pnr hash without its value, carries the Art. 15(1)(a)-(h) information and field descriptions, and writes a data_exported audit event.", "passes": false},
+  {"criterion": "docs/privacy/ describes the manual request path and how we help organisations answer requests about bookkeeping data.", "passes": false}
+]
