@@ -20,7 +20,19 @@ function truncate(ip: string | undefined) {
 }
 
 export type AuditEvent = {
-  event: 'login_success' | 'login_failure' | 'logout'
+  event:
+    | 'login_success'
+    | 'login_failure'
+    | 'logout'
+    | 'organisation_created'
+    | 'member_added'
+    | 'member_role_changed'
+    | 'member_removed'
+    | 'member_left'
+    | 'role_created'
+    | 'role_updated'
+    | 'role_deleted'
+    | 'authorization_refused'
   userId?: string
   sessionKind?: string
   ip?: string

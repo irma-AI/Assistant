@@ -48,6 +48,27 @@ export interface LoginAttempts {
   qr_start_token: string;
 }
 
+export interface Memberships {
+  created_at: Generated<Timestamp>;
+  organisation_id: string;
+  role_id: string;
+  user_id: string;
+}
+
+export interface Organisations {
+  created_at: Generated<Timestamp>;
+  id: Generated<string>;
+  name: string;
+}
+
+export interface Roles {
+  id: Generated<string>;
+  kind: string;
+  name: string;
+  organisation_id: string;
+  permissions: Generated<string[]>;
+}
+
 export interface Sessions {
   created_at: Generated<Timestamp>;
   expires_at: Timestamp;
@@ -68,6 +89,9 @@ export interface Users {
 export interface DB {
   audit_events: AuditEvents;
   login_attempts: LoginAttempts;
+  memberships: Memberships;
+  organisations: Organisations;
+  roles: Roles;
   sessions: Sessions;
   users: Users;
 }
