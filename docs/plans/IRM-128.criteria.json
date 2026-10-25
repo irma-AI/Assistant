@@ -1,0 +1,1 @@
+[{"criterion":"show_full_output is gone, and a fork PR fails policy without running fix-rounds, with a fixture","passes":true},{"criterion":"The route-auth sweep test fails on an unlisted public handler","passes":true},{"criterion":"Guardrails section 7 holds no unfixed weakness details","passes":true}]
