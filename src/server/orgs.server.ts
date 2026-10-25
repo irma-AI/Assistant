@@ -139,6 +139,8 @@ export const editRole = (
     const a = await require(trx, userId, orgId, 'roles.manage')
     const current = await roleIn(trx, orgId, roleId)
     if (current.kind === 'owner') throw new HttpError(409, 'owner_role_fixed')
+    // Editing a role needs everything it grants now as well as everything it will grant.
+    mustHold(a, effective(current))
     mustHold(a, input.permissions ?? [])
     const role = await insertOrConflict(() =>
       trx
@@ -165,9 +167,10 @@ export const deleteRole = (
 ) =>
   db.transaction().execute(async (trx) => {
     await lockOrg(trx, orgId)
-    await require(trx, userId, orgId, 'roles.manage')
+    const a = await require(trx, userId, orgId, 'roles.manage')
     const role = await roleIn(trx, orgId, roleId)
     if (role.kind === 'owner') throw new HttpError(409, 'owner_role_fixed')
+    mustHold(a, effective(role))
     const inUse = await trx
       .selectFrom('memberships')
       .select('user_id')

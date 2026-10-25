@@ -6,6 +6,7 @@ import {
   addMember,
   change,
   db,
+  idOf,
   meOf,
   newOrg,
   person,
@@ -156,4 +157,40 @@ test('every route needs a session', async () => {
   expect(
     (await orgsApi.me(req(undefined, 'GET'), randomUUID(), db)).status,
   ).toBe(401)
+})
+
+test('a role can only be edited or deleted by someone holding everything it grants now', async () => {
+  const owner = await person()
+  const manager = await person()
+  const org = await newOrg(owner)
+  const create = async (name: string, grants: string[]) =>
+    idOf(
+      await orgsApi.createRole(
+        req(owner, 'POST', { name, permissions: grants }),
+        org.id,
+        db,
+      ),
+    )
+  await create('Rollhanterare', ['roles.manage'])
+  await create('Medlemshanterare', ['members.manage'])
+  await addMember(owner, org.id, manager, 'Rollhanterare')
+  const target = await roleId(owner, org.id, 'Medlemshanterare')
+
+  const edit = await orgsApi.editRole(
+    req(manager, 'PATCH', { permissions: [] }),
+    org.id,
+    target,
+    db,
+  )
+  expect(edit.status).toBe(403)
+  const remove = await orgsApi.deleteRole(
+    req(manager, 'DELETE'),
+    org.id,
+    target,
+    db,
+  )
+  expect(remove.status).toBe(403)
+  expect(
+    (await roles(owner, org.id)).find((r) => r.id === target)?.permissions,
+  ).toEqual(['members.manage'])
 })

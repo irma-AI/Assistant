@@ -161,3 +161,12 @@ export const soleOwnerOf = (db: Kysely<DB>, userId: string) =>
     )
     .select('memberships.organisation_id')
     .execute()
+
+// Account deletion (IRM-92): refused while the user is some organisation's only Ägare, so none is left
+// without one (IRM-111); otherwise the memberships go first, then the user. Run inside a transaction.
+export async function deleteUser(trx: Kysely<DB>, userId: string) {
+  if ((await soleOwnerOf(trx, userId)).length) return false
+  await trx.deleteFrom('memberships').where('user_id', '=', userId).execute()
+  await trx.deleteFrom('users').where('id', '=', userId).execute()
+  return true
+}

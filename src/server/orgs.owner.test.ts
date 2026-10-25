@@ -1,5 +1,5 @@
 import { expect, test } from 'vitest'
-import { soleOwnerOf } from './members.server'
+import { deleteUser, soleOwnerOf } from './members.server'
 import { orgsApi } from './orgs.api.server'
 import {
   addMember,
@@ -151,4 +151,27 @@ test('membership and role changes are audited', async () => {
     .where('user_id', '=', owner.id)
     .execute()
   expect(events.map((e) => e.event)).toContain('organisation_created')
+})
+
+test('deleting a user is refused for the only Ägare, and removes a plain member with the membership', async () => {
+  const owner = await person()
+  const member = await person()
+  const org = await newOrg(owner)
+  await addMember(owner, org.id, member, 'Medlem')
+
+  expect(await deleteUser(db, owner.id)).toBe(false)
+  expect(await deleteUser(db, member.id)).toBe(true)
+  const left = await db
+    .selectFrom('memberships')
+    .select('user_id')
+    .where('organisation_id', '=', org.id)
+    .execute()
+  expect(left.map((m) => m.user_id)).toEqual([owner.id])
+  expect(
+    await db
+      .selectFrom('users')
+      .select('id')
+      .where('id', 'in', [owner.id, member.id])
+      .execute(),
+  ).toEqual([{ id: owner.id }])
 })
