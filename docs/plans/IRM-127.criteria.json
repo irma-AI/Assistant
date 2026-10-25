@@ -1,0 +1,7 @@
+[
+  {"criterion": "guard:docs passes and CLAUDE.md stays under 4000 characters", "passes": true},
+  {"criterion": "The skills check passes with shaping listed as local", "passes": true},
+  {"criterion": "The shaping skill names the five owner kinds, dated primary-source research, the plain-problem opener and the demo-flag worked example", "passes": true},
+  {"criterion": "next-step 4 and the CLAUDE.md bullet say fact questions are researched, not asked", "passes": true},
+  {"criterion": "The shaping skill has the record fields, six audit steps, node fields, verdicts and an overturned-finding example; issue-tracker.md mentions the record fields", "passes": true}
+]
