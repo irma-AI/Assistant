@@ -14,6 +14,31 @@ import {
   roleIn,
 } from './access.server'
 
+// Every organisation starts with Ägare and Medlem; the demo organisation uses the same setup.
+export async function insertDefaultRoles(trx: Kysely<DB>, orgId: string) {
+  const owner = await trx
+    .insertInto('roles')
+    .values({
+      organisation_id: orgId,
+      name: 'Ägare',
+      kind: 'owner',
+      permissions: [],
+    })
+    .returning('id')
+    .executeTakeFirstOrThrow()
+  const member = await trx
+    .insertInto('roles')
+    .values({
+      organisation_id: orgId,
+      name: 'Medlem',
+      kind: 'custom',
+      permissions: [],
+    })
+    .returning('id')
+    .executeTakeFirstOrThrow()
+  return { owner: owner.id, member: member.id }
+}
+
 export const createOrganisation = (
   db: Kysely<DB>,
   userId: string,
@@ -26,28 +51,14 @@ export const createOrganisation = (
       .values({ name })
       .returning(['id', 'name'])
       .executeTakeFirstOrThrow()
-    const owner = await trx
-      .insertInto('roles')
-      .values({
-        organisation_id: org.id,
-        name: 'Ägare',
-        kind: 'owner',
-        permissions: [],
-      })
-      .returning('id')
-      .executeTakeFirstOrThrow()
-    await trx
-      .insertInto('roles')
-      .values({
-        organisation_id: org.id,
-        name: 'Medlem',
-        kind: 'custom',
-        permissions: [],
-      })
-      .execute()
+    const roles = await insertDefaultRoles(trx, org.id)
     await trx
       .insertInto('memberships')
-      .values({ user_id: userId, organisation_id: org.id, role_id: owner.id })
+      .values({
+        user_id: userId,
+        organisation_id: org.id,
+        role_id: roles.owner,
+      })
       .execute()
     await audited(trx, 'organisation_created', base, org.id)
     return org

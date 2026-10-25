@@ -11,7 +11,8 @@ import {
 } from './demo.server'
 import { hashPassword, verifyPassword } from './demo-password.server'
 import snapshot from './demo-snapshot.json' with { type: 'json' }
-import { db, newOrg, person, req, useDatabase } from './orgs.fixture'
+import { addMember } from './members.server'
+import { db, newOrg, person, req, roleId, useDatabase } from './orgs.fixture'
 import { orgsApi } from './orgs.api.server'
 import { authenticateSession } from './session.server'
 
@@ -93,6 +94,19 @@ test('a demo session is refused anything with an outside effect, and cannot crea
     db,
   )
   expect(created.status).toBe(403)
+})
+
+test('the demo user can neither invite nor be invited', async () => {
+  await login(freshIp())
+  const owner = await person()
+  const org = await newOrg(owner)
+  const role = await roleId(owner, org.id, 'Medlem')
+  await expect(
+    addMember(db, owner.id, org.id, demoUserId, role, {}),
+  ).rejects.toThrow('demo_session')
+  await expect(
+    addMember(db, demoUserId, demoOrgId, owner.id, role, {}),
+  ).rejects.toThrow('demo_session')
 })
 
 test('with DEMO_LOGIN_ENABLED=false the route returns 404', async () => {

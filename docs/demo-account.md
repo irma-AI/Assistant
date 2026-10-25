@@ -24,4 +24,4 @@ After changing the factory in `seeds/`, run `node seeds/demo-snapshot.ts` and co
 
 ## Known gaps
 
-Demo sessions are refused by `refuseDemo(kind)` (`src/server/access.server.ts`); every future feature with an outside effect (filing, payments, email, invites, BankID signing) must call it. Invites have no route yet (IRM-125), so that call is not wired. The demo account's deletion is `POST /api/v1/auth/demo/delete`; the app screen for it is not built.
+Demo sessions are refused by `refuseDemo(kind)` (`src/server/access.server.ts`); every future feature with an outside effect (filing, payments, email, invites, BankID signing) must call it. Demo deletion is `POST /api/v1/auth/demo/delete`, reached from the "Demokonto" section of `/app/radera-konto`. `addMember` refuses the demo user as inviter or invitee; when IRM-125 adds the invite route it must still call `refuseDemo(kind)` for the session.

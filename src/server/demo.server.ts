@@ -4,6 +4,7 @@ import { z } from 'zod'
 import { clientIp, recordAudit } from './audit.server'
 import type { DB } from './db.gen'
 import { getDb } from './db.server'
+import { insertDefaultRoles } from './orgs.server'
 import snapshot from './demo-snapshot.json' with { type: 'json' }
 import { verifyPassword } from './demo-password.server'
 import {
@@ -30,6 +31,8 @@ const throttled = (ip: string) => {
 }
 
 function fail(ip: string) {
+  for (const [k, v] of failures)
+    if (Date.now() - v.since > windowMs) failures.delete(k)
   const f = failures.get(ip)
   const fresh = !f || Date.now() - f.since > windowMs
   failures.set(ip, {
@@ -72,44 +75,32 @@ export async function ensureDemo(db: Kysely<DB>) {
       .insertInto('organisations')
       .values({ id: demoOrgId, name: snapshot.organisation.name })
       .execute()
-    const [owner, member] = await trx
-      .insertInto('roles')
-      .values([
-        {
-          organisation_id: demoOrgId,
-          name: 'Ägare',
-          kind: 'owner',
-          permissions: [],
-        },
-        {
-          organisation_id: demoOrgId,
-          name: 'Medlem',
-          kind: 'custom',
-          permissions: [],
-        },
-      ])
-      .returning(['id', 'kind'])
-      .execute()
-    if (!owner || !member) throw new Error('demo roles missing')
-    const [ownerRole, memberRole] =
-      owner.kind === 'owner' ? [owner, member] : [member, owner]
+    const roles = await insertDefaultRoles(trx, demoOrgId)
     await trx
       .insertInto('memberships')
       .values([
         {
           user_id: demoUserId,
           organisation_id: demoOrgId,
-          role_id: ownerRole.id,
+          role_id: roles.owner,
         },
         ...snapshot.members.map((m) => ({
           user_id: m.id,
           organisation_id: demoOrgId,
-          role_id: memberRole.id,
+          role_id: roles.member,
         })),
       ])
       .execute()
     return true
   })
+}
+
+// Counts against the IP, audits, and logs the alert line without the submitted username or password.
+async function failedAttempt(db: Kysely<DB>, ip: string) {
+  fail(ip)
+  await recordAudit(db, { event: 'login_failure', sessionKind: 'demo', ip })
+  console.warn(JSON.stringify({ event: 'demo_login_failed' }))
+  return json({ error: 'unauthorized' }, 401)
 }
 
 const body = z.object({ username: z.string(), password: z.string() })
@@ -127,11 +118,7 @@ export async function demoLogin(request: Request, db: Kysely<DB> = getDb()) {
   // Always run the hash, so a wrong username takes as long as a wrong password.
   const passwordOk = await verifyPassword(input.data.password, hash)
   if (input.data.username !== 'demo' || !passwordOk) {
-    fail(ip)
-    await recordAudit(db, { event: 'login_failure', sessionKind: 'demo', ip })
-    // The alert: a log line without the submitted username or password.
-    console.warn(JSON.stringify({ event: 'demo_login_failed' }))
-    return json({ error: 'unauthorized' }, 401)
+    return failedAttempt(db, ip)
   }
   if (await ensureDemo(db))
     await recordAudit(db, {
@@ -169,8 +156,7 @@ export async function deleteDemoAccount(
   if (
     !(await verifyPassword(input.data.password, process.env.DEMO_PASSWORD_HASH))
   ) {
-    fail(ip)
-    return json({ error: 'unauthorized' }, 401)
+    return failedAttempt(db, ip)
   }
   await db.transaction().execute(async (trx) => {
     await sql`select pg_advisory_xact_lock(hashtext('demo'))`.execute(trx)

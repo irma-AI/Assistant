@@ -12,7 +12,7 @@ Copied from Linear IRM-91 (the description and the 2026-10-25 audit comment are 
 - Throttle is in-memory per process (one instance); marked `shortcut:`.
 - Demo deletion removes demo user, members and organisation in one transaction (audit comment).
 - Audit log (IRM-109) exists: `demo_created` and `login_success`/`login_failure` with kind demo.
-- Not built: invite refusal wiring (no invite route until IRM-125), app screen for demo deletion.
+- Invite refusal: `addMember` refuses the demo user as inviter or invitee; the invite route (IRM-125) must still call `refuseDemo(kind)`. Demo deletion has a password form on `/app/radera-konto`.
 
 ## Next step
 
