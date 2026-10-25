@@ -55,7 +55,7 @@ Reasoning:
 - A DPIA is cheap now: the stored data is small (a keyed hash, not the number).
 - Reasons to skip: today only the HMAC is stored and the user count is small. If so, record why here.
 
-Decision: **[PENDING: owner, date]**
+Decision: **DPIA: yes, decided by the owner 2026-10-24.** See [dpia.md](dpia.md).
 
 ## 5. Supplier register
 

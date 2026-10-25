@@ -1,0 +1,18 @@
+[
+ {
+  "criterion": "dpia.md covers each part of Art. 35(7) (a) to (d), and every risk has a measure or an accepted residual risk",
+  "passes": true
+ },
+ {
+  "criterion": "Each source is cited with the date it was read",
+  "passes": true
+ },
+ {
+  "criterion": "Open questions for the owner or a lawyer are listed at the end, not decided by the agent",
+  "passes": true
+ },
+ {
+  "criterion": "make check passes",
+  "passes": true
+ }
+]
