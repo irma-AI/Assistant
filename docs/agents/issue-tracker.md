@@ -7,7 +7,8 @@ Issues for this repository live in Linear, team **IRM**. Use the Linear connecto
 - **Create an issue**: in team IRM, with one type label (`feature`, `bug`, `ui`, `chore`, `docs`) and the acceptance criteria in the description. Add `ci-change` at creation when the work changes a protected path; a label added after the issue reaches Ready doesn't count.
 - **Read an issue**: by its identifier, such as `IRM-12`, with its description, labels and comments.
 - **Comment on an issue**: as a comment on the issue.
-- **Ready an issue**: move it to Ready, then start the Intake dispatcher with `gh workflow run intake-dispatch.yml`, or the GitHub tools' `actions_run_trigger` for that workflow where `gh` can't reach GitHub. Its schedule drops most runs, so without this the issue waits for the next merge or the daily backstop.
+- **Ready an issue**: move it to Ready. Intake checks Linear every 2 minutes, so nothing else is needed.
+- **Answer a question**: reply on the issue and move it from Needs input to Ready. If it already has a pull request, the next session continues on it.
 - **Local work**: the local worker adds the `local` label to the issues it claims, which keeps them out of the cloud's one-session count.
 - **Ask the owner**: comment the question, then move the issue to Needs input.
 - **Blocking**: Linear's native "blocked by" relation between issues.
@@ -15,7 +16,7 @@ Issues for this repository live in Linear, team **IRM**. Use the Linear connecto
 
 ## When a skill says "publish to the issue tracker"
 
-Create a Linear issue in team IRM, in Ready when it is ready to build, and start the dispatcher as in **Ready an issue**. A skill's `ready-for-agent` label means the same here: the Ready state with one type label, plus `ci-change` when the work changes a protected path. There is no such label.
+Create a Linear issue in team IRM, in Ready when it is ready to build. A skill's `ready-for-agent` label means the same here: the Ready state with one type label, plus `ci-change` when the work changes a protected path. There is no such label.
 
 ## When a skill says "fetch the relevant ticket"
 
