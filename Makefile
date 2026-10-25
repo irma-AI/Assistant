@@ -11,6 +11,7 @@ check-repo:
 	.github/scripts/protected-paths.test.sh
 	.github/scripts/review-usage.test.sh
 	.github/scripts/intake-pick.test.sh
+	.github/scripts/audit-gate.test.sh
 	guards/run.sh --self-test
 	guards/docs.test.sh
 	guards/docs.sh

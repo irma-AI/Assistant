@@ -1,0 +1,6 @@
+[
+  {"criterion": "The three pages render server-side and are linked from the landing page and the login screen", "passes": true},
+  {"criterion": "Every processing activity, cookie and retention period in IRM-99's records appears in the privacy policy, and nothing else does", "passes": true},
+  {"criterion": "Playwright (WebKit, iPhone profiles): each page loads, and the links work", "passes": true},
+  {"criterion": "The owner approves the wording in the PR", "passes": false}
+]

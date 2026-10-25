@@ -1,0 +1,4 @@
+[
+  {"criterion": "docs/privacy/breach.md covers detection, the 72-hour notice, informing people and customers, and the breach log", "passes": true},
+  {"criterion": "guard:docs passes", "passes": true}
+]

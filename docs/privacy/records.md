@@ -4,6 +4,8 @@ GDPR Art. 30 records, Art. 6 legal bases, a DPIA recommendation (Art. 35), a coo
 
 Status: draft of 2026-10-24. **Controller: [PLACEHOLDER: legal name, organisation number, contact, filled in by the owner under IRM-54].** Rows marked *planned* describe what an open issue will build; update the row when it ships. Retention periods marked *proposed* wait for the owner's approval.
 
+Breaches are handled under [breach.md](breach.md).
+
 Two roles:
 
 - **Controller** (section 1): accounts, login, sessions, security logs and backups of those.
@@ -15,8 +17,8 @@ Two roles:
 |---|---|---|---|---|---|---|---|
 | Users (`users`, IRM-87) | Identify the account holder | Contract (Art. 6(1)(b)) | Name, keyed HMAC of the personal identity number (never the number), created time | Users | HostUp (server, Sweden) | Until the account is deleted (IRM-92) | HMAC key held apart from the database; TLS; access limited to the app |
 | Sessions (`sessions`, IRM-87) | Keep a user logged in | Contract | Hash of the session token, user, kind (web, app, demo), created, expiry, last used, revoked | Users | HostUp | Web 12 hours, app 90 days; ended sessions deleted after 30 days (`deleteEndedSessions`) | Token stored only as SHA-256; cookie `HttpOnly`, `Secure`, `SameSite=Strict` |
-| BankID login attempts (*planned*, IRM-89) | Authenticate the user; prevent fraud | Contract for the login; legitimate interest (Art. 6(1)(f)) for abuse prevention | `endUserIp`, user agent and `deviceIdentifier` sent to BankID; order reference; outcome; time | Users and anyone attempting a login | BankID's bank, as a separate controller for its own processing; HostUp | *Proposed:* 30 days for attempts, then deleted | TLS to BankID; no personal identity number stored in clear |
-| Traefik and container logs | Operate the service, find faults and attacks | Legitimate interest | Request path, IP address, user agent, status, timing; any personal data the app prints | Visitors and users | HostUp, Dokploy (self-hosted) | *Proposed:* 14 days. Bounding it and keeping personal data out is IRM-100 | Server access limited to the owner's deploy user |
+| BankID login attempts (IRM-110) | Authenticate the user; prevent fraud | Contract for the login; legitimate interest (Art. 6(1)(f)) for abuse prevention | `endUserIp`, user agent and `deviceIdentifier` sent to BankID; order reference; outcome; time | Users and anyone attempting a login | BankID's bank, as a separate controller for its own processing; HostUp | Deleted when the order completes, fails or is cancelled, and swept within an hour at the latest | TLS to BankID; no personal identity number stored in clear |
+| Traefik and container logs | Operate the service, find faults and attacks | Legitimate interest | Request path, IP address, user agent, status, timing; any personal data the app prints | Visitors and users | HostUp, Dokploy (self-hosted) | 14 days (*proposed*, awaiting the owner's approval). Traefik's access log is off, so Traefik writes no per-request IP log. Container logs (Docker `json-file`, no size or age limit of its own) for the Assistant's app and database and for Traefik are cut to the last 14 days daily at 03:17 UTC by the Dokploy schedule "Assistant: 14-day log retention", whose script is `scripts/log-retention.sh` (IRM-115). Keeping personal data out of app logs is IRM-100 | Server access limited to the owner's deploy user |
 | Demo accounts (*planned*, IRM-91) | Let store reviewers try the app | Legitimate interest | Made-up name, no identity number; sessions of kind `demo` | Reviewers | HostUp | Sessions as above; demo data reset regularly | No real person's data in a demo account |
 | Account deletion (*planned*, IRM-92) | Honour erasure (Art. 17) | Legal obligation (Art. 6(1)(c)) | The deletion request and the time; the user and session rows are removed | Users | HostUp | Deletion record *proposed* 12 months, with no identity data | Needs a live session; sessions cascade with the user |
 | Backups (*planned*, IRM-98) | Restore after loss | Legitimate interest | Copies of the tables above | As above | Backup vendor (IRM-98, to be chosen), HostUp | *Proposed:* 30 days. A deleted account leaves backups when they expire | Encrypted before leaving the server; EU storage |
@@ -39,8 +41,8 @@ All are strictly necessary for a service the user asked for (Swedish Electronic 
 | Name | Purpose | Lifetime | Status |
 |---|---|---|---|
 | `__Host-session` cookie | Holds the session token | Web 12 hours; app 90 days | Built (`src/server/session.server.ts`) |
-| Login-attempt cookie | Ties a BankID order to the browser that started it | Until the login ends | *Planned*, IRM-89 |
-| BankID device identifier | Sent to BankID to recognise the device | *Proposed:* same as the session | *Planned*, IRM-89 |
+| Login-attempt cookie | Ties a BankID order to the browser that started it | Until the login ends | Live with IRM-110 |
+| BankID device identifier | Sent to BankID to recognise the device | 365 days, in its own `__Host-device` cookie | Live with IRM-110 |
 
 ## 4. DPIA recommendation (Art. 35)
 

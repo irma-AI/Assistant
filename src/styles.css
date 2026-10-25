@@ -11,3 +11,27 @@ main {
   width: min(42rem, calc(100% - 2rem));
   margin: 4rem auto;
 }
+
+.qr {
+  display: block;
+  padding: 0;
+  border: 0;
+  background: white;
+}
+
+.qr img {
+  display: block;
+  width: 12rem;
+}
+
+.qr-full {
+  position: fixed;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  width: 100%;
+}
+
+.qr-full img {
+  width: min(100vw, 100vh);
+}

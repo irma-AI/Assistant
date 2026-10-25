@@ -11,9 +11,19 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AppRouteRouteImport } from './routes/app/route'
+import { Route as IntegritetspolicyRouteImport } from './routes/integritetspolicy'
+import { Route as PersonuppgiftsbitradesavtalRouteImport } from './routes/personuppgiftsbitradesavtal'
 import { Route as VersionRouteImport } from './routes/version'
+import { Route as VillkorRouteImport } from './routes/villkor'
+import { Route as AppIndexRouteImport } from './routes/app/index'
 import { Route as ApiV1LogoutRouteImport } from './routes/api/v1/logout'
 import { Route as ApiV1MeRouteImport } from './routes/api/v1/me'
+import { Route as AppLoginIndexRouteImport } from './routes/app/login/index'
+import { Route as AppLoginReturnRouteImport } from './routes/app/login/return'
+import { Route as ApiV1AuthBankidCancelRouteImport } from './routes/api/v1/auth/bankid/cancel'
+import { Route as ApiV1AuthBankidModeRouteImport } from './routes/api/v1/auth/bankid/mode'
+import { Route as ApiV1AuthBankidStartRouteImport } from './routes/api/v1/auth/bankid/start'
+import { Route as ApiV1AuthBankidStatusRouteImport } from './routes/api/v1/auth/bankid/status'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -25,10 +35,31 @@ const AppRouteRoute = AppRouteRouteImport.update({
   path: '/app',
   getParentRoute: () => rootRouteImport,
 } as any)
+const IntegritetspolicyRoute = IntegritetspolicyRouteImport.update({
+  id: '/integritetspolicy',
+  path: '/integritetspolicy',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PersonuppgiftsbitradesavtalRoute =
+  PersonuppgiftsbitradesavtalRouteImport.update({
+    id: '/personuppgiftsbitradesavtal',
+    path: '/personuppgiftsbitradesavtal',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 const VersionRoute = VersionRouteImport.update({
   id: '/version',
   path: '/version',
   getParentRoute: () => rootRouteImport,
+} as any)
+const VillkorRoute = VillkorRouteImport.update({
+  id: '/villkor',
+  path: '/villkor',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AppIndexRoute = AppIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => AppRouteRoute,
 } as any)
 const ApiV1LogoutRoute = ApiV1LogoutRouteImport.update({
   id: '/api/v1/logout',
@@ -40,43 +71,154 @@ const ApiV1MeRoute = ApiV1MeRouteImport.update({
   path: '/api/v1/me',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AppLoginIndexRoute = AppLoginIndexRouteImport.update({
+  id: '/login/',
+  path: '/login/',
+  getParentRoute: () => AppRouteRoute,
+} as any)
+const AppLoginReturnRoute = AppLoginReturnRouteImport.update({
+  id: '/login/return',
+  path: '/login/return',
+  getParentRoute: () => AppRouteRoute,
+} as any)
+const ApiV1AuthBankidCancelRoute = ApiV1AuthBankidCancelRouteImport.update({
+  id: '/api/v1/auth/bankid/cancel',
+  path: '/api/v1/auth/bankid/cancel',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiV1AuthBankidModeRoute = ApiV1AuthBankidModeRouteImport.update({
+  id: '/api/v1/auth/bankid/mode',
+  path: '/api/v1/auth/bankid/mode',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiV1AuthBankidStartRoute = ApiV1AuthBankidStartRouteImport.update({
+  id: '/api/v1/auth/bankid/start',
+  path: '/api/v1/auth/bankid/start',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiV1AuthBankidStatusRoute = ApiV1AuthBankidStatusRouteImport.update({
+  id: '/api/v1/auth/bankid/status',
+  path: '/api/v1/auth/bankid/status',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
-  '/app': typeof AppRouteRoute
+  '/app': typeof AppRouteRouteWithChildren
+  '/integritetspolicy': typeof IntegritetspolicyRoute
+  '/personuppgiftsbitradesavtal': typeof PersonuppgiftsbitradesavtalRoute
   '/version': typeof VersionRoute
+  '/villkor': typeof VillkorRoute
+  '/app/': typeof AppIndexRoute
   '/api/v1/logout': typeof ApiV1LogoutRoute
   '/api/v1/me': typeof ApiV1MeRoute
+  '/app/login/return': typeof AppLoginReturnRoute
+  '/app/login/': typeof AppLoginIndexRoute
+  '/api/v1/auth/bankid/cancel': typeof ApiV1AuthBankidCancelRoute
+  '/api/v1/auth/bankid/mode': typeof ApiV1AuthBankidModeRoute
+  '/api/v1/auth/bankid/start': typeof ApiV1AuthBankidStartRoute
+  '/api/v1/auth/bankid/status': typeof ApiV1AuthBankidStatusRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
-  '/app': typeof AppRouteRoute
+  '/integritetspolicy': typeof IntegritetspolicyRoute
+  '/personuppgiftsbitradesavtal': typeof PersonuppgiftsbitradesavtalRoute
   '/version': typeof VersionRoute
+  '/villkor': typeof VillkorRoute
+  '/app': typeof AppIndexRoute
   '/api/v1/logout': typeof ApiV1LogoutRoute
   '/api/v1/me': typeof ApiV1MeRoute
+  '/app/login/return': typeof AppLoginReturnRoute
+  '/app/login': typeof AppLoginIndexRoute
+  '/api/v1/auth/bankid/cancel': typeof ApiV1AuthBankidCancelRoute
+  '/api/v1/auth/bankid/mode': typeof ApiV1AuthBankidModeRoute
+  '/api/v1/auth/bankid/start': typeof ApiV1AuthBankidStartRoute
+  '/api/v1/auth/bankid/status': typeof ApiV1AuthBankidStatusRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
-  '/app': typeof AppRouteRoute
+  '/app': typeof AppRouteRouteWithChildren
+  '/integritetspolicy': typeof IntegritetspolicyRoute
+  '/personuppgiftsbitradesavtal': typeof PersonuppgiftsbitradesavtalRoute
   '/version': typeof VersionRoute
+  '/villkor': typeof VillkorRoute
+  '/app/': typeof AppIndexRoute
   '/api/v1/logout': typeof ApiV1LogoutRoute
   '/api/v1/me': typeof ApiV1MeRoute
+  '/app/login/return': typeof AppLoginReturnRoute
+  '/app/login/': typeof AppLoginIndexRoute
+  '/api/v1/auth/bankid/cancel': typeof ApiV1AuthBankidCancelRoute
+  '/api/v1/auth/bankid/mode': typeof ApiV1AuthBankidModeRoute
+  '/api/v1/auth/bankid/start': typeof ApiV1AuthBankidStartRoute
+  '/api/v1/auth/bankid/status': typeof ApiV1AuthBankidStatusRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/app' | '/version' | '/api/v1/logout' | '/api/v1/me'
+  fullPaths:
+    | '/'
+    | '/app'
+    | '/integritetspolicy'
+    | '/personuppgiftsbitradesavtal'
+    | '/version'
+    | '/villkor'
+    | '/app/'
+    | '/api/v1/logout'
+    | '/api/v1/me'
+    | '/app/login/return'
+    | '/app/login/'
+    | '/api/v1/auth/bankid/cancel'
+    | '/api/v1/auth/bankid/mode'
+    | '/api/v1/auth/bankid/start'
+    | '/api/v1/auth/bankid/status'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/app' | '/version' | '/api/v1/logout' | '/api/v1/me'
-  id: '__root__' | '/' | '/app' | '/version' | '/api/v1/logout' | '/api/v1/me'
+  to:
+    | '/'
+    | '/integritetspolicy'
+    | '/personuppgiftsbitradesavtal'
+    | '/version'
+    | '/villkor'
+    | '/app'
+    | '/api/v1/logout'
+    | '/api/v1/me'
+    | '/app/login/return'
+    | '/app/login'
+    | '/api/v1/auth/bankid/cancel'
+    | '/api/v1/auth/bankid/mode'
+    | '/api/v1/auth/bankid/start'
+    | '/api/v1/auth/bankid/status'
+  id:
+    | '__root__'
+    | '/'
+    | '/app'
+    | '/integritetspolicy'
+    | '/personuppgiftsbitradesavtal'
+    | '/version'
+    | '/villkor'
+    | '/app/'
+    | '/api/v1/logout'
+    | '/api/v1/me'
+    | '/app/login/return'
+    | '/app/login/'
+    | '/api/v1/auth/bankid/cancel'
+    | '/api/v1/auth/bankid/mode'
+    | '/api/v1/auth/bankid/start'
+    | '/api/v1/auth/bankid/status'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
-  AppRouteRoute: typeof AppRouteRoute
+  AppRouteRoute: typeof AppRouteRouteWithChildren
+  IntegritetspolicyRoute: typeof IntegritetspolicyRoute
+  PersonuppgiftsbitradesavtalRoute: typeof PersonuppgiftsbitradesavtalRoute
   VersionRoute: typeof VersionRoute
+  VillkorRoute: typeof VillkorRoute
   ApiV1LogoutRoute: typeof ApiV1LogoutRoute
   ApiV1MeRoute: typeof ApiV1MeRoute
+  ApiV1AuthBankidCancelRoute: typeof ApiV1AuthBankidCancelRoute
+  ApiV1AuthBankidModeRoute: typeof ApiV1AuthBankidModeRoute
+  ApiV1AuthBankidStartRoute: typeof ApiV1AuthBankidStartRoute
+  ApiV1AuthBankidStatusRoute: typeof ApiV1AuthBankidStatusRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -95,12 +237,40 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppRouteRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/integritetspolicy': {
+      id: '/integritetspolicy'
+      path: '/integritetspolicy'
+      fullPath: '/integritetspolicy'
+      preLoaderRoute: typeof IntegritetspolicyRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/personuppgiftsbitradesavtal': {
+      id: '/personuppgiftsbitradesavtal'
+      path: '/personuppgiftsbitradesavtal'
+      fullPath: '/personuppgiftsbitradesavtal'
+      preLoaderRoute: typeof PersonuppgiftsbitradesavtalRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/version': {
       id: '/version'
       path: '/version'
       fullPath: '/version'
       preLoaderRoute: typeof VersionRouteImport
       parentRoute: typeof rootRouteImport
+    }
+    '/villkor': {
+      id: '/villkor'
+      path: '/villkor'
+      fullPath: '/villkor'
+      preLoaderRoute: typeof VillkorRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/app/': {
+      id: '/app/'
+      path: '/'
+      fullPath: '/app/'
+      preLoaderRoute: typeof AppIndexRouteImport
+      parentRoute: typeof AppRouteRoute
     }
     '/api/v1/logout': {
       id: '/api/v1/logout'
@@ -116,15 +286,80 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiV1MeRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/app/login/': {
+      id: '/app/login/'
+      path: '/login'
+      fullPath: '/app/login/'
+      preLoaderRoute: typeof AppLoginIndexRouteImport
+      parentRoute: typeof AppRouteRoute
+    }
+    '/app/login/return': {
+      id: '/app/login/return'
+      path: '/login/return'
+      fullPath: '/app/login/return'
+      preLoaderRoute: typeof AppLoginReturnRouteImport
+      parentRoute: typeof AppRouteRoute
+    }
+    '/api/v1/auth/bankid/cancel': {
+      id: '/api/v1/auth/bankid/cancel'
+      path: '/api/v1/auth/bankid/cancel'
+      fullPath: '/api/v1/auth/bankid/cancel'
+      preLoaderRoute: typeof ApiV1AuthBankidCancelRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/v1/auth/bankid/mode': {
+      id: '/api/v1/auth/bankid/mode'
+      path: '/api/v1/auth/bankid/mode'
+      fullPath: '/api/v1/auth/bankid/mode'
+      preLoaderRoute: typeof ApiV1AuthBankidModeRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/v1/auth/bankid/start': {
+      id: '/api/v1/auth/bankid/start'
+      path: '/api/v1/auth/bankid/start'
+      fullPath: '/api/v1/auth/bankid/start'
+      preLoaderRoute: typeof ApiV1AuthBankidStartRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/v1/auth/bankid/status': {
+      id: '/api/v1/auth/bankid/status'
+      path: '/api/v1/auth/bankid/status'
+      fullPath: '/api/v1/auth/bankid/status'
+      preLoaderRoute: typeof ApiV1AuthBankidStatusRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
+interface AppRouteRouteChildren {
+  AppIndexRoute: typeof AppIndexRoute
+  AppLoginReturnRoute: typeof AppLoginReturnRoute
+  AppLoginIndexRoute: typeof AppLoginIndexRoute
+}
+
+const AppRouteRouteChildren: AppRouteRouteChildren = {
+  AppIndexRoute: AppIndexRoute,
+  AppLoginReturnRoute: AppLoginReturnRoute,
+  AppLoginIndexRoute: AppLoginIndexRoute,
+}
+
+const AppRouteRouteWithChildren = AppRouteRoute._addFileChildren(
+  AppRouteRouteChildren,
+)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
-  AppRouteRoute: AppRouteRoute,
+  AppRouteRoute: AppRouteRouteWithChildren,
+  IntegritetspolicyRoute: IntegritetspolicyRoute,
+  PersonuppgiftsbitradesavtalRoute: PersonuppgiftsbitradesavtalRoute,
   VersionRoute: VersionRoute,
+  VillkorRoute: VillkorRoute,
   ApiV1LogoutRoute: ApiV1LogoutRoute,
   ApiV1MeRoute: ApiV1MeRoute,
+  ApiV1AuthBankidCancelRoute: ApiV1AuthBankidCancelRoute,
+  ApiV1AuthBankidModeRoute: ApiV1AuthBankidModeRoute,
+  ApiV1AuthBankidStartRoute: ApiV1AuthBankidStartRoute,
+  ApiV1AuthBankidStatusRoute: ApiV1AuthBankidStatusRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

@@ -1,0 +1,1 @@
+[{"criterion":"A critical advisory fails ci (audit-gate.test.sh)","passes":true},{"criterion":"Image scan runs on every PR; make check-repo passes","passes":true}]
