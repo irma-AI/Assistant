@@ -1,8 +1,34 @@
 # Design
 
-The visual design is not decided yet. Use browser defaults and native HTML elements, and meet WCAG 2.2 AA. Do not invent a look: a new visual choice is a question for the owner.
+Meet WCAG 2.2 AA. The look below was chosen by the owner on 2026-10-25; a change to it, or any visual choice it does not cover, is a question for the owner. It borrows only the colours and type of the owner's Voice app, never Voice's product concepts.
 
-The rules below are about behaviour, wording and sizes, not the look. Each names its source.
+## Look
+
+Calm and premium: one idea per panel, white type on deep navy, and one warm accent only on what needs the owner.
+
+**Colour.** The app follows the phone's light or dark setting; both themes are complete.
+
+| Role | Dark | Light |
+|---|---|---|
+| Ground | Deep sea `#0B1322` under a Blue hour `#1A2A44` radial falloff from the top right | Sea mist `#E9EDF2` |
+| Panel | white at 4 % over the ground, 1px edge `#2A3447` | white `#FFFFFF`, 1px edge `#D3D9E1` |
+| Text | white `#FFFFFF` | Deep sea `#0B1322` |
+| Secondary text | white at 72 % | `#4C5566` |
+| Accent (Cable light) | `#F5D9A8`; button text Deep sea | button Deep sea with white text; accent text `#7A4E0E` |
+
+- Cable light marks only what needs the owner or can be tapped: the main button, the active tab, a question on a draft. Never decoration, never a finished item.
+- Stay clear of competitors' brand colours (PRODUCT.md, Brand Commitments). No pure black.
+- Measured 2026-10-25: every text pair passes 4.5:1 in both themes (lowest 6.4:1). Panel and tile edges are decorative; a control's edge must reach 3:1.
+
+**Type.** Newsreader (serif) at weight 400 or more for the company name and panel headings; Schibsted Grotesk for everything you read as data or operate, amounts included, with tabular figures. Never a weight under 400.
+
+**Shape.** Panels 14px corners; buttons are full pills, at least 48px tall; no shadows or glow.
+
+**Home screen.** Date and company name; "Snart dags" with Datumblock rows (a date tile, day large and month small, then what is due, the amount and "om N dagar"); "På banken" with its sync time, and "Resultat i år"; "Att godkänna" rows; one Cable light pill; the bottom tab bar.
+
+**Large text.** At 200 %: rows stack (the amount drops under the name), the money panels stack, Swedish words hyphenate except names, the company name's size is capped by screen width so it wraps only at spaces, and tab-bar labels keep their size as on iOS.
+
+The rules below are about behaviour, wording and sizes. Each names its source.
 
 ## Trust
 
