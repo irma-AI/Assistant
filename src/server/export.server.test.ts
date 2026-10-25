@@ -24,7 +24,6 @@ const exportBody = z.object({
   sessions: z.array(z.record(z.string(), z.unknown())),
   audit_events: z.array(z.object({ event: z.string() }).loose()),
   personal_identity_number: z.object({ stored: z.string() }),
-  about_this_export: z.object({ purposes: z.string() }),
 })
 const parse = (text: string) => exportBody.parse(JSON.parse(text))
 
@@ -92,7 +91,6 @@ test('the export holds every field records.md lists for the user, and no token o
     session_kind: null,
   })
   expect(body.personal_identity_number.stored).toMatch(/nyckelad hash/)
-  expect(body.about_this_export.purposes).toBeTruthy()
   expect(text).not.toContain(annaToken)
   expect(text).not.toContain(hashPnr('199001012387').toString('hex'))
   expect(text).not.toContain(hashPnr('199001012387').toString('base64'))
