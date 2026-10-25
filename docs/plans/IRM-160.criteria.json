@@ -1,0 +1,6 @@
+[
+  {"criterion": "DESIGN.md has a Trust section of at most ~40 lines: the UX, IX and AI rules as short imperatives, each with its source", "passes": true},
+  {"criterion": "The section states the rules are behavioural and doesn't decide the visual look", "passes": true},
+  {"criterion": "Feature issues that touch money, sending or AI link to the section", "passes": true},
+  {"criterion": "DESIGN.md has a Touch section with Apple's HIG touch rules translated to the web code the iOS app runs, plus App Store guideline 4.2, each naming its HIG page", "passes": true}
+]
