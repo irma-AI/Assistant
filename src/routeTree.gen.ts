@@ -27,6 +27,8 @@ import { Route as AppLoginReturnRouteImport } from './routes/app/login/return'
 import { Route as ApiV1InvitesTokenRouteImport } from './routes/api/v1/invites/$token'
 import { Route as ApiV1MeExportRouteImport } from './routes/api/v1/me.export'
 import { Route as ApiV1OrgsIndexRouteImport } from './routes/api/v1/orgs/index'
+import { Route as AppOrgOrgIdMedlemmarRouteImport } from './routes/app/org/$orgId/medlemmar'
+import { Route as AppOrgOrgIdRollerRouteImport } from './routes/app/org/$orgId/roller'
 import { Route as ApiV1AuthBankidCancelRouteImport } from './routes/api/v1/auth/bankid/cancel'
 import { Route as ApiV1AuthBankidExtendRouteImport } from './routes/api/v1/auth/bankid/extend'
 import { Route as ApiV1AuthBankidModeRouteImport } from './routes/api/v1/auth/bankid/mode'
@@ -135,6 +137,16 @@ const ApiV1OrgsIndexRoute = ApiV1OrgsIndexRouteImport.update({
   path: '/api/v1/orgs/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AppOrgOrgIdMedlemmarRoute = AppOrgOrgIdMedlemmarRouteImport.update({
+  id: '/org/$orgId/medlemmar',
+  path: '/org/$orgId/medlemmar',
+  getParentRoute: () => AppRouteRoute,
+} as any)
+const AppOrgOrgIdRollerRoute = AppOrgOrgIdRollerRouteImport.update({
+  id: '/org/$orgId/roller',
+  path: '/org/$orgId/roller',
+  getParentRoute: () => AppRouteRoute,
+} as any)
 const ApiV1AuthBankidCancelRoute = ApiV1AuthBankidCancelRouteImport.update({
   id: '/api/v1/auth/bankid/cancel',
   path: '/api/v1/auth/bankid/cancel',
@@ -240,6 +252,8 @@ export interface FileRoutesByFullPath {
   '/app/login/': typeof AppLoginIndexRoute
   '/api/v1/invites/$token': typeof ApiV1InvitesTokenRouteWithChildren
   '/api/v1/me/export': typeof ApiV1MeExportRoute
+  '/app/org/$orgId/medlemmar': typeof AppOrgOrgIdMedlemmarRoute
+  '/app/org/$orgId/roller': typeof AppOrgOrgIdRollerRoute
   '/api/v1/orgs/': typeof ApiV1OrgsIndexRoute
   '/api/v1/auth/bankid/cancel': typeof ApiV1AuthBankidCancelRoute
   '/api/v1/auth/bankid/extend': typeof ApiV1AuthBankidExtendRoute
@@ -275,6 +289,8 @@ export interface FileRoutesByTo {
   '/app/login': typeof AppLoginIndexRoute
   '/api/v1/invites/$token': typeof ApiV1InvitesTokenRouteWithChildren
   '/api/v1/me/export': typeof ApiV1MeExportRoute
+  '/app/org/$orgId/medlemmar': typeof AppOrgOrgIdMedlemmarRoute
+  '/app/org/$orgId/roller': typeof AppOrgOrgIdRollerRoute
   '/api/v1/orgs': typeof ApiV1OrgsIndexRoute
   '/api/v1/auth/bankid/cancel': typeof ApiV1AuthBankidCancelRoute
   '/api/v1/auth/bankid/extend': typeof ApiV1AuthBankidExtendRoute
@@ -312,6 +328,8 @@ export interface FileRoutesById {
   '/app/login/': typeof AppLoginIndexRoute
   '/api/v1/invites/$token': typeof ApiV1InvitesTokenRouteWithChildren
   '/api/v1/me/export': typeof ApiV1MeExportRoute
+  '/app/org/$orgId/medlemmar': typeof AppOrgOrgIdMedlemmarRoute
+  '/app/org/$orgId/roller': typeof AppOrgOrgIdRollerRoute
   '/api/v1/orgs/': typeof ApiV1OrgsIndexRoute
   '/api/v1/auth/bankid/cancel': typeof ApiV1AuthBankidCancelRoute
   '/api/v1/auth/bankid/extend': typeof ApiV1AuthBankidExtendRoute
@@ -350,6 +368,8 @@ export interface FileRouteTypes {
     | '/app/login/'
     | '/api/v1/invites/$token'
     | '/api/v1/me/export'
+    | '/app/org/$orgId/medlemmar'
+    | '/app/org/$orgId/roller'
     | '/api/v1/orgs/'
     | '/api/v1/auth/bankid/cancel'
     | '/api/v1/auth/bankid/extend'
@@ -385,6 +405,8 @@ export interface FileRouteTypes {
     | '/app/login'
     | '/api/v1/invites/$token'
     | '/api/v1/me/export'
+    | '/app/org/$orgId/medlemmar'
+    | '/app/org/$orgId/roller'
     | '/api/v1/orgs'
     | '/api/v1/auth/bankid/cancel'
     | '/api/v1/auth/bankid/extend'
@@ -421,6 +443,8 @@ export interface FileRouteTypes {
     | '/app/login/'
     | '/api/v1/invites/$token'
     | '/api/v1/me/export'
+    | '/app/org/$orgId/medlemmar'
+    | '/app/org/$orgId/roller'
     | '/api/v1/orgs/'
     | '/api/v1/auth/bankid/cancel'
     | '/api/v1/auth/bankid/extend'
@@ -597,6 +621,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiV1OrgsIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/app/org/$orgId/medlemmar': {
+      id: '/app/org/$orgId/medlemmar'
+      path: '/org/$orgId/medlemmar'
+      fullPath: '/app/org/$orgId/medlemmar'
+      preLoaderRoute: typeof AppOrgOrgIdMedlemmarRouteImport
+      parentRoute: typeof AppRouteRoute
+    }
+    '/app/org/$orgId/roller': {
+      id: '/app/org/$orgId/roller'
+      path: '/org/$orgId/roller'
+      fullPath: '/app/org/$orgId/roller'
+      preLoaderRoute: typeof AppOrgOrgIdRollerRouteImport
+      parentRoute: typeof AppRouteRoute
+    }
     '/api/v1/auth/bankid/cancel': {
       id: '/api/v1/auth/bankid/cancel'
       path: '/api/v1/auth/bankid/cancel'
@@ -719,6 +757,8 @@ interface AppRouteRouteChildren {
   AppLoginDemoRoute: typeof AppLoginDemoRoute
   AppLoginReturnRoute: typeof AppLoginReturnRoute
   AppLoginIndexRoute: typeof AppLoginIndexRoute
+  AppOrgOrgIdMedlemmarRoute: typeof AppOrgOrgIdMedlemmarRoute
+  AppOrgOrgIdRollerRoute: typeof AppOrgOrgIdRollerRoute
 }
 
 const AppRouteRouteChildren: AppRouteRouteChildren = {
@@ -728,6 +768,8 @@ const AppRouteRouteChildren: AppRouteRouteChildren = {
   AppLoginDemoRoute: AppLoginDemoRoute,
   AppLoginReturnRoute: AppLoginReturnRoute,
   AppLoginIndexRoute: AppLoginIndexRoute,
+  AppOrgOrgIdMedlemmarRoute: AppOrgOrgIdMedlemmarRoute,
+  AppOrgOrgIdRollerRoute: AppOrgOrgIdRollerRoute,
 }
 
 const AppRouteRouteWithChildren = AppRouteRoute._addFileChildren(

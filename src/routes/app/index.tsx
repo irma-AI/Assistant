@@ -9,6 +9,13 @@ export const Route = createFileRoute('/app/')({ component: App })
 
 type Orgs = z.infer<typeof organisations>
 
+const OrgLinks = ({ id }: { id: string }) => (
+  <p>
+    <a href={`/app/org/${id}/medlemmar`}>Medlemmar</a>{' '}
+    <a href={`/app/org/${id}/roller`}>Roller</a>
+  </p>
+)
+
 function App() {
   // undefined while loading, null when not logged in
   const [orgs, setOrgs] = useState<Orgs | null>()
@@ -61,6 +68,7 @@ function App() {
                   Organisationen har bara en Ägare. Vi rekommenderar två.
                 </p>
               )}
+              <OrgLinks id={o.id} />
               <Invites orgId={o.id} />
             </li>
           ))}

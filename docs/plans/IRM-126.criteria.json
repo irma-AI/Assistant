@@ -1,0 +1,1 @@
+[{"criterion":"Playwright: an Ägare creates a role, assigns it to a member, and that member does not see controls the role lacks","passes":true},{"criterion":"The refusal messages (last Ägare, a role in use) are shown in Swedish","passes":true}]

@@ -227,3 +227,70 @@ test('an admin invites a second user by link, who logs in and joins', async ({
   await expect(second.getByRole('alert')).toBeVisible()
   await guest.close()
 })
+
+test('an Ägare creates a role, gives it to a member, who then lacks the controls', async ({
+  page,
+  browser,
+}, testInfo) => {
+  const n = String(testInfo.workerIndex)
+  await page.context().setExtraHTTPHeaders({
+    'x-forwarded-for': `198.51.100.${String(230 + testInfo.workerIndex)}`,
+  })
+  await page.goto('/app/login')
+  await page.getByRole('button', { name: /annan enhet/ }).click()
+  await expect(page).toHaveURL(/\/app$/, { timeout: 15_000 })
+  await page.getByLabel('Namn').fill(`Roller AB ${n}`)
+  await page.getByRole('button', { name: 'Skapa organisation' }).click()
+  const link = await (async () => {
+    await page.getByRole('button', { name: 'Skapa inbjudningslänk' }).click()
+    return page.getByLabel(/Länk/).inputValue()
+  })()
+
+  const guest = await browser.newContext({
+    ...testInfo.project.use,
+    extraHTTPHeaders: {
+      'x-forwarded-for': `198.51.100.${String(240 + testInfo.workerIndex)}`,
+    },
+  })
+  const second = await guest.newPage()
+  await second.goto(link)
+  await second.getByRole('button', { name: /annan enhet/ }).click()
+  await expect(second).toHaveURL(/\/app$/, { timeout: 15_000 })
+
+  await page.getByRole('link', { name: 'Roller' }).click()
+  await page.getByRole('button', { name: 'Skapa roll' }).click()
+  await page.getByLabel('Namn').fill('Läsare')
+  await page.getByRole('button', { name: 'Spara roll' }).click()
+  await expect(
+    page.getByRole('list', { name: 'Behörigheter för Läsare' }),
+  ).toBeAttached()
+
+  await page.getByRole('link', { name: 'Tillbaka' }).click()
+  await page.getByRole('link', { name: 'Medlemmar' }).click()
+  await page
+    .getByLabel(/^Roll för (?!Test)/)
+    .last()
+    .selectOption({ label: 'Läsare' })
+  await expect(page.getByLabel(/^Roll för /).last()).toHaveValue(/.+/)
+
+  // The member now sees the list without controls.
+  await second.getByRole('link', { name: 'Roller' }).click()
+  await expect(second.getByRole('heading', { name: 'Roller' })).toBeVisible()
+  await expect(second.getByRole('button', { name: 'Skapa roll' })).toHaveCount(
+    0,
+  )
+  await second.getByRole('link', { name: 'Tillbaka' }).click()
+  await second.getByRole('link', { name: 'Medlemmar' }).click()
+  await expect(second.getByRole('button', { name: /^Ta bort/ })).toHaveCount(0)
+
+  // The last Ägare can't be removed: the refusal is in Swedish.
+  await page.reload()
+  await page
+    .getByRole('button', { name: /^Ta bort/ })
+    .first()
+    .click()
+  await expect(page.getByRole('alert')).toHaveText(
+    'Organisationen måste ha minst en Ägare.',
+  )
+  await guest.close()
+})
