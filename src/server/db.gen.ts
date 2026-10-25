@@ -11,6 +11,11 @@ export type Generated<T> = T extends ColumnType<infer S, infer I, infer U>
 
 export type Timestamp = ColumnType<Date, Date | string, Date | string>;
 
+export interface DeletedUsers {
+  deleted_at: Generated<Timestamp>;
+  user_id: string;
+}
+
 export interface LoginAttempts {
   created_at: Generated<Timestamp>;
   end_user_ip: string;
@@ -18,6 +23,7 @@ export interface LoginAttempts {
   last_collect_at: Timestamp | null;
   nonce: string | null;
   order_ref: string;
+  purpose: Generated<string>;
   qr_start_secret: string;
   qr_start_token: string;
 }
@@ -40,6 +46,7 @@ export interface Users {
 }
 
 export interface DB {
+  deleted_users: DeletedUsers;
   login_attempts: LoginAttempts;
   sessions: Sessions;
   users: Users;

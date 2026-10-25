@@ -27,7 +27,7 @@ test('QR data matches the published example at t=0, 1 and 2', () => {
   ])
 })
 
-test('fake: pending, then complete with a fresh person each time', async () => {
+test('fake: pending, then complete with the same person for the same IP', async () => {
   const people = new Set<string>()
   for (let i = 0; i < 2; i++) {
     const { orderRef } = await auth('203.0.113.7')
@@ -36,7 +36,7 @@ test('fake: pending, then complete with a fresh person each time', async () => {
     expect(done).toMatchObject({ status: 'complete' })
     if (done.status === 'complete') people.add(done.personalNumber)
   }
-  expect(people.size).toBe(2)
+  expect(people.size).toBe(1)
 })
 
 test('fake: pending, then failed with userCancel', async () => {

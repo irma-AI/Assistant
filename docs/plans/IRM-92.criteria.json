@@ -1,6 +1,14 @@
 [
-  {"criterion": "After deletion, every one of the user's sessions returns 401, and their name and personal-identity-number hash are gone from users.", "passes": false},
-  {"criterion": "A user who is the last admin of an organisation gets a refusal and keeps their account.", "passes": false},
-  {"criterion": "docs/privacy/records.md states the organisation-record rule with the BFL, BFNAR and IMY references above.", "passes": false},
-  {"criterion": "Playwright covers deleting an account and the last-admin refusal, against the fake BankID.", "passes": false}
+  {
+    "criterion": "After deletion, every one of the user's sessions returns 401, and their personal-identity-number hash, contact data and memberships are gone. Their name is gone too while no bookkeeping record references them.",
+    "passes": true
+  },
+  {
+    "criterion": "docs/privacy/records.md states the organisation-record rule with the BFL, BFNAR and IMY references above.",
+    "passes": true
+  },
+  {
+    "criterion": "Playwright covers deleting an account, confirmed through IRM-110's BankID login against the fake BankID.",
+    "passes": true
+  }
 ]

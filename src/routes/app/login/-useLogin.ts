@@ -8,6 +8,7 @@ import {
   poll,
   startLogin,
 } from './-bankid'
+import type { Purpose } from './-bankid'
 import { isMobile } from './-isMobile'
 
 type Phase =
@@ -23,8 +24,16 @@ function launchBankId(token: string) {
   link.click()
 }
 
-export function useLogin() {
+function useDone(purpose: Purpose) {
   const navigate = useNavigate()
+  return () =>
+    void (purpose === 'delete'
+      ? navigate({ to: '/app/radera-konto', search: { raderat: true } })
+      : navigate({ to: '/app' }))
+}
+
+export function useLogin(purpose: Purpose) {
+  const done = useDone(purpose)
   const [phase, setPhase] = useState<Phase>({ name: 'idle' })
   const [big, setBig] = useState(false)
   const [sameDeviceTab, setSameDeviceTab] = useState(false)
@@ -39,7 +48,7 @@ export function useLogin() {
       poll().then(
         (next) => {
           if (next.status === 'complete') {
-            void navigate({ to: '/app' })
+            done()
           } else if (next.status === 'pending') {
             setPhase((prev) => ({
               name: 'qr',
@@ -50,7 +59,7 @@ export function useLogin() {
             }))
           } else if (next.status === 'expired' && sameDeviceTab) {
             // The return tab finished the login and removed the attempt.
-            void navigate({ to: '/app' })
+            done()
           } else {
             setBig(false)
             setPhase({
@@ -65,7 +74,7 @@ export function useLogin() {
     return () => {
       clearInterval(timer)
     }
-  }, [waiting, sameDeviceTab, navigate])
+  }, [waiting, sameDeviceTab])
 
   const fail = (e: unknown) => {
     setPhase({
@@ -84,7 +93,7 @@ export function useLogin() {
     },
     sameDevice: async () => {
       try {
-        const started = await startLogin(true)
+        const started = await startLogin(true, purpose)
         setSameDeviceTab(true)
         launchBankId(started.autoStartToken ?? '')
         // On desktop the browser stays here, so show the pending state while the app signs.
@@ -95,7 +104,7 @@ export function useLogin() {
     },
     otherDevice: async () => {
       try {
-        await startLogin(false)
+        await startLogin(false, purpose)
         setSameDeviceTab(false)
         setPhase({ name: 'qr' })
       } catch (e) {

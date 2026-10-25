@@ -23,8 +23,10 @@ const post = (path: string, body: object) =>
     body: JSON.stringify(body),
   })
 
-export async function startLogin(sameDevice: boolean) {
-  const response = await post('start', { sameDevice })
+export type Purpose = 'login' | 'delete'
+
+export async function startLogin(sameDevice: boolean, purpose: Purpose) {
+  const response = await post('start', { sameDevice, purpose })
   const body: unknown = await response.json().catch(() => ({}))
   if (!response.ok) {
     const error = z.object({ error: z.string() }).safeParse(body)

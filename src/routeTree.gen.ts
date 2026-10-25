@@ -16,6 +16,7 @@ import { Route as PersonuppgiftsbitradesavtalRouteImport } from './routes/person
 import { Route as VersionRouteImport } from './routes/version'
 import { Route as VillkorRouteImport } from './routes/villkor'
 import { Route as AppIndexRouteImport } from './routes/app/index'
+import { Route as AppRaderaKontoRouteImport } from './routes/app/radera-konto'
 import { Route as ApiV1LogoutRouteImport } from './routes/api/v1/logout'
 import { Route as ApiV1MeRouteImport } from './routes/api/v1/me'
 import { Route as AppLoginIndexRouteImport } from './routes/app/login/index'
@@ -59,6 +60,11 @@ const VillkorRoute = VillkorRouteImport.update({
 const AppIndexRoute = AppIndexRouteImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => AppRouteRoute,
+} as any)
+const AppRaderaKontoRoute = AppRaderaKontoRouteImport.update({
+  id: '/radera-konto',
+  path: '/radera-konto',
   getParentRoute: () => AppRouteRoute,
 } as any)
 const ApiV1LogoutRoute = ApiV1LogoutRouteImport.update({
@@ -109,6 +115,7 @@ export interface FileRoutesByFullPath {
   '/personuppgiftsbitradesavtal': typeof PersonuppgiftsbitradesavtalRoute
   '/version': typeof VersionRoute
   '/villkor': typeof VillkorRoute
+  '/app/radera-konto': typeof AppRaderaKontoRoute
   '/app/': typeof AppIndexRoute
   '/api/v1/logout': typeof ApiV1LogoutRoute
   '/api/v1/me': typeof ApiV1MeRoute
@@ -125,6 +132,7 @@ export interface FileRoutesByTo {
   '/personuppgiftsbitradesavtal': typeof PersonuppgiftsbitradesavtalRoute
   '/version': typeof VersionRoute
   '/villkor': typeof VillkorRoute
+  '/app/radera-konto': typeof AppRaderaKontoRoute
   '/app': typeof AppIndexRoute
   '/api/v1/logout': typeof ApiV1LogoutRoute
   '/api/v1/me': typeof ApiV1MeRoute
@@ -143,6 +151,7 @@ export interface FileRoutesById {
   '/personuppgiftsbitradesavtal': typeof PersonuppgiftsbitradesavtalRoute
   '/version': typeof VersionRoute
   '/villkor': typeof VillkorRoute
+  '/app/radera-konto': typeof AppRaderaKontoRoute
   '/app/': typeof AppIndexRoute
   '/api/v1/logout': typeof ApiV1LogoutRoute
   '/api/v1/me': typeof ApiV1MeRoute
@@ -162,6 +171,7 @@ export interface FileRouteTypes {
     | '/personuppgiftsbitradesavtal'
     | '/version'
     | '/villkor'
+    | '/app/radera-konto'
     | '/app/'
     | '/api/v1/logout'
     | '/api/v1/me'
@@ -178,6 +188,7 @@ export interface FileRouteTypes {
     | '/personuppgiftsbitradesavtal'
     | '/version'
     | '/villkor'
+    | '/app/radera-konto'
     | '/app'
     | '/api/v1/logout'
     | '/api/v1/me'
@@ -195,6 +206,7 @@ export interface FileRouteTypes {
     | '/personuppgiftsbitradesavtal'
     | '/version'
     | '/villkor'
+    | '/app/radera-konto'
     | '/app/'
     | '/api/v1/logout'
     | '/api/v1/me'
@@ -272,6 +284,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppIndexRouteImport
       parentRoute: typeof AppRouteRoute
     }
+    '/app/radera-konto': {
+      id: '/app/radera-konto'
+      path: '/radera-konto'
+      fullPath: '/app/radera-konto'
+      preLoaderRoute: typeof AppRaderaKontoRouteImport
+      parentRoute: typeof AppRouteRoute
+    }
     '/api/v1/logout': {
       id: '/api/v1/logout'
       path: '/api/v1/logout'
@@ -332,12 +351,14 @@ declare module '@tanstack/react-router' {
 }
 
 interface AppRouteRouteChildren {
+  AppRaderaKontoRoute: typeof AppRaderaKontoRoute
   AppIndexRoute: typeof AppIndexRoute
   AppLoginReturnRoute: typeof AppLoginReturnRoute
   AppLoginIndexRoute: typeof AppLoginIndexRoute
 }
 
 const AppRouteRouteChildren: AppRouteRouteChildren = {
+  AppRaderaKontoRoute: AppRaderaKontoRoute,
   AppIndexRoute: AppIndexRoute,
   AppLoginReturnRoute: AppLoginReturnRoute,
   AppLoginIndexRoute: AppLoginIndexRoute,

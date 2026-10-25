@@ -149,12 +149,21 @@ export type Web = {
   deviceIdentifier: string
 }
 
-// returnRisk makes collect report the order's risk; web and returnUrl are sent for a browser login.
+// returnRisk makes collect report the order's risk; web and returnUrl are sent for a browser login;
+// userVisibleData is the text BankID shows the person while they identify.
 export async function auth(
   endUserIp: string,
-  options: { web?: Web; returnUrl?: string } = {},
+  options: { web?: Web; returnUrl?: string; userVisibleData?: string } = {},
 ) {
-  const r = await call('auth', { endUserIp, returnRisk: true, ...options })
+  const { userVisibleData, ...rest } = options
+  const r = await call('auth', {
+    endUserIp,
+    returnRisk: true,
+    ...rest,
+    ...(userVisibleData && {
+      userVisibleData: Buffer.from(userVisibleData).toString('base64'),
+    }),
+  })
   if (!isRecord(r)) throw new Error(wentWrong)
   return {
     orderRef: str(r.orderRef),
