@@ -18,6 +18,7 @@ import { Route as VillkorRouteImport } from './routes/villkor'
 import { Route as AppIndexRouteImport } from './routes/app/index'
 import { Route as AppRaderaKontoRouteImport } from './routes/app/radera-konto'
 import { Route as ApiV1LogoutRouteImport } from './routes/api/v1/logout'
+import { Route as ApiV1McpRouteImport } from './routes/api/v1/mcp'
 import { Route as ApiV1MeRouteImport } from './routes/api/v1/me'
 import { Route as AppLoginIndexRouteImport } from './routes/app/login/index'
 import { Route as AppLoginDemoRouteImport } from './routes/app/login/demo'
@@ -82,6 +83,11 @@ const AppRaderaKontoRoute = AppRaderaKontoRouteImport.update({
 const ApiV1LogoutRoute = ApiV1LogoutRouteImport.update({
   id: '/api/v1/logout',
   path: '/api/v1/logout',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiV1McpRoute = ApiV1McpRouteImport.update({
+  id: '/api/v1/mcp',
+  path: '/api/v1/mcp',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ApiV1MeRoute = ApiV1MeRouteImport.update({
@@ -194,6 +200,7 @@ export interface FileRoutesByFullPath {
   '/app/radera-konto': typeof AppRaderaKontoRoute
   '/app/': typeof AppIndexRoute
   '/api/v1/logout': typeof ApiV1LogoutRoute
+  '/api/v1/mcp': typeof ApiV1McpRoute
   '/api/v1/me': typeof ApiV1MeRouteWithChildren
   '/app/login/demo': typeof AppLoginDemoRoute
   '/app/login/return': typeof AppLoginReturnRoute
@@ -223,6 +230,7 @@ export interface FileRoutesByTo {
   '/app/radera-konto': typeof AppRaderaKontoRoute
   '/app': typeof AppIndexRoute
   '/api/v1/logout': typeof ApiV1LogoutRoute
+  '/api/v1/mcp': typeof ApiV1McpRoute
   '/api/v1/me': typeof ApiV1MeRouteWithChildren
   '/app/login/demo': typeof AppLoginDemoRoute
   '/app/login/return': typeof AppLoginReturnRoute
@@ -254,6 +262,7 @@ export interface FileRoutesById {
   '/app/radera-konto': typeof AppRaderaKontoRoute
   '/app/': typeof AppIndexRoute
   '/api/v1/logout': typeof ApiV1LogoutRoute
+  '/api/v1/mcp': typeof ApiV1McpRoute
   '/api/v1/me': typeof ApiV1MeRouteWithChildren
   '/app/login/demo': typeof AppLoginDemoRoute
   '/app/login/return': typeof AppLoginReturnRoute
@@ -286,6 +295,7 @@ export interface FileRouteTypes {
     | '/app/radera-konto'
     | '/app/'
     | '/api/v1/logout'
+    | '/api/v1/mcp'
     | '/api/v1/me'
     | '/app/login/demo'
     | '/app/login/return'
@@ -315,6 +325,7 @@ export interface FileRouteTypes {
     | '/app/radera-konto'
     | '/app'
     | '/api/v1/logout'
+    | '/api/v1/mcp'
     | '/api/v1/me'
     | '/app/login/demo'
     | '/app/login/return'
@@ -345,6 +356,7 @@ export interface FileRouteTypes {
     | '/app/radera-konto'
     | '/app/'
     | '/api/v1/logout'
+    | '/api/v1/mcp'
     | '/api/v1/me'
     | '/app/login/demo'
     | '/app/login/return'
@@ -374,6 +386,7 @@ export interface RootRouteChildren {
   VersionRoute: typeof VersionRoute
   VillkorRoute: typeof VillkorRoute
   ApiV1LogoutRoute: typeof ApiV1LogoutRoute
+  ApiV1McpRoute: typeof ApiV1McpRoute
   ApiV1MeRoute: typeof ApiV1MeRouteWithChildren
   ApiV1OrgsIndexRoute: typeof ApiV1OrgsIndexRoute
   ApiV1AuthBankidCancelRoute: typeof ApiV1AuthBankidCancelRoute
@@ -454,6 +467,13 @@ declare module '@tanstack/react-router' {
       path: '/api/v1/logout'
       fullPath: '/api/v1/logout'
       preLoaderRoute: typeof ApiV1LogoutRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/v1/mcp': {
+      id: '/api/v1/mcp'
+      path: '/api/v1/mcp'
+      fullPath: '/api/v1/mcp'
+      preLoaderRoute: typeof ApiV1McpRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/api/v1/me': {
@@ -631,6 +651,7 @@ const rootRouteChildren: RootRouteChildren = {
   VersionRoute: VersionRoute,
   VillkorRoute: VillkorRoute,
   ApiV1LogoutRoute: ApiV1LogoutRoute,
+  ApiV1McpRoute: ApiV1McpRoute,
   ApiV1MeRoute: ApiV1MeRouteWithChildren,
   ApiV1OrgsIndexRoute: ApiV1OrgsIndexRoute,
   ApiV1AuthBankidCancelRoute: ApiV1AuthBankidCancelRoute,
