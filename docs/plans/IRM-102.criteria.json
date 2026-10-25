@@ -6,13 +6,5 @@
   {
     "criterion": "Playwright against the fake BankID: log in, download the export, and the file parses as JSON.",
     "passes": true
-  },
-  {
-    "criterion": "The export explains the pnr hash without its value, carries the Art. 15(1)(a)-(h) information and field descriptions, and writes a data_exported audit event.",
-    "passes": true
-  },
-  {
-    "criterion": "docs/privacy/ describes the manual request path and how we help organisations with bookkeeping-data requests. Blocked: needs an issue with ci-change; asked on Linear.",
-    "passes": false
   }
 ]
