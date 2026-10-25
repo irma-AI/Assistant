@@ -52,7 +52,8 @@ All are strictly necessary for a service the user asked for (Swedish Electronic 
 
 | Name | Purpose | Lifetime | Status |
 |---|---|---|---|
-| `__Host-session` cookie | Holds the session token | Web 12 hours; app 90 days | Built (`src/server/session.server.ts`) |
+| `__Host-session` cookie (web only) | Holds the session token | 12 hours | Built (`src/server/session.server.ts`) |
+| Bearer token (apps; no cookie) | Holds the session token, sent in the `Authorization` header | 90 days | Built (`src/server/session.server.ts`) |
 | Login-attempt cookie | Ties a BankID order to the browser that started it | Until the login ends | Live with IRM-110 |
 | BankID device identifier | Sent to BankID to recognise the device | 365 days, in its own `__Host-device` cookie | Live with IRM-110 |
 
