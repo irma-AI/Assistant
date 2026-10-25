@@ -24,7 +24,7 @@ This learns from the scaffolding around that code: instructions for the agents (
 **The stack.** A web app with a realtime UI (autosave and live updates), in TypeScript end to end.
 
 - TypeScript in strict mode on Node LTS, with pnpm; mise pins both ([2.12](#212-ci-as-the-authority)).
-- [TanStack Start](https://tanstack.com/start) (React) for pages and server code, with server-side rendering and a versioned REST API at `/api/v1`, built into a Node server by Nitro.
+- [TanStack Start](https://tanstack.com/start) (React) for pages and server code, and a versioned REST API at `/api/v1`, built into a Node server by Nitro. `/app` is client-rendered (`ssr: false`); the landing page is server-rendered. Start stays because it gives one image, file-routed endpoints and that server-rendered landing page.
 - [TanStack DB](https://tanstack.com/db) in the browser, with live updates over server-sent events ([2.29](#229-one-write-path-with-live-updates)).
 - PostgreSQL, with Kysely for typed queries, plain `.sql` migrations and types generated from the schema ([2.7](#27-invariants-in-the-database-tested-against-the-real-database), [2.9](#29-generated-artifacts)).
 - Vitest and Playwright for tests ([2.8](#28-declared-test-seams-swept)), and the AI model vendors' official TypeScript SDKs.
@@ -221,7 +221,7 @@ Size limits here count characters or words, and are enforced.
 - Tests don't mock the project's own modules, and small local servers that behave like external services, such as an AI model's API, may stand in for them.
 - Sweep tests check every member of a set, so a new member is tested automatically: every `/api/v1` handler requires a session or sits on an explicit public list ([2.3](#23-guard-framework)), and every value of a closed set is handled. Parity tests read both copies of any fact stored in two places and fail if they differ. *Not built yet.*
 - A Playwright test with two browser contexts shows an edit in one appear in the other without a reload, and a write the database refuses roll back visibly ([2.29](#229-one-write-path-with-live-updates)). *Not built yet.*
-- Fake people come from libraries, not code of our own: [`@faker-js/faker`](https://fakerjs.dev) makes the values, with `faker.internet.exampleEmail()` for addresses at the domains RFC 2606 reserves, Swedish and other locales, phone numbers from a range the national regulator reserves for fiction (`faker.helpers.fromRegExp`), and a fixed seed so every run makes the same people. [kysely-ctl](https://github.com/kysely-org/kysely-ctl)'s seed files in `seeds/` insert them through Kysely, for `make dev`, the tests and the data in screenshots, so real personal data never goes into a fixture or a public PR. Set up: `seeds/people.ts` is the Faker people factory (fixed seed, Swedish locale, personal identity numbers from a committed snapshot of Skatteverket's published test numbers); the app stores no personal data yet, so no seed inserts.
+- Fake people come from libraries, not code of our own: [`@faker-js/faker`](https://fakerjs.dev) makes the values, with `faker.internet.exampleEmail()` for addresses at the domains RFC 2606 reserves, Swedish and other locales, phone numbers from a range the national regulator reserves for fiction (`faker.helpers.fromRegExp`), and a fixed seed so every run makes the same people. [kysely-ctl](https://github.com/kysely-org/kysely-ctl)'s seed files in `seeds/` insert them through Kysely, for `make dev`, the tests and the data in screenshots, so real personal data never goes into a fixture or a public PR. Set up: `seeds/people.ts` is the Faker people factory (fixed seed, Swedish locale, personal identity numbers from a committed snapshot of Skatteverket's published test numbers); `seeds/users.ts` inserts the fake users.
 - `guards/synthetic-data.sh` holds that to the first table of people. It fails `make check` when a migration stores people while no file in `seeds/` imports `@faker-js/faker` and uses `exampleEmail`. It reads each migration as SQL, across line breaks, quotes, comments and `DO $$ ... $$` bodies, and counts as people any `name` or `mail` column, the usual words for emails, phones, addresses, personal numbers and birth dates in English, Swedish, German and Dutch, and tables of candidates, users, contacts, respondents and the like. A false hit only means setting up the seeds sooner; a people table that names nothing on the list, or a schema made outside `migrations/`, gets past it.
 - A flaky test (one that passes or fails with no code change) gets a Linear issue and a fix, and is never skipped or retried until it passes.
 
@@ -341,7 +341,7 @@ Size limits here count characters or words, and are enforced.
 **What it is.** The old repository listed areas where an agent had to stop and ask the maintainer: legal wording shown to end users, contacting real people, adding vendors and changing deploy settings. Here each is made impossible for the agent, or routed to the owner as a question in Linear ([2.22](#222-asking-the-owner)).
 
 - Credentials are scoped per project and per purpose, and cannot change DNS, billing or organization settings, or publish anything outside the release job.
-- The Dokploy deploy key belongs to a dedicated member user that can reach only this app, because Dokploy scopes a key by its user, not per key. It lives in the `checks` environment. Its remaining reach is an open risk ([section 7](#7-open-risks)).
+- The Dokploy deploy key is meant to belong to a dedicated member user that can reach only this app, because Dokploy scopes a key by its user, not per key. *Not checked* until IRM-104's `user.get` check passes. It lives in the `checks` environment. Its remaining reach is an open risk ([section 7](#7-open-risks)).
 - One known exception is still open: Claude's GitHub connection acts with the connected account's full rights. If that account owns the organization, the agent's GitHub tools can do anything it can, including turning off the ruleset or changing repository settings. The owner chose not to test a writer-only account (2026-10-23), so this stays a known risk: the ruleset check in the audit on every merge ([2.12](#212-ci-as-the-authority)) is the only defence, and it catches a change afterwards.
 - Cloud environments use a Custom network allow-list no broader than the work needs, including Playwright's browser downloads (`cdn.playwright.dev`, `playwright.download.prss.microsoft.com`).
 - Secrets live only as network secrets, which the proxy adds to requests leaving the VM, so the agent never sees them. Environment variables hold none, because the agent can read them.
@@ -371,7 +371,7 @@ Size limits here count characters or words, and are enforced.
 
 **What it is.** Agents keep no memory between sessions, so the reasons behind choices live in the repository.
 
-- A hard-to-reverse choice gets an architecture decision record (ADR): a short document with the context, the options considered and the consequences.
+- A hard-to-reverse choice goes in the Decisions section of its Linear issue, recorded by the shaping skill (`.claude/skills/shaping/SKILL.md`), with the context, the options considered and the consequences. There are no ADRs.
 - Every other non-obvious choice, and every review finding the author declined, goes in the PR description.
 - Squash merges use the PR title and description as the commit message (a repository setting), so each PR's reasoning, including its "First principles" section ([2.17](#217-pr-description-contract)), lands in `git log`. The merge queue follows this setting.
 
@@ -722,7 +722,7 @@ These depend on what the new repository turns out to contain, or on a live test.
 | Line-count caps on documents | Met by writing 1,489-character lines. Characters or words instead. |
 | Guard code that runs from the PR it judges | Lets a PR rewrite its own judge. The guards run inside `policy` instead ([2.3](#23-guard-framework), [2.12](#212-ci-as-the-authority)). |
 | Merging with zero review as the only defence | Replaced by the AI review, the task-fit judge and the protected-path check, which are still weaker than a person ([section 7](#7-open-risks)). |
-| Agents acting under a person's identity, and hiding that code was AI-written | The history stops showing who did what. Commits come from Claude with the session trailer ([2.15](#215-commit-identity)). |
+| Agents acting under a person's identity, and hiding that code was AI-written | The history stops showing who did what. Commits come from Claude, and session links stay out of them ([2.15](#215-commit-identity)). |
 | An always-on "minimal code" persona injected into every session, plus five stacked skill packs that need rules about which one wins | Its effect could not be measured. It was injected twice in some sessions and used up space in the root instructions. |
 | Vendoring agent skills from `@latest` or the tip of a repository, and stripping the flags that stop the agent running some skills on its own | An unpinned supply chain for the agent's instructions. Copied skills are pinned and their upstream changes reviewed like code ([section 3](#3-skills)). |
 | A usage gate tied to one vendor's harness | Only ever trialled, it relied on readings the agent reported itself, and has been inactive since. |
@@ -767,7 +767,7 @@ These depend on what the new repository turns out to contain, or on a live test.
 | Piece | Why |
 |---|---|
 | Instruction files for other agent tools, and an `AGENTS.md` pointer | Claude Code is the only harness. |
-| A GitHub bot identity or machine account | Cloud commits use the GitHub user connected to the Claude account, and the consumer terms bar sharing account credentials. Claude's identity and the session trailer cover provenance ([2.15](#215-commit-identity)). |
+| A GitHub bot identity or machine account | Cloud commits use the GitHub user connected to the Claude account, and the consumer terms bar sharing account credentials. Claude's identity, the PR and its Linear issue cover provenance ([2.15](#215-commit-identity)). |
 | Reviewers that learn from PR comments | The author agent could teach the reviewer to stop flagging things ([2.11](#211-ai-review-and-task-fit-judge-run-by-ci-on-the-subscription)). |
 | Relying on the skill loader inside routines | The docs say it loads repository skills there, but no run has shown it, so routines read skill files by path ([2.28](#228-routine-prompts-point-into-the-repository)). |
 | Docker in the cloud VM as a requirement | Unproven there. CI is where it has to work. |
@@ -800,5 +800,5 @@ These remain after everything above.
 - **Log retention runs outside the repository's checks.** Docker keeps container logs with no age limit, so a daily Dokploy schedule cuts the Assistant's and Traefik's logs to 14 days (IRM-115). Its script is `scripts/log-retention.sh`, but nothing checks that the schedule's copy matches it, and the other projects on the server keep their logs indefinitely. Traefik's access log is off. Turning it on would start logging every visitor's IP address, so it would need a retention period first. *Not checked:* the first scheduled run is on 2026-10-25; manual runs on 2026-10-24 cut the expected lines.
 - **The personal-identity-number HMAC key.** Open, see IRM-128.
 - **Backups.** Dokploy backs up PostgreSQL with `pg_dump`, so a restore loses everything since the last dump, and no free storage target for the dumps is chosen yet.
-- **Young dependencies.** TanStack DB is in beta and TanStack Intent in alpha. Both are pinned, and their upgrades pass the same gates as any change.
+- **Young dependencies.** TanStack DB is in beta, TanStack Intent in alpha and Nitro (`3.0.260610-beta`, which runs production) in beta. Both are pinned, and their upgrades pass the same gates as any change.
 - **The platform's behaviour.** Several pieces rest on behaviour that is undocumented and was only seen in live tests, and Claude Code, routines and GitHub Actions can change without notice.
