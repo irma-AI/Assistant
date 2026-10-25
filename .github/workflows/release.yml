@@ -15,6 +15,8 @@ jobs:
       packages: write
       id-token: write
       attestations: write
+    outputs:
+      digest: ${{ steps.build.outputs.digest }}
     env:
       IMAGE: ghcr.io/irma-ai/assistant
     steps:
@@ -38,7 +40,11 @@ jobs:
       - name: Verify the attestation
         env:
           GH_TOKEN: ${{ github.token }}
-        run: gh attestation verify "oci://$IMAGE:$GITHUB_SHA" --repo "$GITHUB_REPOSITORY"
+          DIGEST: ${{ steps.build.outputs.digest }}
+        run: |
+          gh attestation verify "oci://$IMAGE@$DIGEST" \
+            --repo "$GITHUB_REPOSITORY" \
+            --signer-workflow "$GITHUB_REPOSITORY/.github/workflows/release.yml" --source-ref refs/heads/main
   # Deploys the attested image and checks it is the one serving; on failure it pins the previous
   # image again and opens a deploy-failure issue in Linear.
   deploy:
@@ -53,6 +59,7 @@ jobs:
     env:
       IMAGE: ghcr.io/irma-ai/assistant
       TAG: ${{ github.sha }}
+      DIGEST: ${{ needs.image.outputs.digest }}
       DOKPLOY_URL: https://dokploy.petterannerwall.se
       APPLICATION_ID: QBnL1Yn7fZ0Ficd4cbI36
       APP_URL: https://redo.petterannerwall.se
@@ -63,7 +70,10 @@ jobs:
       - name: Verify the attestation
         env:
           GH_TOKEN: ${{ github.token }}
-        run: gh attestation verify "oci://$IMAGE:$TAG" --repo "$GITHUB_REPOSITORY"
+        run: |
+          gh attestation verify "oci://$IMAGE@$DIGEST" \
+            --repo "$GITHUB_REPOSITORY" \
+            --signer-workflow "$GITHUB_REPOSITORY/.github/workflows/release.yml" --source-ref refs/heads/main
       - name: Deploy and check /version
         id: deploy
         env:

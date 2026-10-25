@@ -1,0 +1,4 @@
+[
+  {"criterion": "A database test: the migrator on an image one migration behind the database starts and serves.", "passes": true},
+  {"criterion": "The release verifies the signer workflow and the source ref, and deploys by digest.", "passes": true}
+]

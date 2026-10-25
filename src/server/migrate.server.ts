@@ -29,6 +29,24 @@ export function sqlFileProvider(dir: string): MigrationProvider {
 
 export async function migrate<T>(db: Kysely<T>, dir = 'migrations') {
   const migrator = new Migrator({ db, provider: sqlFileProvider(dir) })
+  // Kysely throws when the database has a migration this image lacks, which is what a rollback
+  // after a release that added one looks like. With nothing pending, serve on the newer schema.
+  const known = await migrator.getMigrations()
+  const { rows: has } = await sql<{
+    ok: boolean
+  }>`select to_regclass('kysely_migration') is not null as ok`.execute(db)
+  const { rows } = has[0]?.ok
+    ? await sql<{
+        name: string
+      }>`select name from kysely_migration order by name`.execute(db)
+    : { rows: [] }
+  const ahead = rows
+    .map((r) => r.name)
+    .filter((n) => !known.some((m) => m.name === n))
+  if (ahead.length && known.every((m) => m.executedAt)) {
+    console.warn(JSON.stringify({ event: 'migrations_ahead', names: ahead }))
+    return []
+  }
   const { error, results } = await migrator.migrateToLatest()
   if (error)
     throw error instanceof Error
