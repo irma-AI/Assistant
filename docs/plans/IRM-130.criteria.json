@@ -1,0 +1,9 @@
+[
+  {"criterion": "Start-up throws in test and production when BANKID_MODE or PUBLIC_URL is missing; local dev keeps defaults.", "passes": true},
+  {"criterion": "A session is refused after 24 hours and after 1 hour idle, web and app alike.", "passes": true},
+  {"criterion": "last_used_at is written at most once a minute per session.", "passes": true},
+  {"criterion": "Start answers 429 after N starts from one /24, persistently, logging rate_limited without the raw IP.", "passes": true},
+  {"criterion": "Committed root CA PEMs match pinned fingerprints; BANKID_ROOT_CA_PEM is not read.", "passes": true},
+  {"criterion": "The same-device panel shows the QR hint line.", "passes": true},
+  {"criterion": "records.md states the new session limits; cookie row web-only.", "passes": true}
+]

@@ -23,6 +23,7 @@ export type AuditEvent = {
   event:
     | 'login_success'
     | 'login_failure'
+    | 'login_started'
     | 'logout'
     | 'organisation_created'
     | 'member_added'

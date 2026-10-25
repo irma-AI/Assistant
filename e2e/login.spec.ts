@@ -55,6 +55,15 @@ test('logs in on the same device through the returnUrl', async ({
   expect(cookies.map((c) => c.name)).toContain(sessionCookie)
 })
 
+test('the same-device panel offers QR as the fallback', async ({ page }) => {
+  await page.route('https://app.bankid.com/**', (route) => route.abort())
+  await page.goto('/app/login')
+  await page.getByRole('button', { name: /den här enheten/ }).click()
+  await expect(
+    page.getByText(/Öppnades BankID i en annan webbläsare/),
+  ).toBeVisible()
+})
+
 test('cancelling returns to the start', async ({ page }) => {
   await page.goto('/app/login')
   await page.getByRole('button', { name: /annan enhet/ }).click()

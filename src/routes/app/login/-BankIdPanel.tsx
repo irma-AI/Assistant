@@ -50,6 +50,12 @@ export function BankIdPanel({
             <p>Öppna BankID-appen på din andra enhet och skanna QR-koden.</p>
           )}
           {phase.message && <p role="status">{phase.message}</p>}
+          {sameDeviceWaiting && (
+            <p>
+              Öppnades BankID i en annan webbläsare? Avbryt och välj BankID på
+              en annan enhet, så loggar du in med QR-kod i stället.
+            </p>
+          )}
           {phase.qr && (
             <QrCode
               qr={phase.qr}
