@@ -1,8 +1,10 @@
 import { useNavigate } from '@tanstack/react-router'
 import { useCallback, useEffect, useState } from 'react'
+import type { Dispatch, SetStateAction } from 'react'
 import {
   cancelLogin,
   expiredMessage,
+  extendLogin,
   failedMessage,
   isTestMode,
   poll,
@@ -13,7 +15,7 @@ import { isMobile } from './-isMobile'
 
 type Phase =
   | { name: 'idle'; message?: string }
-  | { name: 'qr'; qr?: string; message?: string }
+  | { name: 'qr'; qr?: string; remaining?: number; message?: string }
 
 // BankID's autostart guide: the app link on mobile, the bankid scheme on desktop.
 function launchBankId(token: string) {
@@ -42,16 +44,14 @@ function useDone(purpose: Purpose, setPhase: (phase: Phase) => void) {
   )
 }
 
-export function useLogin(purpose: Purpose) {
-  const [phase, setPhase] = useState<Phase>({ name: 'idle' })
-  const done = useDone(purpose, setPhase)
-  const [big, setBig] = useState(false)
-  const [sameDeviceTab, setSameDeviceTab] = useState(false)
-  const [testMode, setTestMode] = useState(false)
-  const waiting = phase.name === 'qr'
-
-  useEffect(() => void isTestMode().then(setTestMode, () => undefined), [])
-
+// Polls the login every second while it waits, and moves the panel on when it ends.
+function usePoll(
+  waiting: boolean,
+  sameDeviceTab: boolean,
+  done: (startedOnThisDevice: boolean) => void,
+  setPhase: Dispatch<SetStateAction<Phase>>,
+  setBig: (big: boolean) => void,
+) {
   useEffect(() => {
     if (!waiting) return
     const timer = setInterval(() => {
@@ -63,6 +63,7 @@ export function useLogin(purpose: Purpose) {
             setPhase((prev) => ({
               name: 'qr',
               qr: next.qr,
+              remaining: next.remaining,
               // The server answers without a message while it throttles collect; keep the last one.
               message:
                 next.message || (prev.name === 'qr' ? prev.message : undefined),
@@ -85,6 +86,19 @@ export function useLogin(purpose: Purpose) {
       clearInterval(timer)
     }
   }, [waiting, sameDeviceTab, done])
+}
+
+export function useLogin(purpose: Purpose) {
+  const [phase, setPhase] = useState<Phase>({ name: 'idle' })
+  const done = useDone(purpose, setPhase)
+  const [big, setBig] = useState(false)
+  const [sameDeviceTab, setSameDeviceTab] = useState(false)
+  const [testMode, setTestMode] = useState(false)
+  const waiting = phase.name === 'qr'
+
+  useEffect(() => void isTestMode().then(setTestMode, () => undefined), [])
+
+  usePoll(waiting, sameDeviceTab, done, setPhase, setBig)
 
   const fail = (e: unknown) => {
     setPhase({
@@ -120,6 +134,14 @@ export function useLogin(purpose: Purpose) {
       } catch (e) {
         fail(e)
       }
+    },
+    extend: async () => {
+      const remaining = await extendLogin().catch(() => undefined)
+      setPhase((prev) =>
+        prev.name === 'qr' && remaining !== undefined
+          ? { ...prev, remaining }
+          : prev,
+      )
     },
     cancel: async () => {
       await cancelLogin().catch(() => undefined)

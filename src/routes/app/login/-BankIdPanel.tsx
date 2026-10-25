@@ -1,9 +1,6 @@
-import { renderSVG } from 'uqr'
 import type { Purpose } from './-bankid'
+import { QrCode } from './-QrCode'
 import { useLogin } from './-useLogin'
-
-const qrImage = (qr: string) =>
-  `data:image/svg+xml;utf8,${encodeURIComponent(renderSVG(qr))}`
 
 // The BankID steps shared by logging in and confirming an account deletion.
 export function BankIdPanel({
@@ -21,6 +18,7 @@ export function BankIdPanel({
     toggleBig,
     sameDevice,
     otherDevice,
+    extend,
     cancel,
   } = useLogin(purpose)
 
@@ -50,18 +48,13 @@ export function BankIdPanel({
           )}
           {phase.message && <p role="status">{phase.message}</p>}
           {phase.qr && (
-            <button
-              type="button"
-              className={big ? 'qr qr-full' : 'qr'}
-              aria-label={
-                big ? 'Visa QR-koden mindre' : 'Visa QR-koden i helskärm'
-              }
-              onClick={() => {
-                toggleBig()
-              }}
-            >
-              <img src={qrImage(phase.qr)} alt="QR-kod för BankID-inloggning" />
-            </button>
+            <QrCode
+              qr={phase.qr}
+              remaining={phase.remaining ?? 0}
+              big={big}
+              toggleBig={toggleBig}
+              extend={extend}
+            />
           )}
           <p>
             <button type="button" onClick={() => void cancel()}>
