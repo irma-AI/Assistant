@@ -1,0 +1,6 @@
+[
+  {"criterion": "pg-boss queue in the existing Postgres runs the login-attempt sweep on a schedule", "passes": true},
+  {"criterion": "A job runs against real Postgres in Vitest, including a retry after a forced failure", "passes": true},
+  {"criterion": "Two jobs with one key never queue at once (overlap guard)", "passes": true},
+  {"criterion": "Failures are logged with job id only, and dead-letter jobs are logged", "passes": true}
+]
