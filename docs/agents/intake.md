@@ -10,4 +10,4 @@ Each Intake run builds one Linear issue in team IRM. Two workers run it: the clo
    - In Progress with a `Started by Intake.` comment from the last 10 minutes: another session has it, so stop.
    - Anything else: stop without changing it.
 3. Follow `.claude/skills/next-step/SKILL.md` for the issue, as a plain set of instructions.
-4. If you stop before pushing anything, move the issue back to Ready and say why in a comment, so the next run retries it.
+4. If you claimed the issue in step 2 and then stop before pushing anything, move it back to Ready and say why in a comment, so the next run retries it. Never move an issue you didn't claim.
