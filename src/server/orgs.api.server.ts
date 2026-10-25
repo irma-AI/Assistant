@@ -24,7 +24,8 @@ type Ctx = {
   base: Audit
 }
 
-const json = (body: unknown, status = 200) => Response.json(body, { status })
+const json = (body: unknown, status = 200) =>
+  Response.json(body, { status, headers: { 'cache-control': 'no-store' } })
 const done = async (action: Promise<void>) => {
   await action
   return new Response(null, { status: 204 })
@@ -52,7 +53,14 @@ async function handle(
       await recordAudit(db, {
         ...base,
         event: 'authorization_refused',
-        detail: { path: new URL(request.url).pathname, method: request.method },
+        detail: {
+          // An invite token in the address must never reach the audit log.
+          path: new URL(request.url).pathname.replace(
+            /\/invites\/[^/]+/,
+            '/invites/:token',
+          ),
+          method: request.method,
+        },
       })
     return json({ error: e.message }, e.status)
   }

@@ -169,7 +169,16 @@ test('only members.manage invites, never Ägare, never a demo session', async ()
   )
   expect(asDemo.status).toBe(403)
   const { token } = await invite(owner, org.id, 'Medlem')
-  expect((await accept(demo, token)).status).toBe(403)
+  const viaUrl = new Request(
+    `https://api.test/api/v1/invites/${token}/accept`,
+    {
+      method: 'POST',
+      headers: { authorization: `Bearer ${demo.token}` },
+    },
+  )
+  expect((await orgsApi.acceptInvite(viaUrl, token, db)).status).toBe(403)
+  const logged = await db.selectFrom('audit_events').select('detail').execute()
+  expect(JSON.stringify(logged)).not.toContain(token)
 })
 
 test('an invite cannot name a role with permissions the inviter lacks', async () => {
