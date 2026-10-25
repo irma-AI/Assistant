@@ -11,7 +11,10 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AppRouteRouteImport } from './routes/app/route'
+import { Route as IntegritetspolicyRouteImport } from './routes/integritetspolicy'
+import { Route as PersonuppgiftsbitradesavtalRouteImport } from './routes/personuppgiftsbitradesavtal'
 import { Route as VersionRouteImport } from './routes/version'
+import { Route as VillkorRouteImport } from './routes/villkor'
 import { Route as AppIndexRouteImport } from './routes/app/index'
 import { Route as ApiV1LogoutRouteImport } from './routes/api/v1/logout'
 import { Route as ApiV1MeRouteImport } from './routes/api/v1/me'
@@ -32,9 +35,25 @@ const AppRouteRoute = AppRouteRouteImport.update({
   path: '/app',
   getParentRoute: () => rootRouteImport,
 } as any)
+const IntegritetspolicyRoute = IntegritetspolicyRouteImport.update({
+  id: '/integritetspolicy',
+  path: '/integritetspolicy',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PersonuppgiftsbitradesavtalRoute =
+  PersonuppgiftsbitradesavtalRouteImport.update({
+    id: '/personuppgiftsbitradesavtal',
+    path: '/personuppgiftsbitradesavtal',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 const VersionRoute = VersionRouteImport.update({
   id: '/version',
   path: '/version',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const VillkorRoute = VillkorRouteImport.update({
+  id: '/villkor',
+  path: '/villkor',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AppIndexRoute = AppIndexRouteImport.update({
@@ -86,7 +105,10 @@ const ApiV1AuthBankidStatusRoute = ApiV1AuthBankidStatusRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/app': typeof AppRouteRouteWithChildren
+  '/integritetspolicy': typeof IntegritetspolicyRoute
+  '/personuppgiftsbitradesavtal': typeof PersonuppgiftsbitradesavtalRoute
   '/version': typeof VersionRoute
+  '/villkor': typeof VillkorRoute
   '/app/': typeof AppIndexRoute
   '/api/v1/logout': typeof ApiV1LogoutRoute
   '/api/v1/me': typeof ApiV1MeRoute
@@ -99,7 +121,10 @@ export interface FileRoutesByFullPath {
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/integritetspolicy': typeof IntegritetspolicyRoute
+  '/personuppgiftsbitradesavtal': typeof PersonuppgiftsbitradesavtalRoute
   '/version': typeof VersionRoute
+  '/villkor': typeof VillkorRoute
   '/app': typeof AppIndexRoute
   '/api/v1/logout': typeof ApiV1LogoutRoute
   '/api/v1/me': typeof ApiV1MeRoute
@@ -114,7 +139,10 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/app': typeof AppRouteRouteWithChildren
+  '/integritetspolicy': typeof IntegritetspolicyRoute
+  '/personuppgiftsbitradesavtal': typeof PersonuppgiftsbitradesavtalRoute
   '/version': typeof VersionRoute
+  '/villkor': typeof VillkorRoute
   '/app/': typeof AppIndexRoute
   '/api/v1/logout': typeof ApiV1LogoutRoute
   '/api/v1/me': typeof ApiV1MeRoute
@@ -130,7 +158,10 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/app'
+    | '/integritetspolicy'
+    | '/personuppgiftsbitradesavtal'
     | '/version'
+    | '/villkor'
     | '/app/'
     | '/api/v1/logout'
     | '/api/v1/me'
@@ -143,7 +174,10 @@ export interface FileRouteTypes {
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
+    | '/integritetspolicy'
+    | '/personuppgiftsbitradesavtal'
     | '/version'
+    | '/villkor'
     | '/app'
     | '/api/v1/logout'
     | '/api/v1/me'
@@ -157,7 +191,10 @@ export interface FileRouteTypes {
     | '__root__'
     | '/'
     | '/app'
+    | '/integritetspolicy'
+    | '/personuppgiftsbitradesavtal'
     | '/version'
+    | '/villkor'
     | '/app/'
     | '/api/v1/logout'
     | '/api/v1/me'
@@ -172,7 +209,10 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AppRouteRoute: typeof AppRouteRouteWithChildren
+  IntegritetspolicyRoute: typeof IntegritetspolicyRoute
+  PersonuppgiftsbitradesavtalRoute: typeof PersonuppgiftsbitradesavtalRoute
   VersionRoute: typeof VersionRoute
+  VillkorRoute: typeof VillkorRoute
   ApiV1LogoutRoute: typeof ApiV1LogoutRoute
   ApiV1MeRoute: typeof ApiV1MeRoute
   ApiV1AuthBankidCancelRoute: typeof ApiV1AuthBankidCancelRoute
@@ -197,11 +237,32 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppRouteRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/integritetspolicy': {
+      id: '/integritetspolicy'
+      path: '/integritetspolicy'
+      fullPath: '/integritetspolicy'
+      preLoaderRoute: typeof IntegritetspolicyRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/personuppgiftsbitradesavtal': {
+      id: '/personuppgiftsbitradesavtal'
+      path: '/personuppgiftsbitradesavtal'
+      fullPath: '/personuppgiftsbitradesavtal'
+      preLoaderRoute: typeof PersonuppgiftsbitradesavtalRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/version': {
       id: '/version'
       path: '/version'
       fullPath: '/version'
       preLoaderRoute: typeof VersionRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/villkor': {
+      id: '/villkor'
+      path: '/villkor'
+      fullPath: '/villkor'
+      preLoaderRoute: typeof VillkorRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/app/': {
@@ -289,7 +350,10 @@ const AppRouteRouteWithChildren = AppRouteRoute._addFileChildren(
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AppRouteRoute: AppRouteRouteWithChildren,
+  IntegritetspolicyRoute: IntegritetspolicyRoute,
+  PersonuppgiftsbitradesavtalRoute: PersonuppgiftsbitradesavtalRoute,
   VersionRoute: VersionRoute,
+  VillkorRoute: VillkorRoute,
   ApiV1LogoutRoute: ApiV1LogoutRoute,
   ApiV1MeRoute: ApiV1MeRoute,
   ApiV1AuthBankidCancelRoute: ApiV1AuthBankidCancelRoute,
