@@ -1,0 +1,46 @@
+[
+  {
+    "criterion": "a demo login reaches only demo data",
+    "passes": true
+  },
+  {
+    "criterion": "a real user can't use the password route",
+    "passes": true
+  },
+  {
+    "criterion": "a blocked side effect returns an error for a demo session",
+    "passes": true
+  },
+  {
+    "criterion": "a demo session can't create an invite",
+    "passes": true
+  },
+  {
+    "criterion": "with DEMO_LOGIN_ENABLED=false the route returns 404",
+    "passes": true
+  },
+  {
+    "criterion": "data a demo session changes is still there at the next demo login",
+    "passes": true
+  },
+  {
+    "criterion": "after the demo account is deleted, the next demo login recreates it from the snapshot",
+    "passes": true
+  },
+  {
+    "criterion": "the snapshot equals the factory's output for the fixed seed",
+    "passes": true
+  },
+  {
+    "criterion": "many failed logins throttle that IP but don't block a correct login from another IP",
+    "passes": true
+  },
+  {
+    "criterion": "DEMO_PASSWORD_HASH is checked with Argon2id in constant time, and a wrong password returns 401 without saying whether the username exists",
+    "passes": true
+  },
+  {
+    "criterion": "@faker-js/faker is not imported from src/server",
+    "passes": true
+  }
+]

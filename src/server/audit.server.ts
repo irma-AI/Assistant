@@ -12,7 +12,7 @@ export function clientIp(request: Request) {
 }
 
 // Keeps the network, drops the host: IPv4 /24, IPv6 up to /48 (an address with `::` early keeps fewer groups).
-function truncate(ip: string | undefined) {
+export function truncate(ip: string | undefined) {
   if (ip && isIPv4(ip)) return `${ip.split('.').slice(0, 3).join('.')}.0`
   if (ip && isIPv6(ip))
     return `${ip.split(':').slice(0, 3).filter(Boolean).join(':')}::`
@@ -35,6 +35,7 @@ export type AuditEvent = {
     | 'authorization_refused'
     | 'account_deleted'
     | 'data_exported'
+    | 'demo_recreated'
   userId?: string
   sessionKind?: string
   ip?: string
