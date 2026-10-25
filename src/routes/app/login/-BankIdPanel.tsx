@@ -6,9 +6,12 @@ import { useLogin } from './-useLogin'
 export function BankIdPanel({
   purpose,
   verb,
+  loggedIn,
 }: {
   purpose: Purpose
   verb: string
+  // Replaces the move to /app when a login completes.
+  loggedIn?: () => void
 }) {
   const {
     phase,
@@ -20,7 +23,7 @@ export function BankIdPanel({
     otherDevice,
     extend,
     cancel,
-  } = useLogin(purpose)
+  } = useLogin(purpose, loggedIn)
 
   return (
     <>

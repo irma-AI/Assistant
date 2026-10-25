@@ -11,6 +11,8 @@ const publicHandlers: Record<string, string> = {
   'auth/bankid/status POST': 'login: polls BankID',
   'auth/demo POST': 'login: demo account',
   'auth/demo/delete POST': 'demo: deletes the demo account by its own token',
+  'invites/$token GET':
+    'the invite screen reads the organisation name before login',
   'logout POST': 'logging out twice is not an error',
 }
 

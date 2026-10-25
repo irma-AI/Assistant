@@ -37,6 +37,18 @@ export interface AuditEvents {
   user_id: string | null;
 }
 
+export interface Invites {
+  created_at: Generated<Timestamp>;
+  created_by: string;
+  expires_at: Timestamp;
+  id: Generated<string>;
+  organisation_id: string;
+  revoked_at: Timestamp | null;
+  role_id: string;
+  token_hash: Buffer;
+  used_at: Timestamp | null;
+}
+
 export interface LoginAttempts {
   created_at: Generated<Timestamp>;
   end_user_ip: string;
@@ -91,6 +103,7 @@ export interface Users {
 
 export interface DB {
   audit_events: AuditEvents;
+  invites: Invites;
   login_attempts: LoginAttempts;
   memberships: Memberships;
   organisations: Organisations;

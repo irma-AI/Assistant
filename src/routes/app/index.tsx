@@ -3,6 +3,7 @@ import { useCallback, useEffect, useState } from 'react'
 import type { SyntheticEvent } from 'react'
 import { organisations } from '#/api/schemas'
 import type { z } from 'zod'
+import { Invites } from './-Invites'
 
 export const Route = createFileRoute('/app/')({ component: App })
 
@@ -60,6 +61,7 @@ function App() {
                   Organisationen har bara en Ägare. Vi rekommenderar två.
                 </p>
               )}
+              <Invites orgId={o.id} />
             </li>
           ))}
         </ul>
