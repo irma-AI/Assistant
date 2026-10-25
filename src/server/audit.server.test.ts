@@ -113,7 +113,7 @@ test('the hash chain links each row to the one before, and an edit shows', async
         'ok',
       ),
     )
-    .where('id', '=', rows[1]?.id ?? 0)
+    .where('id', '=', rows[1]?.id ?? '0')
     .executeTakeFirstOrThrow()
   expect(edited.ok).toBe(false)
   expect(before).toBeTruthy()

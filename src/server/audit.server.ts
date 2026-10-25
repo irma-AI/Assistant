@@ -22,7 +22,7 @@ function truncate(ip: string | undefined) {
 export type AuditEvent = {
   event: 'login_success' | 'login_failure' | 'logout'
   userId?: string
-  sessionKind?: 'web' | 'app' | 'demo'
+  sessionKind?: string
   ip?: string
   // Never a personal identity number, token or name.
   detail?: Record<string, string | number | boolean>
