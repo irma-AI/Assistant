@@ -14,16 +14,19 @@ const returnUrlOf = (body: unknown) =>
 
 const asIp = (ip: string) => ({ extraHTTPHeaders: { 'x-forwarded-for': ip } })
 
+const qrName = 'QR-kod, skanna på armlängds avstånd. Tryck för helskärm.'
+
 test('logs in by scanning the QR code on another device', async ({ page }) => {
   await page.goto('/app/login')
   await expect(
     page.getByText('Testmiljö – inloggningen är inte verifierad'),
   ).toBeVisible()
   await page.getByRole('button', { name: /annan enhet/ }).click()
-  await expect(page.getByAltText('QR-kod för BankID-inloggning')).toBeVisible()
-  await page.getByRole('button', { name: 'Visa QR-koden i helskärm' }).click()
+  await page.getByRole('button', { name: qrName }).click()
   await expect(
-    page.getByRole('button', { name: 'Visa QR-koden mindre' }),
+    page.getByRole('button', {
+      name: 'QR-kod, skanna på armlängds avstånd. Tryck för att lämna helskärm.',
+    }),
   ).toBeVisible()
   await expect(page).toHaveURL(/\/app$/, { timeout: 15_000 })
   const cookies = await page.context().cookies()
@@ -149,4 +152,39 @@ test('downloads the export as JSON', async ({ page }, testInfo) => {
     })
     .parse(JSON.parse(readFileSync(path, 'utf8')))
   expect(body.sessions).toHaveLength(1)
+})
+
+// The status reply is held at 20 seconds left, so "Mer tid" shows without waiting five minutes.
+test('offers more time near the end of the QR display, by button or space bar', async ({
+  page,
+}) => {
+  let left = 20
+  let extendCalls = 0
+  await page.route('**/api/v1/auth/bankid/status', (route) =>
+    route.fulfill({
+      json: {
+        status: 'pending',
+        message: '',
+        qr: 'bankid.x.0.y',
+        remaining: left,
+      },
+    }),
+  )
+  page.on('request', (r) => {
+    if (!r.url().endsWith('/api/v1/auth/bankid/extend')) return
+    extendCalls += 1
+    left = 300
+  })
+  await page.goto('/app/login')
+  await page.getByRole('button', { name: /annan enhet/ }).click()
+  await expect(page.getByText('Tid kvar: 0:20')).toBeVisible()
+  await page.getByRole('button', { name: 'Mer tid' }).click()
+  await expect(page.getByText('Tid kvar: 5:00')).toBeVisible()
+  await expect(page.getByRole('button', { name: 'Mer tid' })).toBeHidden()
+  await expect(page.getByRole('button', { name: qrName })).toBeFocused()
+  left = 20
+  await expect(page.getByRole('button', { name: 'Mer tid' })).toBeVisible()
+  await page.keyboard.press('Space')
+  await expect(page.getByText('Tid kvar: 5:00')).toBeVisible()
+  expect(extendCalls).toBe(2)
 })

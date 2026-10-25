@@ -5,6 +5,7 @@ const reply = z.discriminatedUnion('status', [
     status: z.literal('pending'),
     message: z.string(),
     qr: z.string().optional(),
+    remaining: z.number().optional(),
   }),
   z.object({ status: z.literal('complete') }),
   z.object({ status: z.literal('failed'), message: z.string() }),
@@ -44,6 +45,28 @@ export async function poll(nonce?: string): Promise<Poll> {
 }
 
 export const cancelLogin = () => post('cancel', {})
+
+// "Mer tid": the server resets the QR display and answers with the seconds now remaining.
+export async function extendLogin() {
+  const response = await post('extend', {})
+  if (!response.ok) throw new Error(failedMessage)
+  return z.object({ remaining: z.number() }).parse(await response.json())
+    .remaining
+}
+
+// BankID's key points for reading the countdown aloud: 5 to 1 minutes, then 50 to 10 seconds.
+const keyPoints = [300, 240, 180, 120, 60, 50, 40, 30, 20, 10]
+
+// What a screen reader hears; it changes only at a key point, so a live region speaks just then.
+export function countdownAnnouncement(remaining: number) {
+  const point = keyPoints.filter((t) => t >= remaining).at(-1) ?? 300
+  if (point < 60) return `${String(point)} sekunder kvar`
+  const minutes = point / 60
+  return `${String(minutes)} ${minutes === 1 ? 'minut' : 'minuter'} kvar`
+}
+
+export const countdownText = (remaining: number) =>
+  `${String(Math.floor(remaining / 60))}:${String(remaining % 60).padStart(2, '0')}`
 
 export async function isTestMode() {
   const response = await fetch('/api/v1/auth/bankid/mode')

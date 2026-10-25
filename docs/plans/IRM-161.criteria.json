@@ -1,0 +1,7 @@
+[
+  {"criterion": "A QR login stays scannable for at least 5 minutes, across new orders where needed. Each new order cancels the old one.", "passes": true},
+  {"criterion": "With 20 seconds or less left, the panel offers \"Mer tid\" and continuing works.", "passes": true},
+  {"criterion": "The QR image's accessible name matches BankID's recommended wording.", "passes": true},
+  {"criterion": "The 30-second test is replaced by tests for the new timing, and an e2e test covers the extend flow with the fake BankID.", "passes": true},
+  {"criterion": "Throttling from IRM-130 still holds: extending must not let one client start unlimited orders.", "passes": true}
+]

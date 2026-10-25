@@ -2,19 +2,27 @@ import { randomBytes, randomUUID } from 'node:crypto'
 import { sql } from 'kysely'
 import type { Kysely } from 'kysely'
 import { z } from 'zod'
-import { publicUrl } from '#/api/csrf'
-import {
-  auth,
-  cancel,
-  collect,
-  messageFor,
-  pendingMessage,
-  qrData,
-} from './auth/bankid.server'
+import { collect, pendingMessage } from './auth/bankid.server'
 import { clientIp, recordAudit } from './audit.server'
 import type { DB } from './db.gen'
 import { getDb } from './db.server'
+import {
+  clearLogin,
+  cookie,
+  deviceCookie,
+  drop,
+  failed,
+  loginCookie,
+  refused,
+  respond,
+} from './login.reply.server'
 import { deleteUser } from './members.server'
+import {
+  pendingReply,
+  placeOrder,
+  qrStep,
+  remainingSql,
+} from './login.order.server'
 import { hashPnr } from './pii.server'
 import {
   cookieName,
@@ -23,79 +31,16 @@ import {
   webSeconds,
 } from './session.server'
 
-const loginCookie = '__Host-login'
-const deviceCookie = '__Host-device'
-const orderSeconds = 30
 const collectSeconds = 2
-const clearLogin = `${loginCookie}=; Path=/; HttpOnly; Secure; SameSite=Strict; Max-Age=0`
-const refused = 'Något gick fel. Försök igen.' // RFA22
-
-const cookie = (name: string, value: string, maxAge?: number) =>
-  `${name}=${value}; Path=/; HttpOnly; Secure; SameSite=Strict${maxAge === undefined ? '' : `; Max-Age=${String(maxAge)}`}`
-
-const respond = (body: object | null, cookies: string[], status = 200) => {
-  const headers = new Headers()
-  for (const c of cookies) headers.append('set-cookie', c)
-  if (body === null) return new Response(null, { status: 204, headers })
-  headers.set('content-type', 'application/json')
-  return new Response(JSON.stringify(body), { status, headers })
-}
-
-// Removes the attempt and cancels its order at BankID, which may already be over.
-async function drop(db: Kysely<DB>, id: string) {
-  const row = await db
-    .deleteFrom('login_attempts')
-    .where('id', '=', id)
-    .returning('order_ref')
-    .executeTakeFirst()
-  if (row) await cancel(row.order_ref).catch(() => undefined)
-}
-
-async function failed(
-  db: Kysely<DB>,
-  row: { id: string; end_user_ip: string },
-  message: string,
-) {
-  await drop(db, row.id)
-  await recordAudit(db, {
-    event: 'login_failure',
-    sessionKind: 'web',
-    ip: row.end_user_ip,
-  })
-  return respond({ status: 'failed', message }, [clearLogin])
-}
 
 const startBody = z.object({
   sameDevice: z.boolean(),
   purpose: z.enum(['login', 'delete']).default('login'),
 })
 
-const deleteText = 'Bekräfta att du vill radera ditt konto'
 const noAccount = 'Det finns inget konto för det här BankID:t.'
 const soleOwner =
   'Du är enda Ägare i en organisation. Ge rollen Ägare till någon annan först, sedan kan du radera kontot.'
-
-const placeOrder = (
-  request: Request,
-  ip: string,
-  device: string,
-  nonce: string | null,
-  purpose: 'login' | 'delete',
-) =>
-  auth(ip, {
-    ...(purpose === 'delete' && { userVisibleData: deleteText }),
-    web: {
-      referringDomain: new URL(publicUrl()).hostname,
-      userAgent: request.headers.get('user-agent') ?? '',
-      deviceIdentifier: device,
-    },
-    ...(nonce && {
-      returnUrl: `${publicUrl()}/app/login/return?purpose=${purpose}#nonce=${nonce}`,
-    }),
-  }).then(
-    (order) => ({ order }),
-    (e: unknown) => ({ error: e instanceof Error ? e.message : '' }),
-  )
 
 export async function start(request: Request, db: Kysely<DB> = getDb()) {
   const body = startBody.safeParse(await request.json().catch(() => null))
@@ -109,12 +54,7 @@ export async function start(request: Request, db: Kysely<DB> = getDb()) {
     ? randomBytes(16).toString('base64url')
     : null
   const placed = await placeOrder(request, ip, device, nonce, body.data.purpose)
-  if ('error' in placed) {
-    // RFA4 is the only BankID error the user can act on; anything else is RFA22.
-    const known = messageFor('alreadyInProgress')
-    const error = placed.error === known ? known : messageFor(undefined)
-    return respond({ error }, [], 502)
-  }
+  if ('error' in placed) return respond({ error: placed.error }, [], 502)
   const { order } = placed
   const row = await db
     .insertInto('login_attempts')
@@ -143,7 +83,8 @@ function loadAttempt(db: Kysely<DB>, request: Request) {
   return db
     .selectFrom('login_attempts')
     .selectAll()
-    .select(sql<number>`extract(epoch from now() - created_at)`.as('age'))
+    .select(sql<number>`extract(epoch from now() - order_at)::float8`.as('age'))
+    .select(remainingSql.as('remaining'))
     .where('id', '=', id.data)
     .executeTakeFirst()
 }
@@ -243,14 +184,7 @@ async function complete(
 export async function pollLogin(request: Request, db: Kysely<DB> = getDb()) {
   const row = await loadAttempt(db, request)
   if (!row) return respond({ error: 'no_attempt' }, [], 404)
-  // BankID ends an unscanned order itself; we only stop offering QR data after 30 seconds and never cancel a login being signed.
-  const pending = (message: string) => {
-    const qr =
-      row.nonce === null && row.age < orderSeconds
-        ? qrData(row.qr_start_token, row.qr_start_secret, Math.floor(row.age))
-        : undefined
-    return respond({ status: 'pending', message, ...(qr && { qr }) }, [])
-  }
+  const pending = (message: string) => pendingReply(row, row.age, message)
   if (!(await claimCollect(db, row.id))) return pending('')
 
   // A network error or timeout says nothing about the order, so the attempt stays and the client polls again.
@@ -259,6 +193,8 @@ export async function pollLogin(request: Request, db: Kysely<DB> = getDb()) {
   )
   if (!result)
     return pending(pendingMessage('outstandingTransaction', row.nonce !== null))
+  const next = await qrStep(request, db, row, result)
+  if (next) return next
   if (result.status === 'pending') return pending(result.message)
   if (result.status !== 'complete') return failed(db, row, result.message)
   const body = statusBody.safeParse(await request.json().catch(() => ({})))
