@@ -91,6 +91,18 @@ test('a cross-site POST with the session cookie is rejected', async ({
   expect(response.status()).toBe(403)
 })
 
+test('creates an organisation after logging in and sees it listed', async ({
+  page,
+}) => {
+  await page.goto('/app/login')
+  await page.getByRole('button', { name: /annan enhet/ }).click()
+  await expect(page).toHaveURL(/\/app$/, { timeout: 15_000 })
+  await page.getByLabel('Namn').fill('Bolaget AB')
+  await page.getByRole('button', { name: 'Skapa organisation' }).click()
+  await expect(page.getByText('Bolaget AB (Ägare)')).toBeVisible()
+  await expect(page.getByRole('note')).toBeVisible()
+})
+
 test('deletes the account after a fresh BankID confirmation', async ({
   page,
   request,

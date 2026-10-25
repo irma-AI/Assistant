@@ -14,6 +14,7 @@ import {
 import { clientIp, recordAudit } from './audit.server'
 import type { DB } from './db.gen'
 import { getDb } from './db.server'
+import { deleteUser } from './members.server'
 import { hashPnr } from './pii.server'
 import {
   cookieName,
@@ -71,6 +72,8 @@ const startBody = z.object({
 
 const deleteText = 'Bekräfta att du vill radera ditt konto'
 const noAccount = 'Det finns inget konto för det här BankID:t.'
+const soleOwner =
+  'Du är enda Ägare i en organisation. Ge rollen Ägare till någon annan först, sedan kan du radera kontot.'
 
 const placeOrder = (
   request: Request,
@@ -172,20 +175,22 @@ type Done = Extract<Awaited<ReturnType<typeof collect>>, { status: 'complete' }>
 async function deleteAccount(db: Kysely<DB>, row: Attempt, result: Done) {
   const deleted = await db.transaction().execute(async (trx) => {
     const user = await trx
-      .deleteFrom('users')
+      .selectFrom('users')
+      .select('id')
       .where('pnr_hmac', '=', hashPnr(result.personalNumber))
-      .returning('id')
       .executeTakeFirst()
-    if (user)
-      await recordAudit(trx, {
-        event: 'account_deleted',
-        userId: user.id,
-        ip: row.end_user_ip,
-      })
+    if (!user) return 'no_account'
+    if (!(await deleteUser(trx, user.id))) return 'sole_owner'
+    await recordAudit(trx, {
+      event: 'account_deleted',
+      userId: user.id,
+      ip: row.end_user_ip,
+    })
     await trx.deleteFrom('login_attempts').where('id', '=', row.id).execute()
-    return user
+    return 'deleted'
   })
-  if (!deleted) return failed(db, row, noAccount)
+  if (deleted === 'no_account') return failed(db, row, noAccount)
+  if (deleted === 'sole_owner') return failed(db, row, soleOwner)
   return respond({ status: 'complete' }, [
     cookie(cookieName, '', 0),
     clearLogin,

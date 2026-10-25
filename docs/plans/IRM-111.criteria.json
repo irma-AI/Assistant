@@ -1,0 +1,5 @@
+[
+  {"criterion": "Vitest against Postgres covers the listed role, membership, concurrency and isolation cases", "passes": true},
+  {"criterion": "Role, membership and refused-authorisation events are written to the audit log", "passes": true},
+  {"criterion": "Playwright: log in with the fake BankID, create an organisation, see it listed", "passes": true}
+]
