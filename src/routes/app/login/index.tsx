@@ -67,7 +67,7 @@ function Login() {
         </>
       )}
       <p>
-        <a href="/integritet">Integritetspolicy</a>
+        <a href="/integritetspolicy">Integritetspolicy</a>
       </p>
     </main>
   )
