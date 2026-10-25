@@ -4,7 +4,7 @@ GDPR Art. 30 records, Art. 6 legal bases, a DPIA recommendation (Art. 35), a coo
 
 Status: draft of 2026-10-24. **Controller: [PLACEHOLDER: legal name, organisation number, contact, filled in by the owner under IRM-54].** Rows marked *planned* describe what an open issue will build; update the row when it ships. Retention periods marked *proposed* wait for the owner's approval.
 
-Breaches are handled under [breach.md](breach.md).
+Breaches are handled under [breach.md](breach.md). Access and portability requests: [access-requests.md](access-requests.md).
 
 Two roles:
 
