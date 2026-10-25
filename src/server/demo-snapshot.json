@@ -1,0 +1,22 @@
+{
+  "organisation": {
+    "name": "Demobolaget AB"
+  },
+  "owner": {
+    "name": "Emilia Gustafsson"
+  },
+  "members": [
+    {
+      "id": "ffffffff-0000-4000-8000-000000000001",
+      "name": "Kristina Holmberg"
+    },
+    {
+      "id": "ffffffff-0000-4000-8000-000000000002",
+      "name": "Kevin Sundberg"
+    },
+    {
+      "id": "ffffffff-0000-4000-8000-000000000003",
+      "name": "Karin Jakobsson"
+    }
+  ]
+}

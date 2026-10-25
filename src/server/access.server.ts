@@ -146,3 +146,9 @@ export const audited = (
     event,
     detail: { organisation: orgId, ...detail },
   })
+
+// The one check for anything with an effect outside the system (filing with Skatteverket, payments, email,
+// invites, BankID signing, new organisations): a demo session never gets through.
+export function refuseDemo(kind: string) {
+  if (kind === 'demo') throw new HttpError(403, 'demo_session')
+}
