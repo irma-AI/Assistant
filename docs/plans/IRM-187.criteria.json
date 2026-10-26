@@ -1,0 +1,34 @@
+[
+  {
+    "criterion": "Playwright (both iPhone profiles): a logged-in person sees Hem, Organisation and Konto in the tab bar, each opens its screen, and the open one has aria-current=\"page\".",
+    "passes": false
+  },
+  {
+    "criterion": "Playwright: a logged-out visit to the Organisation tab lands on /app/login.",
+    "passes": false
+  },
+  {
+    "criterion": "Playwright: \"Logga ut\" on Konto ends the session (a later GET /api/v1/me is 401) and lands on /app/login.",
+    "passes": false
+  },
+  {
+    "criterion": "Playwright: creating an organisation on the Organisation tab lists it, and choosing it shows its name on Hem.",
+    "passes": false
+  },
+  {
+    "criterion": "Playwright: no request goes to fonts.googleapis.com or fonts.gstatic.com, and both font families load from the app's origin.",
+    "passes": false
+  },
+  {
+    "criterion": "Playwright with colorScheme dark and light: the ground, panel and text colours computed on Hem match DESIGN.md's table.",
+    "passes": false
+  },
+  {
+    "criterion": "Playwright at 390px wide with the root font size doubled: no horizontal scroll on any tab, and the tab-bar labels keep their size.",
+    "passes": false
+  },
+  {
+    "criterion": "impeccable audit on the changed screens has no P0 or P1 finding.",
+    "passes": false
+  }
+]
