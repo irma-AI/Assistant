@@ -1,10 +1,9 @@
 name: intake-dispatch
 # Starts the Intake routine through its API trigger when Linear has work, so a check that
 # finds none costs no cloud session. A Dokploy schedule runs it every 2 minutes (GitHub's own
-# schedule drops most runs); it also runs on each merge and on demand.
+# schedule drops most runs); it also runs on demand. No push trigger: a merge and a tick
+# close together fired one issue twice (IRM-191).
 on:
-  push:
-    branches: [main]
   workflow_dispatch:
 permissions: {}
 concurrency: intake-dispatch
