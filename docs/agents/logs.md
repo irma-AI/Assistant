@@ -2,7 +2,7 @@
 
 Production logs are in VictoriaLogs at `https://logs.petterannerwall.se/select/vmui/`. A session reaches it through its network proxy, which adds a read-only user. The log format and the events are in `docs/observability.md`.
 
-The app is `{service="assistant-u5wrvv"}`. Today it writes one line per API request: `event:http_request`, `level`, `method`, `path`, `status` and `duration_ms`. `request_id`, `route`, `user_id`, `outcome`, the `client` stream and the other events in `docs/observability.md` are planned (IRM-193) and not in the logs yet; the queries below use only what exists.
+The app is `{service="assistant-u5wrvv"}`. Today it writes one line per API request: `event:http_request`, `level`, `method`, `path`, `status` and `duration_ms`. A few other lines exist, such as `rate_limited`, `demo_login_failed` and `migrations_ahead`; they have no `request_id`. `request_id`, `route`, `user_id`, `outcome`, the `client` stream and the other events in `docs/observability.md` are planned (IRM-193) and not in the logs yet; the queries below use only what exists.
 
 ## Quote events, never lines
 
