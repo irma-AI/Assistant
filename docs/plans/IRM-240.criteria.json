@@ -1,0 +1,1 @@
+[{"criterion":"next-step and CLAUDE.md say the new wording; both within guard:docs budgets","passes":true},{"criterion":"Resume by plan file works on an existing claude/ branch, shown in Progress","passes":true},{"criterion":"make check passes","passes":false}]
