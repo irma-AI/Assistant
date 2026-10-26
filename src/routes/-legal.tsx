@@ -12,13 +12,13 @@ export function Legal({
   children: ReactNode
 }) {
   return (
-    <main>
+    <main className="legal">
       <p>
         <a href="/">Till startsidan</a>
       </p>
       <h1>{title}</h1>
       {children}
-      <nav aria-label="Juridisk information">
+      <nav className="legal-links" aria-label="Juridisk information">
         <a href="/integritetspolicy">Integritetspolicy</a>{' '}
         <a href="/villkor">Villkor</a>{' '}
         <a href="/personuppgiftsbitradesavtal">Personuppgiftsbiträdesavtal</a>

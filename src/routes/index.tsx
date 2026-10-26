@@ -16,7 +16,7 @@ function Home() {
           Logga in
         </a>
       </p>
-      <footer className="muted">
+      <footer className="muted legal-links">
         <p>{controller}</p>
         <a href="/integritetspolicy">Integritetspolicy</a>{' '}
         <a href="/villkor">Villkor</a>{' '}
