@@ -1,4 +1,4 @@
-import { createFileRoute } from '@tanstack/react-router'
+import { Link, createFileRoute } from '@tanstack/react-router'
 import { useState } from 'react'
 import type { SyntheticEvent } from 'react'
 import { Field } from '#/ui/Field'
@@ -11,13 +11,27 @@ export const Route = createFileRoute('/app/organisation')({
 
 const OrgLinks = ({ id }: { id: string }) => (
   <p>
-    <a href={`/app/org/${id}/medlemmar`}>Medlemmar</a>{' '}
-    <a href={`/app/org/${id}/roller`}>Roller</a>{' '}
-    <a href={`/app/org/${id}/kunder`}>Kunder</a>{' '}
-    <a href={`/app/org/${id}/fakturor`}>Fakturor</a>{' '}
-    <a href={`/app/org/${id}/kvitton`}>Kvitton</a>{' '}
-    <a href={`/app/org/${id}/notiser`}>Aviseringar</a>{' '}
-    <a href={`/app/org/${id}/uppgifter`}>Företagsuppgifter</a>
+    <Link to="/app/org/$orgId/medlemmar" params={{ orgId: id }}>
+      Medlemmar
+    </Link>{' '}
+    <Link to="/app/org/$orgId/roller" params={{ orgId: id }}>
+      Roller
+    </Link>{' '}
+    <Link to="/app/org/$orgId/kunder" params={{ orgId: id }}>
+      Kunder
+    </Link>{' '}
+    <Link to="/app/org/$orgId/fakturor" params={{ orgId: id }}>
+      Fakturor
+    </Link>{' '}
+    <Link to="/app/org/$orgId/kvitton" params={{ orgId: id }}>
+      Kvitton
+    </Link>{' '}
+    <Link to="/app/org/$orgId/notiser" params={{ orgId: id }}>
+      Aviseringar
+    </Link>{' '}
+    <Link to="/app/org/$orgId/uppgifter" params={{ orgId: id }}>
+      Företagsuppgifter
+    </Link>
   </p>
 )
 
