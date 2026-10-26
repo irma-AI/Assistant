@@ -1,0 +1,6 @@
+[
+  {"criterion": "A Playwright test shows a screen's API request starts before the screen renders (on hover or touch of its link)", "passes": false},
+  {"criterion": "Going back to a screen already visited shows its content with no loading state", "passes": false},
+  {"criterion": "After a save, the screen shows the saved data without a reload", "passes": false},
+  {"criterion": "The screens' existing e2e tests pass, and make check passes", "passes": false}
+]
