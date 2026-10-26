@@ -23,7 +23,7 @@ COPY --from=build /app/.output ./.output
 COPY package.json ./
 COPY migrations ./migrations
 COPY scripts/migrate.ts ./scripts/
-COPY src/server/migrate.server.ts ./src/server/
+COPY src/server/migrate.server.ts src/server/log.server.ts ./src/server/
 ARG APP_VERSION=dev
 ENV APP_VERSION=$APP_VERSION NODE_ENV=production PORT=3000
 LABEL org.opencontainers.image.source=https://github.com/irma-AI/Assistant
