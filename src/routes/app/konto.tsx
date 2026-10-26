@@ -1,8 +1,10 @@
 import { createFileRoute } from '@tanstack/react-router'
+import { useState } from 'react'
 
 export const Route = createFileRoute('/app/konto')({ component: Account })
 
 function Account() {
+  const [failed, setFailed] = useState(false)
   return (
     <main>
       <h1>Konto</h1>
@@ -23,13 +25,24 @@ function Account() {
         type="button"
         className="secondary"
         onClick={() => {
-          void fetch('/api/v1/logout', { method: 'POST' }).then(() => {
-            location.assign('/app/login')
-          })
+          fetch('/api/v1/logout', { method: 'POST' }).then(
+            (response) => {
+              setFailed(!response.ok)
+              if (response.ok) location.assign('/app/login')
+            },
+            () => {
+              setFailed(true)
+            },
+          )
         }}
       >
         Logga ut
       </button>
+      {failed && (
+        <p role="alert" className="error">
+          Utloggningen misslyckades. Försök igen.
+        </p>
+      )}
       <p>
         <a href="/villkor">Villkor</a>
         {' · '}

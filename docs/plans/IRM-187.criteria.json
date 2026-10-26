@@ -29,6 +29,6 @@
   },
   {
     "criterion": "impeccable audit on the changed screens has no P0 or P1 finding.",
-    "passes": false
+    "passes": true
   }
 ]
