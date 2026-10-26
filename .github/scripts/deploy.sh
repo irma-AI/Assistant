@@ -28,7 +28,7 @@ tagof() { local r=${1%@*}; echo "${r##*:}"; }
 # The live test saw the new tag after about 22 s; 5 minutes leaves room for a slow health check.
 serves() {
   for _ in $(seq 1 60); do
-    [ "$(curl -sf "$APP_URL/version" | jq -r .version 2>/dev/null)" = "$1" ] && return 0
+    [ "$(curl -sf --max-time 10 "$APP_URL/version" | jq -r .version 2>/dev/null)" = "$1" ] && return 0
     sleep 5
   done
   return 1
@@ -50,7 +50,7 @@ echo "previous image: $previous"
 echo "previous=$previous" >> "${GITHUB_OUTPUT:-/dev/null}"
 # The home page must render to its end. What it says is the smoke test's job (e2e/smoke.spec.ts), so a design
 # change edits one place.
-renders() { curl -sf "$APP_URL/" | grep -q '</html>'; }
+renders() { curl -sf --max-time 30 "$APP_URL/" | grep -q '</html>'; }
 if pin "$IMAGE:$TAG@$DIGEST" && serves "$TAG" && renders; then
   echo "serving $TAG"
   outcome deployed

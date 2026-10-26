@@ -29,7 +29,7 @@ expect() {
   echo "img:old@sha256:a" > "$tmp/pinned"
   echo "$2" > "$tmp/status"
   printf '%s' "$3" > "$tmp/page"
-  PATH="$tmp/bin:$PATH" STATE=$tmp DOKPLOY_URL=https://dokploy.test DOKPLOY_API_KEY=k APPLICATION_ID=a \
+  GITHUB_OUTPUT= PATH="$tmp/bin:$PATH" STATE=$tmp DOKPLOY_URL=https://dokploy.test DOKPLOY_API_KEY=k APPLICATION_ID=a \
     APP_URL=https://app.test IMAGE=img TAG=new DIGEST=sha256:b bash "$here/deploy.sh" > /dev/null 2>&1 || true
   got=$(cat "$tmp/pinned")
   if [ "$got" = "$4" ]; then echo "ok    $1"; else echo "FAIL  $1: pinned $got, want $4"; fail=1; fi
