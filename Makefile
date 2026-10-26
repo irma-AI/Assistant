@@ -14,6 +14,7 @@ check-repo:
 	.github/scripts/audit-gate.test.sh
 	.github/scripts/deploy.test.sh
 	.github/scripts/deploy-issue.test.sh
+	.github/scripts/queue-drop.test.sh
 	guards/run.sh --self-test
 	guards/docs.test.sh
 	guards/docs.sh

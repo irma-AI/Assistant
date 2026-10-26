@@ -1,0 +1,28 @@
+name: queue-drop
+# A PR dropped from the merge queue goes back to Ready in Linear, so the next intake run resumes on it.
+# Runs the default branch's copy of the script; the PR description is read as data only.
+on:
+  pull_request_target: # zizmor: ignore[dangerous-triggers] runs the default branch's copy and reads the PR as data only
+    types: [dequeued]
+permissions: {}
+jobs:
+  back-to-ready:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    environment: checks
+    permissions:
+      contents: read
+      actions: read
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - name: Move the issue back to Ready
+        env:
+          LINEAR_API_TOKEN: ${{ secrets.LINEAR_API_TOKEN }}
+          GH_TOKEN: ${{ github.token }}
+          REPO: ${{ github.repository }}
+          PR: ${{ github.event.pull_request.number }}
+          PR_BODY: ${{ github.event.pull_request.body }}
+          RUN: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+        run: .github/scripts/queue-drop.sh
