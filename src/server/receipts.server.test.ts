@@ -3,19 +3,11 @@ import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import { sql } from 'kysely'
 import { beforeAll, expect, test } from 'vitest'
-import { z } from 'zod'
 import { bookkeepingApi } from './bookkeeping.api.server'
 import { books, draft, id as idOnly, post } from './bookkeeping.fixture'
 import { receiptsApi } from './receipts.api.server'
-import {
-  addMember,
-  db,
-  idOf,
-  newOrg,
-  person,
-  req,
-  useDatabase,
-} from './orgs.fixture'
+import { bankWith, fill, list, unmatched, upload } from './receipts.fixture'
+import { addMember, db, newOrg, person, req, useDatabase } from './orgs.fixture'
 import type { Person } from './orgs.fixture'
 import { inOrganisation } from './tenant.server'
 
@@ -23,90 +15,6 @@ useDatabase()
 beforeAll(async () => {
   process.env.STORAGE_DIR = await mkdtemp(join(tmpdir(), 'receipts-'))
 })
-
-const pdf = (n: number) =>
-  new TextEncoder().encode(`%PDF-1.7 made-up ${String(n)}`)
-let counter = 0
-const upload = async (p: Person, org: string) =>
-  idOf(
-    await receiptsApi.upload(
-      new Request('https://api.test/api/v1/x?name=kvitto.pdf', {
-        method: 'POST',
-        headers: { authorization: `Bearer ${p.token}` },
-        body: new Blob([pdf(counter++)]),
-      }),
-      org,
-      db,
-    ),
-  )
-const fill = (p: Person, org: string, id: string, body: object) =>
-  receiptsApi.update(req(p, 'PATCH', body), org, id, db)
-const match = z.object({
-  id: z.string(),
-  status: z.string(),
-  pass: z.number().nullable(),
-  confidence: z.number().nullable(),
-  reason: z.string().nullable(),
-  covers_ore: z.number(),
-  transaction: z.object({ id: z.string() }),
-})
-const receiptRow = z.object({
-  id: z.string(),
-  matches: z.array(match),
-  suggested_account: z.object({ number: z.string() }).nullable(),
-})
-const list = async (p: Person, org: string) =>
-  z
-    .array(receiptRow)
-    .parse(await (await receiptsApi.list(req(p, 'GET'), org, db)).json())
-const unmatched = async (p: Person, org: string) =>
-  z
-    .array(z.object({ id: z.string() }))
-    .parse(await (await receiptsApi.unmatched(req(p, 'GET'), org, db)).json())
-
-// A bank account with payments typed in directly: the import itself is tested in bank.server.test.ts.
-async function bankWith(
-  org: string,
-  rows: { amount: number; date: string; text: string; ref?: string }[],
-) {
-  return inOrganisation(db, org, async (t) => {
-    const a = await t
-      .insertInto('bank_accounts')
-      .values({ organisation_id: org, title: 'Företagskonto' })
-      .returning('id')
-      .executeTakeFirstOrThrow()
-    const b = await t
-      .insertInto('bank_imports')
-      .values({
-        organisation_id: org,
-        bank_account_id: a.id,
-        file_name: 'x',
-        format: 'test',
-      })
-      .returning('id')
-      .executeTakeFirstOrThrow()
-    const ids: string[] = []
-    for (const [i, r] of rows.entries()) {
-      const tx = await t
-        .insertInto('bank_transactions')
-        .values({
-          organisation_id: org,
-          bank_account_id: a.id,
-          bank_import_id: b.id,
-          dedup_key: `k${String(i)}${org}`,
-          amount_ore: r.amount,
-          booking_date: r.date,
-          counterparty: r.text,
-          reference: r.ref ?? null,
-          source: 'file',
-        })
-        .returning('id')
-        .executeTakeFirstOrThrow()
-      ids.push(tx.id)
-    }
-    return ids
-  })
-}
 
 test('a member uploads and fills in a receipt; a passing amount within the credit period is suggested with its reason, and confirming needs bookkeeping.manage', async () => {
   const owner = await person()

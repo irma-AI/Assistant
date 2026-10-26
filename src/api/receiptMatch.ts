@@ -19,7 +19,9 @@ const creditDays = 30
 const toleranceOre = 500
 const day = 86_400_000
 
-const digits = (s: string | null) => (s ?? '').replace(/\D/g, '')
+// Leading zeros are padding in a reference, never part of it.
+const digits = (s: string | null) =>
+  (s ?? '').replace(/\D/g, '').replace(/^0+/, '')
 const letters = (s: string | null) =>
   (s ?? '').toLowerCase().replace(/[^\p{L}\p{N}]/gu, '')
 const days = (from: string, to: string) =>
@@ -33,8 +35,10 @@ const reference = (r: ReceiptFacts, t: TransactionFacts): Match | undefined => {
 
 const giro = (r: ReceiptFacts, t: TransactionFacts): Match | undefined => {
   const g = digits(r.giro)
-  const text = digits(`${t.counterparty ?? ''} ${t.reference ?? ''}`)
-  if (-t.amount_ore === r.amount_ore && g.length >= 6 && text.includes(g))
+  const inField = [t.counterparty, t.reference].some((f) =>
+    digits(f).includes(g),
+  )
+  if (-t.amount_ore === r.amount_ore && g.length >= 6 && inField)
     return { pass: 2, confidence: 0.92, reason: 'Samma belopp och giro' }
 }
 
@@ -57,7 +61,10 @@ const nameInText = (
   aliases: string[],
 ): Match | undefined => {
   const text = letters(`${t.counterparty ?? ''} ${t.reference ?? ''}`)
-  const names = [r.supplier ?? '', ...aliases].map(letters).filter(Boolean)
+  // A name under three letters would sit inside almost any bank text.
+  const names = [r.supplier ?? '', ...aliases]
+    .map(letters)
+    .filter((n) => n.length >= 3)
   if (
     Math.abs(-t.amount_ore - r.amount_ore) <= toleranceOre &&
     names.some((n) => text.includes(n))

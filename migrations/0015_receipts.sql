@@ -75,7 +75,9 @@ begin
   end loop;
 end $$;
 
-grant select, insert, update on receipts, receipt_matches, receipt_settings to assistant_app;
+grant select, insert, update on receipts, receipt_settings to assistant_app;
+-- Delete is for open suggestions only, which the app recomputes; the app code never deletes a confirmed or rejected row.
+grant select, insert, update, delete on receipt_matches to assistant_app;
 grant select, insert on supplier_aliases to assistant_app;
 
 -- The mail job knows only the code in the address, before any organisation is set: this is its one way in.

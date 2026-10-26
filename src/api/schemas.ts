@@ -180,6 +180,7 @@ export const receiptFields = z
     giro: text(20),
   })
   .partial()
+  .refine((f) => Object.keys(f).length > 0)
 export const receiptLink = z.object({
   transactionId: z.uuid(),
   coversOre: z.number().int().positive().optional(),

@@ -7,8 +7,14 @@ import { settingsOf } from './receipts.settings.server'
 
 type Trx = Kysely<DB>
 
-// Open means no suggestion or confirmed link yet; a rejected pair is never suggested again.
+// Open means no confirmed link yet; open suggestions are dropped first and made again, so the strongest pair
+// wins whatever the order things arrived in. A rejected pair is never suggested again.
 async function loadOpen(trx: Trx, orgId: string) {
+  await trx
+    .deleteFrom('receipt_matches')
+    .where('organisation_id', '=', orgId)
+    .where('status', '=', 'suggested')
+    .execute()
   const links = await trx
     .selectFrom('receipt_matches')
     .select(['receipt_id', 'bank_transaction_id', 'status'])
@@ -50,60 +56,90 @@ async function loadOpen(trx: Trx, orgId: string) {
 
 type Open = Awaited<ReturnType<typeof loadOpen>>
 
-function bestFor(r: Open['receipts'][number], open: Open) {
-  const names = open.aliases
-    .filter((a) => a.supplier === (r.supplier ?? '').toLowerCase().trim())
-    .map((a) => a.bank_text)
-  const facts = {
-    supplier: r.supplier,
-    amount_ore: Number(r.amount_ore),
-    receipt_date: r.receipt_date,
-    reference: r.reference,
-    giro: r.giro,
-  }
-  let best: { id: string; paid: number; m: Match } | undefined
-  for (const t of open.transactions) {
-    if (open.busyTx.has(t.id) || open.refused.has(`${r.id}/${t.id}`)) continue
-    const m = matchPass(
-      facts,
-      {
-        amount_ore: Number(t.amount_ore),
-        booking_date: t.booking_date,
-        counterparty: t.counterparty,
-        reference: t.reference,
-      },
-      names,
-    )
-    if (m && (!best || m.confidence > best.m.confidence))
-      best = { id: t.id, paid: -Number(t.amount_ore), m }
-  }
-  return best && { ...best, amount: facts.amount_ore }
+type Candidate = {
+  receipt: Open['receipts'][number]
+  id: string
+  paid: number
+  amount: number
+  m: Match
+  gap: number
 }
 
-// One suggestion per receipt: the strongest pass over the payments nothing is linked to yet.
+// Every pair that passes, strongest first; among equals the payment closest in date to the receipt.
+function candidates(open: Open) {
+  const all: Candidate[] = []
+  for (const r of open.receipts) {
+    const names = open.aliases
+      .filter((a) => a.supplier === (r.supplier ?? '').toLowerCase().trim())
+      .map((a) => a.bank_text)
+    const facts = {
+      supplier: r.supplier,
+      amount_ore: Number(r.amount_ore),
+      receipt_date: r.receipt_date,
+      reference: r.reference,
+      giro: r.giro,
+    }
+    for (const t of open.transactions) {
+      if (open.refused.has(`${r.id}/${t.id}`)) continue
+      const m = matchPass(
+        facts,
+        {
+          amount_ore: Number(t.amount_ore),
+          booking_date: t.booking_date,
+          counterparty: t.counterparty,
+          reference: t.reference,
+        },
+        names,
+      )
+      if (!m) continue
+      const gap = Math.abs(
+        Date.parse(t.booking_date) -
+          Date.parse(r.receipt_date ?? t.booking_date),
+      )
+      all.push({
+        receipt: r,
+        id: t.id,
+        paid: -Number(t.amount_ore),
+        amount: facts.amount_ore,
+        m,
+        gap,
+      })
+    }
+  }
+  return all.sort((x, y) => y.m.confidence - x.m.confidence || x.gap - y.gap)
+}
+
+// One suggestion per receipt and per payment, strongest pass first.
 // shortcut: compares every open receipt with every open payment in memory, move it to SQL when an organisation holds tens of thousands.
 export async function suggest(trx: Trx, orgId: string) {
   if (!(await settingsOf(trx, orgId)).suggestions) return 0
   const open = await loadOpen(trx, orgId)
+  if (!open.receipts.length) return 0
+  const usedReceipts = new Set<string>()
   let made = 0
-  for (const r of open.receipts) {
-    const best = bestFor(r, open)
-    if (!best) continue
-    open.busyTx.add(best.id)
-    await trx
+  for (const c of candidates(open)) {
+    if (usedReceipts.has(c.receipt.id) || open.busyTx.has(c.id)) continue
+    usedReceipts.add(c.receipt.id)
+    open.busyTx.add(c.id)
+    const inserted = await trx
       .insertInto('receipt_matches')
       .values({
         organisation_id: orgId,
-        receipt_id: r.id,
-        bank_transaction_id: best.id,
+        receipt_id: c.receipt.id,
+        bank_transaction_id: c.id,
         status: 'suggested',
-        pass: best.m.pass,
-        confidence: best.m.confidence.toFixed(2),
-        reason: best.m.reason,
-        covers_ore: Math.min(best.amount, best.paid),
+        pass: c.m.pass,
+        confidence: c.m.confidence.toFixed(2),
+        reason: c.m.reason,
+        covers_ore: Math.min(c.amount, c.paid),
       })
+      // A concurrent run may have made the same suggestion first.
+      .onConflict((oc) =>
+        oc.columns(['receipt_id', 'bank_transaction_id']).doNothing(),
+      )
+      .returning('id')
       .execute()
-    made++
+    made += inserted.length
   }
   return made
 }

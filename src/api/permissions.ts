@@ -67,6 +67,7 @@ const errorText: Record<string, string> = {
   bad_row: 'En rad i filen går inte att läsa. Inget har importerats.',
   sum_exceeds:
     'Beloppen blir större än kvittot eller betalningen. Minska det som kopplas.',
+  receipt_matched: 'Kvittot har en godkänd koppling. Beloppet kan inte ändras.',
   receipt_incomplete: 'Fyll i kvittots belopp först.',
   already_decided: 'Förslaget är redan hanterat. Ladda om sidan.',
   demo_session: 'Det här går inte i demoläget.',

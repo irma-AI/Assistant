@@ -58,6 +58,17 @@ export async function addReceipt(
   return { id: row.id, document_id: doc.id }
 }
 
+// The amount of a receipt a confirmed match rests on is not edited.
+async function amountMayChange(trx: Trx, id: string) {
+  const m = await trx
+    .selectFrom('receipt_matches')
+    .select('id')
+    .where('receipt_id', '=', id)
+    .where('status', '=', 'confirmed')
+    .executeTakeFirst()
+  if (m) throw new HttpError(409, 'receipt_matched')
+}
+
 export const updateReceipt = (
   db: Kysely<DB>,
   userId: string,
@@ -68,6 +79,7 @@ export const updateReceipt = (
 ) =>
   inOrganisation(db, orgId, async (trx) => {
     await access(trx, userId, orgId)
+    if (fields.amount_ore !== undefined) await amountMayChange(trx, id)
     const r = await trx
       .updateTable('receipts')
       .set(fields)
@@ -199,7 +211,7 @@ export const unmatchedTransactions = (
       .where('t.organisation_id', '=', orgId)
       .where('t.amount_ore', '<', '0')
       .where(
-        sql<boolean>`coalesce((select sum(m.covers_ore) from receipt_matches m where m.bank_transaction_id = t.id and m.status = 'confirmed'), 0) < -t.amount_ore - ${toleranceOre}`,
+        sql<boolean>`(coalesce((select sum(m.covers_ore) from receipt_matches m where m.bank_transaction_id = t.id and m.status = 'confirmed'), 0) = 0 or (select sum(m.covers_ore) from receipt_matches m where m.bank_transaction_id = t.id and m.status = 'confirmed') < -t.amount_ore - ${toleranceOre})`,
       )
       .orderBy('t.booking_date', 'desc')
       .limit(500)

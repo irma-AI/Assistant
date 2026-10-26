@@ -25,15 +25,18 @@ const sumOf = async (
 
 // What a receipt and a transaction still have to cover; the covered amounts on each side may not exceed them.
 async function room(trx: Trx, receiptId: string, txId: string) {
+  // Row locks, receipt first, so two decisions on the same receipt or payment run one after the other.
   const r = await trx
     .selectFrom('receipts')
     .select('amount_ore')
     .where('id', '=', receiptId)
+    .forUpdate()
     .executeTakeFirstOrThrow()
   const t = await trx
     .selectFrom('bank_transactions')
     .select('amount_ore')
     .where('id', '=', txId)
+    .forUpdate()
     .executeTakeFirstOrThrow()
   if (r.amount_ore === null) throw new HttpError(409, 'receipt_incomplete')
   return Math.min(
