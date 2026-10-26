@@ -169,3 +169,70 @@ test('at double text size no tab scrolls sideways and tab labels keep their size
     ).toBe(true)
   }
 })
+
+test('a person without an organisation is told so and can create one', async ({
+  page,
+}, testInfo) => {
+  await loginTo(page, '/app', testInfo.workerIndex)
+  const create = page.getByRole('link', { name: 'Skapa organisation' })
+  // Shared test user: the earlier tests may already have made organisations.
+  test.skip(
+    !(await create.isVisible()),
+    'this user already has an organisation',
+  )
+  await expect(page.getByText('Du har ingen organisation än')).toBeVisible()
+  await create.click()
+  const name = `Nya AB ${String(Date.now())}`
+  await page.getByLabel('Namn').fill(name)
+  await page.getByRole('button', { name: 'Skapa organisation' }).click()
+  await tab(page, 'Hem').click()
+  await expect(page.getByRole('heading', { level: 1, name })).toBeVisible()
+})
+
+test('Hem shows four panels with honest empty states and no Cable light pill', async ({
+  page,
+}, testInfo) => {
+  await loginTo(page, '/app/organisation', testInfo.workerIndex)
+  await page.getByLabel('Namn').fill(`Panel AB ${String(Date.now())}`)
+  await page.getByRole('button', { name: 'Skapa organisation' }).click()
+  await tab(page, 'Hem').click()
+  for (const heading of [
+    'Snart dags',
+    'På banken',
+    'Resultat i år',
+    'Att godkänna',
+  ])
+    await expect(
+      page.getByRole('heading', { level: 2, name: heading }),
+    ).toBeVisible()
+  await expect(page.getByText('Ingen bank är kopplad')).toBeVisible()
+  await expect(page.getByText(/kommer snart/i)).toHaveCount(0)
+  await expect(page.locator('main .btn')).toHaveCount(0)
+})
+
+test('at double text size Hem has no sideways scroll and Datumblock rows stack', async ({
+  page,
+}, testInfo) => {
+  await page.setViewportSize({ width: 390, height: 844 })
+  await loginTo(page, '/app', testInfo.workerIndex)
+  await page.evaluate(() => {
+    document.documentElement.style.fontSize = '34px'
+    // Made-up row in the markup DatumRow renders; there is no data to show one yet.
+    document.querySelector('main')?.insertAdjacentHTML(
+      'beforeend',
+      `<ul><li class="datum-row"><time class="datum-tile"><strong>12</strong><span>maj</span></time>
+       <span class="datum-what">Moms</span><span class="datum-amount">12 500 kr om 11 dagar</span></li></ul>`,
+    )
+  })
+  const [what, amount] = await Promise.all(
+    ['.datum-what', '.datum-amount'].map((s) => page.locator(s).boundingBox()),
+  )
+  expect(amount?.y).toBeGreaterThan((what?.y ?? 0) + (what?.height ?? 0) - 1)
+  expect(
+    await page.evaluate(
+      () =>
+        document.documentElement.scrollWidth <=
+        document.documentElement.clientWidth,
+    ),
+  ).toBe(true)
+})

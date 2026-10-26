@@ -1,0 +1,7 @@
+[
+  {"criterion": "Playwright: one organisation sees four panels with empty-state text and no Cable light pill", "passes": false},
+  {"criterion": "Playwright: no organisation sees Skapa organisation, creating one shows its name on Hem", "passes": false},
+  {"criterion": "Datumblock row shows day, month, what, kronor and om N dagar in Europe/Stockholm", "passes": true},
+  {"criterion": "Playwright at 390px with doubled root font: no horizontal scroll, rows stack", "passes": false},
+  {"criterion": "impeccable audit on Hem has no P0 or P1 finding", "passes": false}
+]
