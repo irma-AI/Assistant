@@ -6,8 +6,8 @@ set -euo pipefail
 gql() { curl -sSf https://api.linear.app/graphql -H "Authorization: $LINEAR_API_TOKEN" -H 'Content-Type: application/json' -d @-; }
 id=$(grep -oE 'Closes IRM-[0-9]+' <<<"$PR_BODY" | head -n1 | cut -d' ' -f2 || true)
 [ -n "$id" ] || { echo "no Closes IRM-n in the PR description"; exit 0; }
-# The queue's run is on a gh-readonly-queue/<base>/pr-<n>-<sha> branch; its failed jobs are the reason.
-run=$(gh api "repos/$REPO/actions/runs?event=merge_group&status=failure&per_page=50" \
+# The newest queue run, finished or not (the queue drops a PR at the first failed check), is on a gh-readonly-queue/<base>/pr-<n>-<sha> branch; its failed jobs are the reason.
+run=$(gh api "repos/$REPO/actions/runs?event=merge_group&per_page=50" \
   --jq "[.workflow_runs[] | select(.head_branch | test(\"/pr-$PR-\"))][0].id // empty")
 failed=""
 [ -z "$run" ] || failed=$(gh api "repos/$REPO/actions/runs/$run/jobs" --jq '[.jobs[] | select(.conclusion == "failure") | .name] | join(", ")')

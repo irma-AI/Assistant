@@ -7,6 +7,8 @@ on:
 permissions: {}
 jobs:
   back-to-ready:
+    # The queue also sends dequeued when it merges the PR (reason MERGE); only a drop goes back to Ready.
+    if: github.event.reason != 'MERGE'
     runs-on: ubuntu-latest
     timeout-minutes: 5
     environment: checks

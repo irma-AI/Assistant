@@ -1,6 +1,6 @@
 ---
 name: next-step
-description: Runs one Linear issue from Ready to a merged PR, picking the flow from the issue's type label and resuming from its plan file. Use from a routine, or as /next-step IRM-12.
+description: Runs one Linear issue from Ready to a queued PR, picking the flow from the issue's type label and resuming from its plan file. Use from a routine, or as /next-step IRM-12.
 ---
 
 # Next step
