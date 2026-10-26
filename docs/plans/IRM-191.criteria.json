@@ -1,0 +1,1 @@
+[{"criterion":"grep 'push:' finds nothing in intake-dispatch.yml and workflow_dispatch remains","passes":true},{"criterion":"docs/guardrails.md no longer says intake runs on each merge","passes":true},{"criterion":"make check passes","passes":true}]
