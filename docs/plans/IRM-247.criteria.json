@@ -1,0 +1,4 @@
+[
+  {"criterion": "next-step names both reference files and the detector-output proof, within the budget.", "passes": true},
+  {"criterion": "make check passes.", "passes": false}
+]
