@@ -1,5 +1,6 @@
 import { createFileRoute, useNavigate } from '@tanstack/react-router'
 import { useState } from 'react'
+import { Field } from '#/ui/Field'
 
 export const Route = createFileRoute('/app/login/demo')({ component: Demo })
 
@@ -39,37 +40,37 @@ function Demo() {
   return (
     <main>
       <h1>Demokonto</h1>
-      <form action={submit}>
-        <label>
-          Användarnamn
-          <input
-            name="username"
-            autoComplete="username"
-            value={username}
-            onChange={(e) => {
-              setUsername(e.target.value)
-            }}
-            required
-          />
-        </label>
-        <label>
-          Lösenord
-          <input
-            name="password"
-            type="password"
-            autoComplete="current-password"
-            value={password}
-            onChange={(e) => {
-              setPassword(e.target.value)
-            }}
-            required
-          />
-        </label>
+      <form action={submit} className="panel">
+        <Field
+          label="Användarnamn"
+          name="username"
+          autoComplete="username"
+          value={username}
+          onChange={(e) => {
+            setUsername(e.target.value)
+          }}
+          required
+        />
+        <Field
+          label="Lösenord"
+          name="password"
+          type="password"
+          autoComplete="current-password"
+          value={password}
+          onChange={(e) => {
+            setPassword(e.target.value)
+          }}
+          required
+        />
         <button type="submit" disabled={busy}>
           {busy ? 'Loggar in…' : 'Logga in'}
         </button>
       </form>
-      {message && <p role="alert">{message}</p>}
+      {message && (
+        <p role="alert" className="error">
+          {message}
+        </p>
+      )}
     </main>
   )
 }

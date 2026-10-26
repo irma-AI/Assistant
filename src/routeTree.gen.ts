@@ -32,6 +32,7 @@ import { Route as ApiV1InvitesTokenRouteImport } from './routes/api/v1/invites/$
 import { Route as ApiV1MeEmailRouteImport } from './routes/api/v1/me.email'
 import { Route as ApiV1MeExportRouteImport } from './routes/api/v1/me.export'
 import { Route as ApiV1MeNotificationsRouteImport } from './routes/api/v1/me.notifications'
+import { Route as ApiV1MeSessionsRouteImport } from './routes/api/v1/me.sessions'
 import { Route as ApiV1NotificationsUnsubscribeRouteImport } from './routes/api/v1/notifications/unsubscribe'
 import { Route as ApiV1OrgsIndexRouteImport } from './routes/api/v1/orgs/index'
 import { Route as AppOrgOrgIdKunderRouteImport } from './routes/app/org/$orgId/kunder'
@@ -49,6 +50,7 @@ import { Route as ApiV1AuthDemoDeleteRouteImport } from './routes/api/v1/auth/de
 import { Route as ApiV1InvitesTokenAcceptRouteImport } from './routes/api/v1/invites/$token/accept'
 import { Route as ApiV1MeEmailConfirmRouteImport } from './routes/api/v1/me.email.confirm'
 import { Route as ApiV1MeNotificationsTypeRouteImport } from './routes/api/v1/me.notifications.$type'
+import { Route as ApiV1MeSessionsIdRouteImport } from './routes/api/v1/me.sessions.$id'
 import { Route as ApiV1OrgsOrgIdCompanyRouteImport } from './routes/api/v1/orgs/$orgId/company'
 import { Route as ApiV1OrgsOrgIdMeRouteImport } from './routes/api/v1/orgs/$orgId/me'
 import { Route as ApiV1OrgsOrgIdBankAccountsIndexRouteImport } from './routes/api/v1/orgs/$orgId/bank-accounts/index'
@@ -185,6 +187,11 @@ const ApiV1MeNotificationsRoute = ApiV1MeNotificationsRouteImport.update({
   path: '/notifications',
   getParentRoute: () => ApiV1MeRoute,
 } as any)
+const ApiV1MeSessionsRoute = ApiV1MeSessionsRouteImport.update({
+  id: '/sessions',
+  path: '/sessions',
+  getParentRoute: () => ApiV1MeRoute,
+} as any)
 const ApiV1NotificationsUnsubscribeRoute =
   ApiV1NotificationsUnsubscribeRouteImport.update({
     id: '/api/v1/notifications/unsubscribe',
@@ -272,6 +279,11 @@ const ApiV1MeNotificationsTypeRoute =
     path: '/$type',
     getParentRoute: () => ApiV1MeNotificationsRoute,
   } as any)
+const ApiV1MeSessionsIdRoute = ApiV1MeSessionsIdRouteImport.update({
+  id: '/$id',
+  path: '/$id',
+  getParentRoute: () => ApiV1MeSessionsRoute,
+} as any)
 const ApiV1OrgsOrgIdCompanyRoute = ApiV1OrgsOrgIdCompanyRouteImport.update({
   id: '/api/v1/orgs/$orgId/company',
   path: '/api/v1/orgs/$orgId/company',
@@ -408,6 +420,7 @@ export interface FileRoutesByFullPath {
   '/api/v1/me/email': typeof ApiV1MeEmailRouteWithChildren
   '/api/v1/me/export': typeof ApiV1MeExportRoute
   '/api/v1/me/notifications': typeof ApiV1MeNotificationsRouteWithChildren
+  '/api/v1/me/sessions': typeof ApiV1MeSessionsRouteWithChildren
   '/api/v1/notifications/unsubscribe': typeof ApiV1NotificationsUnsubscribeRoute
   '/app/org/$orgId/kunder': typeof AppOrgOrgIdKunderRoute
   '/app/org/$orgId/medlemmar': typeof AppOrgOrgIdMedlemmarRoute
@@ -424,6 +437,7 @@ export interface FileRoutesByFullPath {
   '/api/v1/invites/$token/accept': typeof ApiV1InvitesTokenAcceptRoute
   '/api/v1/me/email/confirm': typeof ApiV1MeEmailConfirmRoute
   '/api/v1/me/notifications/$type': typeof ApiV1MeNotificationsTypeRoute
+  '/api/v1/me/sessions/$id': typeof ApiV1MeSessionsIdRoute
   '/api/v1/orgs/$orgId/company': typeof ApiV1OrgsOrgIdCompanyRoute
   '/api/v1/orgs/$orgId/me': typeof ApiV1OrgsOrgIdMeRoute
   '/api/v1/auth/demo/': typeof ApiV1AuthDemoIndexRoute
@@ -468,6 +482,7 @@ export interface FileRoutesByTo {
   '/api/v1/me/email': typeof ApiV1MeEmailRouteWithChildren
   '/api/v1/me/export': typeof ApiV1MeExportRoute
   '/api/v1/me/notifications': typeof ApiV1MeNotificationsRouteWithChildren
+  '/api/v1/me/sessions': typeof ApiV1MeSessionsRouteWithChildren
   '/api/v1/notifications/unsubscribe': typeof ApiV1NotificationsUnsubscribeRoute
   '/app/org/$orgId/kunder': typeof AppOrgOrgIdKunderRoute
   '/app/org/$orgId/medlemmar': typeof AppOrgOrgIdMedlemmarRoute
@@ -484,6 +499,7 @@ export interface FileRoutesByTo {
   '/api/v1/invites/$token/accept': typeof ApiV1InvitesTokenAcceptRoute
   '/api/v1/me/email/confirm': typeof ApiV1MeEmailConfirmRoute
   '/api/v1/me/notifications/$type': typeof ApiV1MeNotificationsTypeRoute
+  '/api/v1/me/sessions/$id': typeof ApiV1MeSessionsIdRoute
   '/api/v1/orgs/$orgId/company': typeof ApiV1OrgsOrgIdCompanyRoute
   '/api/v1/orgs/$orgId/me': typeof ApiV1OrgsOrgIdMeRoute
   '/api/v1/auth/demo': typeof ApiV1AuthDemoIndexRoute
@@ -530,6 +546,7 @@ export interface FileRoutesById {
   '/api/v1/me/email': typeof ApiV1MeEmailRouteWithChildren
   '/api/v1/me/export': typeof ApiV1MeExportRoute
   '/api/v1/me/notifications': typeof ApiV1MeNotificationsRouteWithChildren
+  '/api/v1/me/sessions': typeof ApiV1MeSessionsRouteWithChildren
   '/api/v1/notifications/unsubscribe': typeof ApiV1NotificationsUnsubscribeRoute
   '/app/org/$orgId/kunder': typeof AppOrgOrgIdKunderRoute
   '/app/org/$orgId/medlemmar': typeof AppOrgOrgIdMedlemmarRoute
@@ -546,6 +563,7 @@ export interface FileRoutesById {
   '/api/v1/invites/$token/accept': typeof ApiV1InvitesTokenAcceptRoute
   '/api/v1/me/email/confirm': typeof ApiV1MeEmailConfirmRoute
   '/api/v1/me/notifications/$type': typeof ApiV1MeNotificationsTypeRoute
+  '/api/v1/me/sessions/$id': typeof ApiV1MeSessionsIdRoute
   '/api/v1/orgs/$orgId/company': typeof ApiV1OrgsOrgIdCompanyRoute
   '/api/v1/orgs/$orgId/me': typeof ApiV1OrgsOrgIdMeRoute
   '/api/v1/auth/demo/': typeof ApiV1AuthDemoIndexRoute
@@ -593,6 +611,7 @@ export interface FileRouteTypes {
     | '/api/v1/me/email'
     | '/api/v1/me/export'
     | '/api/v1/me/notifications'
+    | '/api/v1/me/sessions'
     | '/api/v1/notifications/unsubscribe'
     | '/app/org/$orgId/kunder'
     | '/app/org/$orgId/medlemmar'
@@ -609,6 +628,7 @@ export interface FileRouteTypes {
     | '/api/v1/invites/$token/accept'
     | '/api/v1/me/email/confirm'
     | '/api/v1/me/notifications/$type'
+    | '/api/v1/me/sessions/$id'
     | '/api/v1/orgs/$orgId/company'
     | '/api/v1/orgs/$orgId/me'
     | '/api/v1/auth/demo/'
@@ -653,6 +673,7 @@ export interface FileRouteTypes {
     | '/api/v1/me/email'
     | '/api/v1/me/export'
     | '/api/v1/me/notifications'
+    | '/api/v1/me/sessions'
     | '/api/v1/notifications/unsubscribe'
     | '/app/org/$orgId/kunder'
     | '/app/org/$orgId/medlemmar'
@@ -669,6 +690,7 @@ export interface FileRouteTypes {
     | '/api/v1/invites/$token/accept'
     | '/api/v1/me/email/confirm'
     | '/api/v1/me/notifications/$type'
+    | '/api/v1/me/sessions/$id'
     | '/api/v1/orgs/$orgId/company'
     | '/api/v1/orgs/$orgId/me'
     | '/api/v1/auth/demo'
@@ -714,6 +736,7 @@ export interface FileRouteTypes {
     | '/api/v1/me/email'
     | '/api/v1/me/export'
     | '/api/v1/me/notifications'
+    | '/api/v1/me/sessions'
     | '/api/v1/notifications/unsubscribe'
     | '/app/org/$orgId/kunder'
     | '/app/org/$orgId/medlemmar'
@@ -730,6 +753,7 @@ export interface FileRouteTypes {
     | '/api/v1/invites/$token/accept'
     | '/api/v1/me/email/confirm'
     | '/api/v1/me/notifications/$type'
+    | '/api/v1/me/sessions/$id'
     | '/api/v1/orgs/$orgId/company'
     | '/api/v1/orgs/$orgId/me'
     | '/api/v1/auth/demo/'
@@ -956,6 +980,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiV1MeNotificationsRouteImport
       parentRoute: typeof ApiV1MeRoute
     }
+    '/api/v1/me/sessions': {
+      id: '/api/v1/me/sessions'
+      path: '/sessions'
+      fullPath: '/api/v1/me/sessions'
+      preLoaderRoute: typeof ApiV1MeSessionsRouteImport
+      parentRoute: typeof ApiV1MeRoute
+    }
     '/api/v1/notifications/unsubscribe': {
       id: '/api/v1/notifications/unsubscribe'
       path: '/api/v1/notifications/unsubscribe'
@@ -1074,6 +1105,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/api/v1/me/notifications/$type'
       preLoaderRoute: typeof ApiV1MeNotificationsTypeRouteImport
       parentRoute: typeof ApiV1MeNotificationsRoute
+    }
+    '/api/v1/me/sessions/$id': {
+      id: '/api/v1/me/sessions/$id'
+      path: '/$id'
+      fullPath: '/api/v1/me/sessions/$id'
+      preLoaderRoute: typeof ApiV1MeSessionsIdRouteImport
+      parentRoute: typeof ApiV1MeSessionsRoute
     }
     '/api/v1/orgs/$orgId/company': {
       id: '/api/v1/orgs/$orgId/company'
@@ -1274,16 +1312,30 @@ const ApiV1MeNotificationsRouteChildren: ApiV1MeNotificationsRouteChildren = {
 const ApiV1MeNotificationsRouteWithChildren =
   ApiV1MeNotificationsRoute._addFileChildren(ApiV1MeNotificationsRouteChildren)
 
+interface ApiV1MeSessionsRouteChildren {
+  ApiV1MeSessionsIdRoute: typeof ApiV1MeSessionsIdRoute
+}
+
+const ApiV1MeSessionsRouteChildren: ApiV1MeSessionsRouteChildren = {
+  ApiV1MeSessionsIdRoute: ApiV1MeSessionsIdRoute,
+}
+
+const ApiV1MeSessionsRouteWithChildren = ApiV1MeSessionsRoute._addFileChildren(
+  ApiV1MeSessionsRouteChildren,
+)
+
 interface ApiV1MeRouteChildren {
   ApiV1MeEmailRoute: typeof ApiV1MeEmailRouteWithChildren
   ApiV1MeExportRoute: typeof ApiV1MeExportRoute
   ApiV1MeNotificationsRoute: typeof ApiV1MeNotificationsRouteWithChildren
+  ApiV1MeSessionsRoute: typeof ApiV1MeSessionsRouteWithChildren
 }
 
 const ApiV1MeRouteChildren: ApiV1MeRouteChildren = {
   ApiV1MeEmailRoute: ApiV1MeEmailRouteWithChildren,
   ApiV1MeExportRoute: ApiV1MeExportRoute,
   ApiV1MeNotificationsRoute: ApiV1MeNotificationsRouteWithChildren,
+  ApiV1MeSessionsRoute: ApiV1MeSessionsRouteWithChildren,
 }
 
 const ApiV1MeRouteWithChildren =

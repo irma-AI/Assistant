@@ -4,6 +4,16 @@ export const errorBody = z.object({ error: z.string() })
 
 export const me = z.object({ id: z.string() })
 
+export const sessions = z.array(
+  z.object({
+    id: z.string(),
+    kind: z.string(),
+    startedAt: z.string(),
+    lastUsedAt: z.string(),
+    current: z.boolean(),
+  }),
+)
+
 export const permission = z.enum([
   'organisation.manage',
   'members.manage',

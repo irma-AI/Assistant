@@ -51,8 +51,8 @@ function DemoDelete() {
             required
           />
         </label>
-        <button type="submit" disabled={busy}>
-          Radera demokontot
+        <button type="submit" className="secondary" disabled={busy}>
+          {busy ? 'Raderar…' : 'Radera demokontot'}
         </button>
       </form>
       {message && <p role="alert">{message}</p>}
@@ -66,7 +66,10 @@ function DeleteAccount() {
     <main>
       <h1>Radera mitt konto</h1>
       {raderat ? (
-        <p role="status">Ditt konto är raderat.</p>
+        <p role="status">
+          Ditt konto är raderat. Personnummer, sessioner och inloggningar är
+          borttagna och du är utloggad överallt.
+        </p>
       ) : (
         <>
           <p>
@@ -79,7 +82,9 @@ function DeleteAccount() {
             <a href="/integritetspolicy">integritetspolicyn</a>.
           </p>
           <p>Bekräfta med BankID att du vill radera kontot.</p>
-          <BankIdPanel purpose="delete" verb="Radera mitt konto" />
+          <div className="panel">
+            <BankIdPanel purpose="delete" verb="Radera mitt konto" quiet />
+          </div>
           <DemoDelete />
         </>
       )}
