@@ -24,7 +24,7 @@ type Ctx = {
   base: Audit
 }
 
-const json = (body: unknown, status = 200) =>
+export const json = (body: unknown, status = 200) =>
   Response.json(body, { status, headers: { 'cache-control': 'no-store' } })
 const done = async (action: Promise<void>) => {
   await action
@@ -33,7 +33,7 @@ const done = async (action: Promise<void>) => {
 
 // Every handler goes through here: session first, ids must be UUIDs (anything else is a 404),
 // and a refused authorisation is audited once the transaction has rolled back.
-async function handle(
+export async function handle(
   request: Request,
   ids: string[],
   run: (c: Ctx) => Promise<Response>,
@@ -66,7 +66,7 @@ async function handle(
   }
 }
 
-async function parse<T extends z.ZodType>(request: Request, schema: T) {
+export async function parse<T extends z.ZodType>(request: Request, schema: T) {
   const parsed = schema.safeParse(await request.json().catch(() => null))
   if (!parsed.success) throw new HttpError(400, 'bad_request', false)
   return parsed.data

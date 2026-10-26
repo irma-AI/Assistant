@@ -18,6 +18,10 @@ export const permissionText: Record<
     label: 'Hantera roller',
     help: 'Skapa, ändra och ta bort roller.',
   },
+  'customers.manage': {
+    label: 'Hantera kunder',
+    help: 'Lägga till, ändra, importera och ta bort kunder. Alla medlemmar kan se kunderna.',
+  },
 }
 
 const errorText: Record<string, string> = {
@@ -28,6 +32,7 @@ const errorText: Record<string, string> = {
   escalation: 'Du kan bara ge behörigheter som du själv har.',
   forbidden: 'Du har inte behörighet till det här.',
   conflict: 'Det finns redan en roll med det namnet.',
+  bad_request: 'Uppgifterna är ogiltiga. Kontrollera dem och försök igen.',
   demo_session: 'Det här går inte i demoläget.',
 }
 

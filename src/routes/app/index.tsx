@@ -12,7 +12,8 @@ type Orgs = z.infer<typeof organisations>
 const OrgLinks = ({ id }: { id: string }) => (
   <p>
     <a href={`/app/org/${id}/medlemmar`}>Medlemmar</a>{' '}
-    <a href={`/app/org/${id}/roller`}>Roller</a>
+    <a href={`/app/org/${id}/roller`}>Roller</a>{' '}
+    <a href={`/app/org/${id}/kunder`}>Kunder</a>
   </p>
 )
 
