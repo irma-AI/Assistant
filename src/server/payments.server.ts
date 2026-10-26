@@ -38,6 +38,7 @@ const livePayments = (trx: Trx, orgId: string) =>
       'p.invoice_id',
       'p.status',
       'p.covers_ore',
+      'p.pass',
       'p.confidence',
       'p.reason',
       't.amount_ore',
@@ -87,6 +88,7 @@ export const listPayments = (db: Kysely<DB>, userId: string, orgId: string) =>
             id: p.id,
             status: p.status,
             covers_ore: Number(p.covers_ore),
+            pass: p.pass,
             confidence: Number(p.confidence),
             reason: p.reason,
             // Money that came in beyond what the invoice needed.

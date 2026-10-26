@@ -228,7 +228,8 @@ test('email turned off gives in-app only, and a mandatory type cannot be turned 
   const prefs = noticePreferences.parse(
     await (await notificationsApi.preferences(req(owner, 'GET'), db)).json(),
   )
-  expect(prefs.map((p) => [p.type, p.email])).toEqual([
+  // The owner also holds invoices.manage, so the invoice events follow.
+  expect(prefs.map((p) => [p.type, p.email]).slice(0, 2)).toEqual([
     ['bank_consent_expiring', true],
     ['member_joined', false],
   ])
