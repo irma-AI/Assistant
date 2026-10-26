@@ -16,7 +16,7 @@ export async function exportData(request: Request, db?: Kysely<DB>) {
   const conn = db ?? getDb()
   const account = await conn
     .selectFrom('users')
-    .select(['id', 'name', 'created_at'])
+    .select(['id', 'name', 'email', 'email_verified_at', 'created_at'])
     .where('id', '=', id)
     .executeTakeFirstOrThrow()
   const sessions = await conn

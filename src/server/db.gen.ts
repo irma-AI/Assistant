@@ -65,6 +65,13 @@ export interface Documents {
   storage_key: string;
 }
 
+export interface EmailConfirmations {
+  email: string;
+  expires_at: Timestamp;
+  token_hash: Buffer;
+  user_id: string;
+}
+
 export interface Invites {
   created_at: Generated<Timestamp>;
   created_by: string;
@@ -98,6 +105,38 @@ export interface Memberships {
   user_id: string;
 }
 
+export interface NotificationDeliveries {
+  attempts: Generated<number>;
+  event_id: string;
+  failed_at: Timestamp | null;
+  last_error: string | null;
+  next_attempt_at: Generated<Timestamp>;
+  organisation_id: string;
+  sent_at: Timestamp | null;
+  user_id: string;
+}
+
+export interface NotificationEvents {
+  created_at: Generated<Timestamp>;
+  id: Generated<string>;
+  organisation_id: string;
+  payload: Generated<Json>;
+  type: string;
+}
+
+export interface NotificationPreferences {
+  email: boolean;
+  type: string;
+  user_id: string;
+}
+
+export interface NotificationReads {
+  event_id: string;
+  organisation_id: string;
+  read_at: Generated<Timestamp>;
+  user_id: string;
+}
+
 export interface Organisations {
   created_at: Generated<Timestamp>;
   id: Generated<string>;
@@ -124,6 +163,8 @@ export interface Sessions {
 
 export interface Users {
   created_at: Generated<Timestamp>;
+  email: string | null;
+  email_verified_at: Timestamp | null;
   id: Generated<string>;
   name: string;
   pnr_hmac: Buffer | null;
@@ -133,9 +174,14 @@ export interface DB {
   audit_events: AuditEvents;
   customers: Customers;
   documents: Documents;
+  email_confirmations: EmailConfirmations;
   invites: Invites;
   login_attempts: LoginAttempts;
   memberships: Memberships;
+  notification_deliveries: NotificationDeliveries;
+  notification_events: NotificationEvents;
+  notification_preferences: NotificationPreferences;
+  notification_reads: NotificationReads;
   organisations: Organisations;
   roles: Roles;
   sessions: Sessions;

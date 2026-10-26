@@ -40,6 +40,11 @@ const errorText: Record<string, string> = {
   too_large: 'Filen är större än 20 MB.',
   unsupported_type: 'Filen måste vara en PDF, JPEG, PNG eller HEIC.',
   demo_session: 'Det här går inte i demoläget.',
+  mandatory: 'Den här aviseringen går inte att stänga av.',
+  too_many: 'Vi har nyss skickat en länk. Vänta en minut och försök igen.',
+  email_failed:
+    'Vi kunde inte skicka bekräftelsen just nu. Adressen är sparad, försök igen om en stund.',
+  invalid_link: 'Länken fungerar inte längre. Be om en ny under Inställningar.',
 }
 
 // The server's error code in Swedish; anything unknown gets the generic message.

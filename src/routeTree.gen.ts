@@ -16,6 +16,8 @@ import { Route as PersonuppgiftsbitradesavtalRouteImport } from './routes/person
 import { Route as VersionRouteImport } from './routes/version'
 import { Route as VillkorRouteImport } from './routes/villkor'
 import { Route as AppIndexRouteImport } from './routes/app/index'
+import { Route as AppBekraftaEpostRouteImport } from './routes/app/bekrafta-epost'
+import { Route as AppInstallningarRouteImport } from './routes/app/installningar'
 import { Route as AppRaderaKontoRouteImport } from './routes/app/radera-konto'
 import { Route as ApiV1LogoutRouteImport } from './routes/api/v1/logout'
 import { Route as ApiV1McpRouteImport } from './routes/api/v1/mcp'
@@ -25,10 +27,14 @@ import { Route as AppLoginIndexRouteImport } from './routes/app/login/index'
 import { Route as AppLoginDemoRouteImport } from './routes/app/login/demo'
 import { Route as AppLoginReturnRouteImport } from './routes/app/login/return'
 import { Route as ApiV1InvitesTokenRouteImport } from './routes/api/v1/invites/$token'
+import { Route as ApiV1MeEmailRouteImport } from './routes/api/v1/me.email'
 import { Route as ApiV1MeExportRouteImport } from './routes/api/v1/me.export'
+import { Route as ApiV1MeNotificationsRouteImport } from './routes/api/v1/me.notifications'
+import { Route as ApiV1NotificationsUnsubscribeRouteImport } from './routes/api/v1/notifications/unsubscribe'
 import { Route as ApiV1OrgsIndexRouteImport } from './routes/api/v1/orgs/index'
 import { Route as AppOrgOrgIdKunderRouteImport } from './routes/app/org/$orgId/kunder'
 import { Route as AppOrgOrgIdMedlemmarRouteImport } from './routes/app/org/$orgId/medlemmar'
+import { Route as AppOrgOrgIdNotiserRouteImport } from './routes/app/org/$orgId/notiser'
 import { Route as AppOrgOrgIdRollerRouteImport } from './routes/app/org/$orgId/roller'
 import { Route as ApiV1AuthBankidCancelRouteImport } from './routes/api/v1/auth/bankid/cancel'
 import { Route as ApiV1AuthBankidExtendRouteImport } from './routes/api/v1/auth/bankid/extend'
@@ -38,6 +44,8 @@ import { Route as ApiV1AuthBankidStatusRouteImport } from './routes/api/v1/auth/
 import { Route as ApiV1AuthDemoIndexRouteImport } from './routes/api/v1/auth/demo/index'
 import { Route as ApiV1AuthDemoDeleteRouteImport } from './routes/api/v1/auth/demo/delete'
 import { Route as ApiV1InvitesTokenAcceptRouteImport } from './routes/api/v1/invites/$token/accept'
+import { Route as ApiV1MeEmailConfirmRouteImport } from './routes/api/v1/me.email.confirm'
+import { Route as ApiV1MeNotificationsTypeRouteImport } from './routes/api/v1/me.notifications.$type'
 import { Route as ApiV1OrgsOrgIdMeRouteImport } from './routes/api/v1/orgs/$orgId/me'
 import { Route as ApiV1OrgsOrgIdCustomersIndexRouteImport } from './routes/api/v1/orgs/$orgId/customers/index'
 import { Route as ApiV1OrgsOrgIdCustomersCustomerIdRouteImport } from './routes/api/v1/orgs/$orgId/customers/$customerId'
@@ -49,8 +57,10 @@ import { Route as ApiV1OrgsOrgIdInvitesInviteIdRouteImport } from './routes/api/
 import { Route as ApiV1OrgsOrgIdMembersIndexRouteImport } from './routes/api/v1/orgs/$orgId/members/index'
 import { Route as ApiV1OrgsOrgIdMembersUserIdRouteImport } from './routes/api/v1/orgs/$orgId/members/$userId'
 import { Route as ApiV1OrgsOrgIdMembersMeRouteImport } from './routes/api/v1/orgs/$orgId/members/me'
+import { Route as ApiV1OrgsOrgIdNotificationsIndexRouteImport } from './routes/api/v1/orgs/$orgId/notifications/index'
 import { Route as ApiV1OrgsOrgIdRolesIndexRouteImport } from './routes/api/v1/orgs/$orgId/roles/index'
 import { Route as ApiV1OrgsOrgIdRolesRoleIdRouteImport } from './routes/api/v1/orgs/$orgId/roles/$roleId'
+import { Route as ApiV1OrgsOrgIdNotificationsIdReadRouteImport } from './routes/api/v1/orgs/$orgId/notifications/$id/read'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -86,6 +96,16 @@ const VillkorRoute = VillkorRouteImport.update({
 const AppIndexRoute = AppIndexRouteImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => AppRouteRoute,
+} as any)
+const AppBekraftaEpostRoute = AppBekraftaEpostRouteImport.update({
+  id: '/bekrafta-epost',
+  path: '/bekrafta-epost',
+  getParentRoute: () => AppRouteRoute,
+} as any)
+const AppInstallningarRoute = AppInstallningarRouteImport.update({
+  id: '/installningar',
+  path: '/installningar',
   getParentRoute: () => AppRouteRoute,
 } as any)
 const AppRaderaKontoRoute = AppRaderaKontoRouteImport.update({
@@ -133,11 +153,27 @@ const ApiV1InvitesTokenRoute = ApiV1InvitesTokenRouteImport.update({
   path: '/api/v1/invites/$token',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiV1MeEmailRoute = ApiV1MeEmailRouteImport.update({
+  id: '/email',
+  path: '/email',
+  getParentRoute: () => ApiV1MeRoute,
+} as any)
 const ApiV1MeExportRoute = ApiV1MeExportRouteImport.update({
   id: '/export',
   path: '/export',
   getParentRoute: () => ApiV1MeRoute,
 } as any)
+const ApiV1MeNotificationsRoute = ApiV1MeNotificationsRouteImport.update({
+  id: '/notifications',
+  path: '/notifications',
+  getParentRoute: () => ApiV1MeRoute,
+} as any)
+const ApiV1NotificationsUnsubscribeRoute =
+  ApiV1NotificationsUnsubscribeRouteImport.update({
+    id: '/api/v1/notifications/unsubscribe',
+    path: '/api/v1/notifications/unsubscribe',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 const ApiV1OrgsIndexRoute = ApiV1OrgsIndexRouteImport.update({
   id: '/api/v1/orgs/',
   path: '/api/v1/orgs/',
@@ -151,6 +187,11 @@ const AppOrgOrgIdKunderRoute = AppOrgOrgIdKunderRouteImport.update({
 const AppOrgOrgIdMedlemmarRoute = AppOrgOrgIdMedlemmarRouteImport.update({
   id: '/org/$orgId/medlemmar',
   path: '/org/$orgId/medlemmar',
+  getParentRoute: () => AppRouteRoute,
+} as any)
+const AppOrgOrgIdNotiserRoute = AppOrgOrgIdNotiserRouteImport.update({
+  id: '/org/$orgId/notiser',
+  path: '/org/$orgId/notiser',
   getParentRoute: () => AppRouteRoute,
 } as any)
 const AppOrgOrgIdRollerRoute = AppOrgOrgIdRollerRouteImport.update({
@@ -198,6 +239,17 @@ const ApiV1InvitesTokenAcceptRoute = ApiV1InvitesTokenAcceptRouteImport.update({
   path: '/accept',
   getParentRoute: () => ApiV1InvitesTokenRoute,
 } as any)
+const ApiV1MeEmailConfirmRoute = ApiV1MeEmailConfirmRouteImport.update({
+  id: '/confirm',
+  path: '/confirm',
+  getParentRoute: () => ApiV1MeEmailRoute,
+} as any)
+const ApiV1MeNotificationsTypeRoute =
+  ApiV1MeNotificationsTypeRouteImport.update({
+    id: '/$type',
+    path: '/$type',
+    getParentRoute: () => ApiV1MeNotificationsRoute,
+  } as any)
 const ApiV1OrgsOrgIdMeRoute = ApiV1OrgsOrgIdMeRouteImport.update({
   id: '/api/v1/orgs/$orgId/me',
   path: '/api/v1/orgs/$orgId/me',
@@ -262,6 +314,12 @@ const ApiV1OrgsOrgIdMembersMeRoute = ApiV1OrgsOrgIdMembersMeRouteImport.update({
   path: '/api/v1/orgs/$orgId/members/me',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiV1OrgsOrgIdNotificationsIndexRoute =
+  ApiV1OrgsOrgIdNotificationsIndexRouteImport.update({
+    id: '/api/v1/orgs/$orgId/notifications/',
+    path: '/api/v1/orgs/$orgId/notifications/',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 const ApiV1OrgsOrgIdRolesIndexRoute =
   ApiV1OrgsOrgIdRolesIndexRouteImport.update({
     id: '/api/v1/orgs/$orgId/roles/',
@@ -274,6 +332,12 @@ const ApiV1OrgsOrgIdRolesRoleIdRoute =
     path: '/api/v1/orgs/$orgId/roles/$roleId',
     getParentRoute: () => rootRouteImport,
   } as any)
+const ApiV1OrgsOrgIdNotificationsIdReadRoute =
+  ApiV1OrgsOrgIdNotificationsIdReadRouteImport.update({
+    id: '/api/v1/orgs/$orgId/notifications/$id/read',
+    path: '/api/v1/orgs/$orgId/notifications/$id/read',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -282,6 +346,8 @@ export interface FileRoutesByFullPath {
   '/personuppgiftsbitradesavtal': typeof PersonuppgiftsbitradesavtalRoute
   '/version': typeof VersionRoute
   '/villkor': typeof VillkorRoute
+  '/app/bekrafta-epost': typeof AppBekraftaEpostRoute
+  '/app/installningar': typeof AppInstallningarRoute
   '/app/radera-konto': typeof AppRaderaKontoRoute
   '/app/': typeof AppIndexRoute
   '/api/v1/logout': typeof ApiV1LogoutRoute
@@ -292,9 +358,13 @@ export interface FileRoutesByFullPath {
   '/app/login/return': typeof AppLoginReturnRoute
   '/app/login/': typeof AppLoginIndexRoute
   '/api/v1/invites/$token': typeof ApiV1InvitesTokenRouteWithChildren
+  '/api/v1/me/email': typeof ApiV1MeEmailRouteWithChildren
   '/api/v1/me/export': typeof ApiV1MeExportRoute
+  '/api/v1/me/notifications': typeof ApiV1MeNotificationsRouteWithChildren
+  '/api/v1/notifications/unsubscribe': typeof ApiV1NotificationsUnsubscribeRoute
   '/app/org/$orgId/kunder': typeof AppOrgOrgIdKunderRoute
   '/app/org/$orgId/medlemmar': typeof AppOrgOrgIdMedlemmarRoute
+  '/app/org/$orgId/notiser': typeof AppOrgOrgIdNotiserRoute
   '/app/org/$orgId/roller': typeof AppOrgOrgIdRollerRoute
   '/api/v1/orgs/': typeof ApiV1OrgsIndexRoute
   '/api/v1/auth/bankid/cancel': typeof ApiV1AuthBankidCancelRoute
@@ -304,6 +374,8 @@ export interface FileRoutesByFullPath {
   '/api/v1/auth/bankid/status': typeof ApiV1AuthBankidStatusRoute
   '/api/v1/auth/demo/delete': typeof ApiV1AuthDemoDeleteRoute
   '/api/v1/invites/$token/accept': typeof ApiV1InvitesTokenAcceptRoute
+  '/api/v1/me/email/confirm': typeof ApiV1MeEmailConfirmRoute
+  '/api/v1/me/notifications/$type': typeof ApiV1MeNotificationsTypeRoute
   '/api/v1/orgs/$orgId/me': typeof ApiV1OrgsOrgIdMeRoute
   '/api/v1/auth/demo/': typeof ApiV1AuthDemoIndexRoute
   '/api/v1/orgs/$orgId/customers/$customerId': typeof ApiV1OrgsOrgIdCustomersCustomerIdRoute
@@ -317,7 +389,9 @@ export interface FileRoutesByFullPath {
   '/api/v1/orgs/$orgId/documents/': typeof ApiV1OrgsOrgIdDocumentsIndexRoute
   '/api/v1/orgs/$orgId/invites/': typeof ApiV1OrgsOrgIdInvitesIndexRoute
   '/api/v1/orgs/$orgId/members/': typeof ApiV1OrgsOrgIdMembersIndexRoute
+  '/api/v1/orgs/$orgId/notifications/': typeof ApiV1OrgsOrgIdNotificationsIndexRoute
   '/api/v1/orgs/$orgId/roles/': typeof ApiV1OrgsOrgIdRolesIndexRoute
+  '/api/v1/orgs/$orgId/notifications/$id/read': typeof ApiV1OrgsOrgIdNotificationsIdReadRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -325,6 +399,8 @@ export interface FileRoutesByTo {
   '/personuppgiftsbitradesavtal': typeof PersonuppgiftsbitradesavtalRoute
   '/version': typeof VersionRoute
   '/villkor': typeof VillkorRoute
+  '/app/bekrafta-epost': typeof AppBekraftaEpostRoute
+  '/app/installningar': typeof AppInstallningarRoute
   '/app/radera-konto': typeof AppRaderaKontoRoute
   '/app': typeof AppIndexRoute
   '/api/v1/logout': typeof ApiV1LogoutRoute
@@ -335,9 +411,13 @@ export interface FileRoutesByTo {
   '/app/login/return': typeof AppLoginReturnRoute
   '/app/login': typeof AppLoginIndexRoute
   '/api/v1/invites/$token': typeof ApiV1InvitesTokenRouteWithChildren
+  '/api/v1/me/email': typeof ApiV1MeEmailRouteWithChildren
   '/api/v1/me/export': typeof ApiV1MeExportRoute
+  '/api/v1/me/notifications': typeof ApiV1MeNotificationsRouteWithChildren
+  '/api/v1/notifications/unsubscribe': typeof ApiV1NotificationsUnsubscribeRoute
   '/app/org/$orgId/kunder': typeof AppOrgOrgIdKunderRoute
   '/app/org/$orgId/medlemmar': typeof AppOrgOrgIdMedlemmarRoute
+  '/app/org/$orgId/notiser': typeof AppOrgOrgIdNotiserRoute
   '/app/org/$orgId/roller': typeof AppOrgOrgIdRollerRoute
   '/api/v1/orgs': typeof ApiV1OrgsIndexRoute
   '/api/v1/auth/bankid/cancel': typeof ApiV1AuthBankidCancelRoute
@@ -347,6 +427,8 @@ export interface FileRoutesByTo {
   '/api/v1/auth/bankid/status': typeof ApiV1AuthBankidStatusRoute
   '/api/v1/auth/demo/delete': typeof ApiV1AuthDemoDeleteRoute
   '/api/v1/invites/$token/accept': typeof ApiV1InvitesTokenAcceptRoute
+  '/api/v1/me/email/confirm': typeof ApiV1MeEmailConfirmRoute
+  '/api/v1/me/notifications/$type': typeof ApiV1MeNotificationsTypeRoute
   '/api/v1/orgs/$orgId/me': typeof ApiV1OrgsOrgIdMeRoute
   '/api/v1/auth/demo': typeof ApiV1AuthDemoIndexRoute
   '/api/v1/orgs/$orgId/customers/$customerId': typeof ApiV1OrgsOrgIdCustomersCustomerIdRoute
@@ -360,7 +442,9 @@ export interface FileRoutesByTo {
   '/api/v1/orgs/$orgId/documents': typeof ApiV1OrgsOrgIdDocumentsIndexRoute
   '/api/v1/orgs/$orgId/invites': typeof ApiV1OrgsOrgIdInvitesIndexRoute
   '/api/v1/orgs/$orgId/members': typeof ApiV1OrgsOrgIdMembersIndexRoute
+  '/api/v1/orgs/$orgId/notifications': typeof ApiV1OrgsOrgIdNotificationsIndexRoute
   '/api/v1/orgs/$orgId/roles': typeof ApiV1OrgsOrgIdRolesIndexRoute
+  '/api/v1/orgs/$orgId/notifications/$id/read': typeof ApiV1OrgsOrgIdNotificationsIdReadRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -370,6 +454,8 @@ export interface FileRoutesById {
   '/personuppgiftsbitradesavtal': typeof PersonuppgiftsbitradesavtalRoute
   '/version': typeof VersionRoute
   '/villkor': typeof VillkorRoute
+  '/app/bekrafta-epost': typeof AppBekraftaEpostRoute
+  '/app/installningar': typeof AppInstallningarRoute
   '/app/radera-konto': typeof AppRaderaKontoRoute
   '/app/': typeof AppIndexRoute
   '/api/v1/logout': typeof ApiV1LogoutRoute
@@ -380,9 +466,13 @@ export interface FileRoutesById {
   '/app/login/return': typeof AppLoginReturnRoute
   '/app/login/': typeof AppLoginIndexRoute
   '/api/v1/invites/$token': typeof ApiV1InvitesTokenRouteWithChildren
+  '/api/v1/me/email': typeof ApiV1MeEmailRouteWithChildren
   '/api/v1/me/export': typeof ApiV1MeExportRoute
+  '/api/v1/me/notifications': typeof ApiV1MeNotificationsRouteWithChildren
+  '/api/v1/notifications/unsubscribe': typeof ApiV1NotificationsUnsubscribeRoute
   '/app/org/$orgId/kunder': typeof AppOrgOrgIdKunderRoute
   '/app/org/$orgId/medlemmar': typeof AppOrgOrgIdMedlemmarRoute
+  '/app/org/$orgId/notiser': typeof AppOrgOrgIdNotiserRoute
   '/app/org/$orgId/roller': typeof AppOrgOrgIdRollerRoute
   '/api/v1/orgs/': typeof ApiV1OrgsIndexRoute
   '/api/v1/auth/bankid/cancel': typeof ApiV1AuthBankidCancelRoute
@@ -392,6 +482,8 @@ export interface FileRoutesById {
   '/api/v1/auth/bankid/status': typeof ApiV1AuthBankidStatusRoute
   '/api/v1/auth/demo/delete': typeof ApiV1AuthDemoDeleteRoute
   '/api/v1/invites/$token/accept': typeof ApiV1InvitesTokenAcceptRoute
+  '/api/v1/me/email/confirm': typeof ApiV1MeEmailConfirmRoute
+  '/api/v1/me/notifications/$type': typeof ApiV1MeNotificationsTypeRoute
   '/api/v1/orgs/$orgId/me': typeof ApiV1OrgsOrgIdMeRoute
   '/api/v1/auth/demo/': typeof ApiV1AuthDemoIndexRoute
   '/api/v1/orgs/$orgId/customers/$customerId': typeof ApiV1OrgsOrgIdCustomersCustomerIdRoute
@@ -405,7 +497,9 @@ export interface FileRoutesById {
   '/api/v1/orgs/$orgId/documents/': typeof ApiV1OrgsOrgIdDocumentsIndexRoute
   '/api/v1/orgs/$orgId/invites/': typeof ApiV1OrgsOrgIdInvitesIndexRoute
   '/api/v1/orgs/$orgId/members/': typeof ApiV1OrgsOrgIdMembersIndexRoute
+  '/api/v1/orgs/$orgId/notifications/': typeof ApiV1OrgsOrgIdNotificationsIndexRoute
   '/api/v1/orgs/$orgId/roles/': typeof ApiV1OrgsOrgIdRolesIndexRoute
+  '/api/v1/orgs/$orgId/notifications/$id/read': typeof ApiV1OrgsOrgIdNotificationsIdReadRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -416,6 +510,8 @@ export interface FileRouteTypes {
     | '/personuppgiftsbitradesavtal'
     | '/version'
     | '/villkor'
+    | '/app/bekrafta-epost'
+    | '/app/installningar'
     | '/app/radera-konto'
     | '/app/'
     | '/api/v1/logout'
@@ -426,9 +522,13 @@ export interface FileRouteTypes {
     | '/app/login/return'
     | '/app/login/'
     | '/api/v1/invites/$token'
+    | '/api/v1/me/email'
     | '/api/v1/me/export'
+    | '/api/v1/me/notifications'
+    | '/api/v1/notifications/unsubscribe'
     | '/app/org/$orgId/kunder'
     | '/app/org/$orgId/medlemmar'
+    | '/app/org/$orgId/notiser'
     | '/app/org/$orgId/roller'
     | '/api/v1/orgs/'
     | '/api/v1/auth/bankid/cancel'
@@ -438,6 +538,8 @@ export interface FileRouteTypes {
     | '/api/v1/auth/bankid/status'
     | '/api/v1/auth/demo/delete'
     | '/api/v1/invites/$token/accept'
+    | '/api/v1/me/email/confirm'
+    | '/api/v1/me/notifications/$type'
     | '/api/v1/orgs/$orgId/me'
     | '/api/v1/auth/demo/'
     | '/api/v1/orgs/$orgId/customers/$customerId'
@@ -451,7 +553,9 @@ export interface FileRouteTypes {
     | '/api/v1/orgs/$orgId/documents/'
     | '/api/v1/orgs/$orgId/invites/'
     | '/api/v1/orgs/$orgId/members/'
+    | '/api/v1/orgs/$orgId/notifications/'
     | '/api/v1/orgs/$orgId/roles/'
+    | '/api/v1/orgs/$orgId/notifications/$id/read'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -459,6 +563,8 @@ export interface FileRouteTypes {
     | '/personuppgiftsbitradesavtal'
     | '/version'
     | '/villkor'
+    | '/app/bekrafta-epost'
+    | '/app/installningar'
     | '/app/radera-konto'
     | '/app'
     | '/api/v1/logout'
@@ -469,9 +575,13 @@ export interface FileRouteTypes {
     | '/app/login/return'
     | '/app/login'
     | '/api/v1/invites/$token'
+    | '/api/v1/me/email'
     | '/api/v1/me/export'
+    | '/api/v1/me/notifications'
+    | '/api/v1/notifications/unsubscribe'
     | '/app/org/$orgId/kunder'
     | '/app/org/$orgId/medlemmar'
+    | '/app/org/$orgId/notiser'
     | '/app/org/$orgId/roller'
     | '/api/v1/orgs'
     | '/api/v1/auth/bankid/cancel'
@@ -481,6 +591,8 @@ export interface FileRouteTypes {
     | '/api/v1/auth/bankid/status'
     | '/api/v1/auth/demo/delete'
     | '/api/v1/invites/$token/accept'
+    | '/api/v1/me/email/confirm'
+    | '/api/v1/me/notifications/$type'
     | '/api/v1/orgs/$orgId/me'
     | '/api/v1/auth/demo'
     | '/api/v1/orgs/$orgId/customers/$customerId'
@@ -494,7 +606,9 @@ export interface FileRouteTypes {
     | '/api/v1/orgs/$orgId/documents'
     | '/api/v1/orgs/$orgId/invites'
     | '/api/v1/orgs/$orgId/members'
+    | '/api/v1/orgs/$orgId/notifications'
     | '/api/v1/orgs/$orgId/roles'
+    | '/api/v1/orgs/$orgId/notifications/$id/read'
   id:
     | '__root__'
     | '/'
@@ -503,6 +617,8 @@ export interface FileRouteTypes {
     | '/personuppgiftsbitradesavtal'
     | '/version'
     | '/villkor'
+    | '/app/bekrafta-epost'
+    | '/app/installningar'
     | '/app/radera-konto'
     | '/app/'
     | '/api/v1/logout'
@@ -513,9 +629,13 @@ export interface FileRouteTypes {
     | '/app/login/return'
     | '/app/login/'
     | '/api/v1/invites/$token'
+    | '/api/v1/me/email'
     | '/api/v1/me/export'
+    | '/api/v1/me/notifications'
+    | '/api/v1/notifications/unsubscribe'
     | '/app/org/$orgId/kunder'
     | '/app/org/$orgId/medlemmar'
+    | '/app/org/$orgId/notiser'
     | '/app/org/$orgId/roller'
     | '/api/v1/orgs/'
     | '/api/v1/auth/bankid/cancel'
@@ -525,6 +645,8 @@ export interface FileRouteTypes {
     | '/api/v1/auth/bankid/status'
     | '/api/v1/auth/demo/delete'
     | '/api/v1/invites/$token/accept'
+    | '/api/v1/me/email/confirm'
+    | '/api/v1/me/notifications/$type'
     | '/api/v1/orgs/$orgId/me'
     | '/api/v1/auth/demo/'
     | '/api/v1/orgs/$orgId/customers/$customerId'
@@ -538,7 +660,9 @@ export interface FileRouteTypes {
     | '/api/v1/orgs/$orgId/documents/'
     | '/api/v1/orgs/$orgId/invites/'
     | '/api/v1/orgs/$orgId/members/'
+    | '/api/v1/orgs/$orgId/notifications/'
     | '/api/v1/orgs/$orgId/roles/'
+    | '/api/v1/orgs/$orgId/notifications/$id/read'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -552,6 +676,7 @@ export interface RootRouteChildren {
   ApiV1McpRoute: typeof ApiV1McpRoute
   ApiV1MeRoute: typeof ApiV1MeRouteWithChildren
   ApiV1InvitesTokenRoute: typeof ApiV1InvitesTokenRouteWithChildren
+  ApiV1NotificationsUnsubscribeRoute: typeof ApiV1NotificationsUnsubscribeRoute
   ApiV1OrgsIndexRoute: typeof ApiV1OrgsIndexRoute
   ApiV1AuthBankidCancelRoute: typeof ApiV1AuthBankidCancelRoute
   ApiV1AuthBankidExtendRoute: typeof ApiV1AuthBankidExtendRoute
@@ -572,7 +697,9 @@ export interface RootRouteChildren {
   ApiV1OrgsOrgIdDocumentsIndexRoute: typeof ApiV1OrgsOrgIdDocumentsIndexRoute
   ApiV1OrgsOrgIdInvitesIndexRoute: typeof ApiV1OrgsOrgIdInvitesIndexRoute
   ApiV1OrgsOrgIdMembersIndexRoute: typeof ApiV1OrgsOrgIdMembersIndexRoute
+  ApiV1OrgsOrgIdNotificationsIndexRoute: typeof ApiV1OrgsOrgIdNotificationsIndexRoute
   ApiV1OrgsOrgIdRolesIndexRoute: typeof ApiV1OrgsOrgIdRolesIndexRoute
+  ApiV1OrgsOrgIdNotificationsIdReadRoute: typeof ApiV1OrgsOrgIdNotificationsIdReadRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -624,6 +751,20 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/app/'
       preLoaderRoute: typeof AppIndexRouteImport
+      parentRoute: typeof AppRouteRoute
+    }
+    '/app/bekrafta-epost': {
+      id: '/app/bekrafta-epost'
+      path: '/bekrafta-epost'
+      fullPath: '/app/bekrafta-epost'
+      preLoaderRoute: typeof AppBekraftaEpostRouteImport
+      parentRoute: typeof AppRouteRoute
+    }
+    '/app/installningar': {
+      id: '/app/installningar'
+      path: '/installningar'
+      fullPath: '/app/installningar'
+      preLoaderRoute: typeof AppInstallningarRouteImport
       parentRoute: typeof AppRouteRoute
     }
     '/app/radera-konto': {
@@ -689,12 +830,33 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiV1InvitesTokenRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/v1/me/email': {
+      id: '/api/v1/me/email'
+      path: '/email'
+      fullPath: '/api/v1/me/email'
+      preLoaderRoute: typeof ApiV1MeEmailRouteImport
+      parentRoute: typeof ApiV1MeRoute
+    }
     '/api/v1/me/export': {
       id: '/api/v1/me/export'
       path: '/export'
       fullPath: '/api/v1/me/export'
       preLoaderRoute: typeof ApiV1MeExportRouteImport
       parentRoute: typeof ApiV1MeRoute
+    }
+    '/api/v1/me/notifications': {
+      id: '/api/v1/me/notifications'
+      path: '/notifications'
+      fullPath: '/api/v1/me/notifications'
+      preLoaderRoute: typeof ApiV1MeNotificationsRouteImport
+      parentRoute: typeof ApiV1MeRoute
+    }
+    '/api/v1/notifications/unsubscribe': {
+      id: '/api/v1/notifications/unsubscribe'
+      path: '/api/v1/notifications/unsubscribe'
+      fullPath: '/api/v1/notifications/unsubscribe'
+      preLoaderRoute: typeof ApiV1NotificationsUnsubscribeRouteImport
+      parentRoute: typeof rootRouteImport
     }
     '/api/v1/orgs/': {
       id: '/api/v1/orgs/'
@@ -715,6 +877,13 @@ declare module '@tanstack/react-router' {
       path: '/org/$orgId/medlemmar'
       fullPath: '/app/org/$orgId/medlemmar'
       preLoaderRoute: typeof AppOrgOrgIdMedlemmarRouteImport
+      parentRoute: typeof AppRouteRoute
+    }
+    '/app/org/$orgId/notiser': {
+      id: '/app/org/$orgId/notiser'
+      path: '/org/$orgId/notiser'
+      fullPath: '/app/org/$orgId/notiser'
+      preLoaderRoute: typeof AppOrgOrgIdNotiserRouteImport
       parentRoute: typeof AppRouteRoute
     }
     '/app/org/$orgId/roller': {
@@ -779,6 +948,20 @@ declare module '@tanstack/react-router' {
       fullPath: '/api/v1/invites/$token/accept'
       preLoaderRoute: typeof ApiV1InvitesTokenAcceptRouteImport
       parentRoute: typeof ApiV1InvitesTokenRoute
+    }
+    '/api/v1/me/email/confirm': {
+      id: '/api/v1/me/email/confirm'
+      path: '/confirm'
+      fullPath: '/api/v1/me/email/confirm'
+      preLoaderRoute: typeof ApiV1MeEmailConfirmRouteImport
+      parentRoute: typeof ApiV1MeEmailRoute
+    }
+    '/api/v1/me/notifications/$type': {
+      id: '/api/v1/me/notifications/$type'
+      path: '/$type'
+      fullPath: '/api/v1/me/notifications/$type'
+      preLoaderRoute: typeof ApiV1MeNotificationsTypeRouteImport
+      parentRoute: typeof ApiV1MeNotificationsRoute
     }
     '/api/v1/orgs/$orgId/me': {
       id: '/api/v1/orgs/$orgId/me'
@@ -857,6 +1040,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiV1OrgsOrgIdMembersMeRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/v1/orgs/$orgId/notifications/': {
+      id: '/api/v1/orgs/$orgId/notifications/'
+      path: '/api/v1/orgs/$orgId/notifications'
+      fullPath: '/api/v1/orgs/$orgId/notifications/'
+      preLoaderRoute: typeof ApiV1OrgsOrgIdNotificationsIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/v1/orgs/$orgId/roles/': {
       id: '/api/v1/orgs/$orgId/roles/'
       path: '/api/v1/orgs/$orgId/roles'
@@ -871,10 +1061,19 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiV1OrgsOrgIdRolesRoleIdRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/v1/orgs/$orgId/notifications/$id/read': {
+      id: '/api/v1/orgs/$orgId/notifications/$id/read'
+      path: '/api/v1/orgs/$orgId/notifications/$id/read'
+      fullPath: '/api/v1/orgs/$orgId/notifications/$id/read'
+      preLoaderRoute: typeof ApiV1OrgsOrgIdNotificationsIdReadRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
 interface AppRouteRouteChildren {
+  AppBekraftaEpostRoute: typeof AppBekraftaEpostRoute
+  AppInstallningarRoute: typeof AppInstallningarRoute
   AppRaderaKontoRoute: typeof AppRaderaKontoRoute
   AppIndexRoute: typeof AppIndexRoute
   AppInviteTokenRoute: typeof AppInviteTokenRoute
@@ -883,10 +1082,13 @@ interface AppRouteRouteChildren {
   AppLoginIndexRoute: typeof AppLoginIndexRoute
   AppOrgOrgIdKunderRoute: typeof AppOrgOrgIdKunderRoute
   AppOrgOrgIdMedlemmarRoute: typeof AppOrgOrgIdMedlemmarRoute
+  AppOrgOrgIdNotiserRoute: typeof AppOrgOrgIdNotiserRoute
   AppOrgOrgIdRollerRoute: typeof AppOrgOrgIdRollerRoute
 }
 
 const AppRouteRouteChildren: AppRouteRouteChildren = {
+  AppBekraftaEpostRoute: AppBekraftaEpostRoute,
+  AppInstallningarRoute: AppInstallningarRoute,
   AppRaderaKontoRoute: AppRaderaKontoRoute,
   AppIndexRoute: AppIndexRoute,
   AppInviteTokenRoute: AppInviteTokenRoute,
@@ -895,6 +1097,7 @@ const AppRouteRouteChildren: AppRouteRouteChildren = {
   AppLoginIndexRoute: AppLoginIndexRoute,
   AppOrgOrgIdKunderRoute: AppOrgOrgIdKunderRoute,
   AppOrgOrgIdMedlemmarRoute: AppOrgOrgIdMedlemmarRoute,
+  AppOrgOrgIdNotiserRoute: AppOrgOrgIdNotiserRoute,
   AppOrgOrgIdRollerRoute: AppOrgOrgIdRollerRoute,
 }
 
@@ -902,12 +1105,39 @@ const AppRouteRouteWithChildren = AppRouteRoute._addFileChildren(
   AppRouteRouteChildren,
 )
 
+interface ApiV1MeEmailRouteChildren {
+  ApiV1MeEmailConfirmRoute: typeof ApiV1MeEmailConfirmRoute
+}
+
+const ApiV1MeEmailRouteChildren: ApiV1MeEmailRouteChildren = {
+  ApiV1MeEmailConfirmRoute: ApiV1MeEmailConfirmRoute,
+}
+
+const ApiV1MeEmailRouteWithChildren = ApiV1MeEmailRoute._addFileChildren(
+  ApiV1MeEmailRouteChildren,
+)
+
+interface ApiV1MeNotificationsRouteChildren {
+  ApiV1MeNotificationsTypeRoute: typeof ApiV1MeNotificationsTypeRoute
+}
+
+const ApiV1MeNotificationsRouteChildren: ApiV1MeNotificationsRouteChildren = {
+  ApiV1MeNotificationsTypeRoute: ApiV1MeNotificationsTypeRoute,
+}
+
+const ApiV1MeNotificationsRouteWithChildren =
+  ApiV1MeNotificationsRoute._addFileChildren(ApiV1MeNotificationsRouteChildren)
+
 interface ApiV1MeRouteChildren {
+  ApiV1MeEmailRoute: typeof ApiV1MeEmailRouteWithChildren
   ApiV1MeExportRoute: typeof ApiV1MeExportRoute
+  ApiV1MeNotificationsRoute: typeof ApiV1MeNotificationsRouteWithChildren
 }
 
 const ApiV1MeRouteChildren: ApiV1MeRouteChildren = {
+  ApiV1MeEmailRoute: ApiV1MeEmailRouteWithChildren,
   ApiV1MeExportRoute: ApiV1MeExportRoute,
+  ApiV1MeNotificationsRoute: ApiV1MeNotificationsRouteWithChildren,
 }
 
 const ApiV1MeRouteWithChildren =
@@ -935,6 +1165,7 @@ const rootRouteChildren: RootRouteChildren = {
   ApiV1McpRoute: ApiV1McpRoute,
   ApiV1MeRoute: ApiV1MeRouteWithChildren,
   ApiV1InvitesTokenRoute: ApiV1InvitesTokenRouteWithChildren,
+  ApiV1NotificationsUnsubscribeRoute: ApiV1NotificationsUnsubscribeRoute,
   ApiV1OrgsIndexRoute: ApiV1OrgsIndexRoute,
   ApiV1AuthBankidCancelRoute: ApiV1AuthBankidCancelRoute,
   ApiV1AuthBankidExtendRoute: ApiV1AuthBankidExtendRoute,
@@ -957,7 +1188,10 @@ const rootRouteChildren: RootRouteChildren = {
   ApiV1OrgsOrgIdDocumentsIndexRoute: ApiV1OrgsOrgIdDocumentsIndexRoute,
   ApiV1OrgsOrgIdInvitesIndexRoute: ApiV1OrgsOrgIdInvitesIndexRoute,
   ApiV1OrgsOrgIdMembersIndexRoute: ApiV1OrgsOrgIdMembersIndexRoute,
+  ApiV1OrgsOrgIdNotificationsIndexRoute: ApiV1OrgsOrgIdNotificationsIndexRoute,
   ApiV1OrgsOrgIdRolesIndexRoute: ApiV1OrgsOrgIdRolesIndexRoute,
+  ApiV1OrgsOrgIdNotificationsIdReadRoute:
+    ApiV1OrgsOrgIdNotificationsIdReadRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
