@@ -1,0 +1,18 @@
+[
+  {
+    "criterion": "Playwright: a logged-in person sees their active sessions on Konto with kind, start time and last use, and the current one is marked as this device.",
+    "passes": true
+  },
+  {
+    "criterion": "Vitest against the real database: ending a session makes that session's next request 401, and \"end all others\" leaves only the current session.",
+    "passes": true
+  },
+  {
+    "criterion": "Vitest: a person can neither list nor end another user's sessions; the API answers as if the session doesn't exist.",
+    "passes": true
+  },
+  {
+    "criterion": "No new column or field is stored, and docs/privacy/records.md is unchanged.",
+    "passes": true
+  }
+]

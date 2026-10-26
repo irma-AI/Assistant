@@ -2,7 +2,7 @@ import { createHash, randomBytes } from 'node:crypto'
 import { sql } from 'kysely'
 import type { Kysely } from 'kysely'
 import type { z } from 'zod'
-import type { errorBody, me } from '#/api/schemas'
+import type { errorBody, me, sessions } from '#/api/schemas'
 import { clientIp, recordAudit } from './audit.server'
 import type { DB } from './db.gen'
 import { getDb } from './db.server'
@@ -133,6 +133,64 @@ export async function logout(request: Request, db?: Kysely<DB>) {
       'set-cookie': `${cookieName}=; Path=/; Max-Age=0; HttpOnly; Secure; SameSite=Strict`,
     },
   })
+}
+
+// The user's own live sessions; the id is the token's hash in hex, which cannot be used to log in.
+export async function listSessions(request: Request, db?: Kysely<DB>) {
+  const conn = db ?? getDb()
+  const current = await authenticateSession(conn, request)
+  if (!current) return unauthorized()
+  const mine = hash(tokenOf(request) ?? '').toString('hex')
+  const rows = await conn
+    .selectFrom('sessions')
+    .select(['token_hash', 'kind', 'created_at', 'last_used_at'])
+    .where('user_id', '=', current.userId)
+    .where('revoked_at', 'is', null)
+    .where('expires_at', '>', sql<Date>`now()`)
+    .where(
+      'last_used_at',
+      '>',
+      sql<Date>`now() - ${idleSeconds} * interval '1 second'`,
+    )
+    .orderBy('created_at', 'desc')
+    .execute()
+  const body: z.infer<typeof sessions> = rows.map((r) => {
+    const id = r.token_hash.toString('hex')
+    return {
+      id,
+      kind: r.kind,
+      startedAt: r.created_at.toISOString(),
+      lastUsedAt: r.last_used_at.toISOString(),
+      current: id === mine,
+    }
+  })
+  return Response.json(body, { headers: { 'cache-control': 'no-store' } })
+}
+
+// Ends one of the caller's own sessions, or all the others when id is undefined. Another user's
+// session answers 404, as if it did not exist.
+export async function endSessions(
+  request: Request,
+  id: string | undefined,
+  db?: Kysely<DB>,
+) {
+  const conn = db ?? getDb()
+  const current = await authenticateSession(conn, request)
+  if (!current) return unauthorized()
+  const mine = hash(tokenOf(request) ?? '')
+  let query = conn
+    .updateTable('sessions')
+    .set({ revoked_at: sql<Date>`now()` })
+    .where('user_id', '=', current.userId)
+    .where('revoked_at', 'is', null)
+  if (id === undefined) query = query.where('token_hash', '!=', mine)
+  else if (/^[0-9a-f]{64}$/.test(id))
+    query = query.where('token_hash', '=', Buffer.from(id, 'hex'))
+  else return Response.json({ error: 'not_found' }, { status: 404 })
+  const ended = await query.returning('token_hash').execute()
+  if (id !== undefined && ended.length === 0)
+    return Response.json({ error: 'not_found' }, { status: 404 })
+  return new Response(null, { status: 204 })
 }
 
 // Ended sessions (expired or revoked) are kept 30 days, then deleted (GDPR Art. 5(1)(e)).
