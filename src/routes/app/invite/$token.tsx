@@ -1,11 +1,23 @@
 import { createFileRoute, useNavigate } from '@tanstack/react-router'
-import { useCallback, useEffect, useState } from 'react'
+import { useCallback, useState } from 'react'
 import { invitePreview } from '#/api/schemas'
 import { BankIdPanel } from '../login/-BankIdPanel'
 
 export const Route = createFileRoute('/app/invite/$token')({
+  loader: async ({ params }) => {
+    const response = await fetch(`/api/v1/invites/${params.token}`)
+    return {
+      // null for a link that does not work
+      organisation: response.ok
+        ? invitePreview.parse(await response.json()).organisation
+        : null,
+      loggedIn: (await fetch('/api/v1/me')).ok,
+    }
+  },
   // The token is in the address, so the page must not leak it through the Referer header.
   head: () => ({ meta: [{ name: 'referrer', content: 'no-referrer' }] }),
+  // One-time link: never shown from the cache.
+  gcTime: 0,
   component: Invite,
 })
 
@@ -14,22 +26,9 @@ const neutral = 'Länken fungerar inte. Be om en ny inbjudan.'
 function Invite() {
   const { token } = Route.useParams()
   const navigate = useNavigate()
-  // undefined while loading, null for a link that does not work
-  const [organisation, setOrganisation] = useState<string | null>()
-  const [loggedIn, setLoggedIn] = useState<boolean>()
+  const { organisation, loggedIn: wasLoggedIn } = Route.useLoaderData()
+  const [loggedIn, setLoggedIn] = useState(wasLoggedIn)
   const [failed, setFailed] = useState(false)
-
-  useEffect(() => {
-    void (async () => {
-      const response = await fetch(`/api/v1/invites/${token}`)
-      setOrganisation(
-        response.ok
-          ? invitePreview.parse(await response.json()).organisation
-          : null,
-      )
-      setLoggedIn((await fetch('/api/v1/me')).ok)
-    })()
-  }, [token])
 
   const accept = useCallback(async () => {
     const response = await fetch(`/api/v1/invites/${token}/accept`, {
@@ -44,8 +43,6 @@ function Invite() {
 
   const afterLogin = useCallback(() => void accept(), [accept])
 
-  if (organisation === undefined || loggedIn === undefined)
-    return <p>Laddar…</p>
   if (organisation === null || failed)
     return (
       <main>
