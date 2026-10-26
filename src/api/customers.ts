@@ -29,7 +29,8 @@ export const customerFieldText: Record<
 // Throws on an unterminated quote, so a damaged file is refused rather than half read.
 export function parseCsv(text: string) {
   const body = text.replace(/^\uFEFF/, '')
-  const first = body.split(/\r?\n/, 1)[0] ?? ''
+  // Count separators outside quotes only.
+  const first = (body.split(/\r?\n/, 1)[0] ?? '').replace(/"(?:[^"]|"")*"/g, '')
   const sep = first.split(';').length > first.split(',').length ? ';' : ','
   const next = new RegExp(
     String.raw`("(?:[^"]|"")*"|[^${sep}\r\n"]*)(${sep}|\r\n|\n|\r|$)`,
@@ -48,5 +49,5 @@ export function parseCsv(text: string) {
     }
   }
   if (row.length) rows.push(row)
-  return rows.filter((r) => r.some((x) => x.trim()))
+  return rows
 }

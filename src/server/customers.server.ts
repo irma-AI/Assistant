@@ -99,6 +99,23 @@ const kinds: Record<string, string> = {
   consumer: 'consumer',
 }
 
+// One CSV line as the fields of a customer; empty cells and unmapped columns are left out.
+function rowFields(
+  header: string[],
+  line: string[],
+  mapping: Record<string, string>,
+) {
+  const raw: Record<string, string | number> = { kind: 'business' }
+  for (const field of customerFields) {
+    const column = header.indexOf(mapping[field] || '\0')
+    const cell = line[column]?.trim()
+    if (column < 0 || !cell) continue
+    if (field === 'kind') raw[field] = kinds[cell.toLowerCase()] ?? cell
+    else raw[field] = field === 'payment_terms_days' ? Number(cell) : cell
+  }
+  return raw
+}
+
 // Checks every row, and saves them all in one transaction only when `commit` is set and none is invalid.
 export const importCustomers = (
   db: Kysely<DB>,
@@ -120,19 +137,11 @@ export const importCustomers = (
     const valid: Customer[] = []
     const errors: { row: number; fields: string[] }[] = []
     lines.forEach((line, i) => {
-      const raw: Record<string, string | number> = { kind: 'business' }
-      for (const field of customerFields) {
-        const column = header.indexOf(input.mapping[field] ?? '\0')
-        const cell = line[column]?.trim()
-        if (column < 0 || !cell) continue
-        raw[field] =
-          field === 'kind'
-            ? (kinds[cell.toLowerCase()] ?? cell)
-            : field === 'payment_terms_days'
-              ? Number(cell)
-              : cell
-      }
-      const parsed = newCustomer.safeParse(raw)
+      // Blank lines keep their place so a reported row matches the file.
+      if (!line.some((x) => x.trim())) return
+      const parsed = newCustomer.safeParse(
+        rowFields(header, line, input.mapping),
+      )
       if (parsed.success) valid.push(parsed.data)
       else
         errors.push({
@@ -154,5 +163,5 @@ export const importCustomers = (
         count: String(valid.length),
       })
     }
-    return { rows: lines.length, errors, saved }
+    return { rows: valid.length + errors.length, errors, saved }
   })

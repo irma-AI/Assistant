@@ -261,3 +261,19 @@ test('an import checks every row and saves nothing unless all are valid', async 
     'Ek & Co, AB',
   ])
 })
+
+test('import: quoted commas in a semicolon file, and row numbers past blank lines', async () => {
+  const { owner, org } = await setup()
+  const csv = [
+    '"typ, x";namn;adress;epost;orgnr',
+    'privat;Anna;Vägen 3;;',
+    '',
+    'privat;;Vägen 4;;',
+  ].join('\n')
+  const r = await importCsv(owner, org, csv, false)
+  expect(r).toEqual({
+    rows: 2,
+    errors: [{ row: 4, fields: ['name'] }],
+    saved: false,
+  })
+})
