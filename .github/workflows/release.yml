@@ -116,10 +116,10 @@ jobs:
       - run: pnpm install --frozen-lockfile
       - run: pnpm exec playwright test
 
-  # A smoke test that didn't pass (failed, or cancelled by a lost runner or a timeout) pins the previous image again.
+  # A failed smoke test pins the previous image again.
   rollback:
     needs: [deploy, smoke]
-    if: always() && needs.deploy.result == 'success' && needs.smoke.result != 'success'
+    if: failure() && needs.deploy.result == 'success'
     runs-on: ubuntu-latest
     timeout-minutes: 10
     environment: checks

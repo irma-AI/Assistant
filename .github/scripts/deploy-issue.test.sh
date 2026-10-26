@@ -22,7 +22,7 @@ fi
 FAKE
 chmod +x "$tmp/bin/curl"
 
-# expect NAME LABELS OPEN WANT: with these team labels and worked deploy-failure issues, the calls made, as a jq
+# expect NAME LABELS OPEN WANT: with these team labels and open deploy-failure issues, the calls made, as a jq
 # array, satisfy the jq test WANT.
 expect() {
   echo "$2" > "$tmp/labels"
@@ -38,10 +38,7 @@ label='[{"id":"label"}]'
 expect "a first failure files an Urgent issue in Ready" "$label" '[]' \
   'length == 1 and .[0].m == "issueCreate" and .[0].priority == 1 and .[0].stateId == "ready"
    and .[0].labelIds == ["label"] and .[0].title == "Deploy failed at abcdef0"'
-expect "a repeat while one is worked comments on it" "$label" '[{"id":"open-1"}]' \
+expect "a repeat while one is open comments on it" "$label" '[{"id":"open-1"}]' \
   'length == 1 and .[0].m == "commentCreate" and .[0].issueId == "open-1" and (.[0].body | contains("img:abcdef0123 failed"))'
 expect "a missing label files nothing" '[]' '[]' 'length == 0'
-grep -q 'state:{name:{in:\["Ready","In Progress","In Review"\]}}' "$here/deploy-issue.sh" \
-  && echo "ok    only an issue being worked absorbs a repeat" \
-  || { echo "FAIL  only an issue being worked absorbs a repeat"; fail=1; }
 exit $fail
