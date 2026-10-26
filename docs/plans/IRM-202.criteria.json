@@ -1,0 +1,6 @@
+[
+  {"criterion": "The list can reach every transaction of an account via a cursor", "passes": true},
+  {"criterion": "The response tells the caller when there is a next page; it never truncates silently", "passes": true},
+  {"criterion": "A Vitest test against the real database imports more rows than the page size and reads them all back, in order, with no row twice", "passes": true},
+  {"criterion": "The UI that lists transactions (if any exists yet) loads the next page", "passes": true}
+]

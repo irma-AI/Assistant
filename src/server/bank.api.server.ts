@@ -37,7 +37,15 @@ export const bankApi = {
       request,
       [orgId, accountId],
       async (c) =>
-        json(await bank.listTransactions(c.db, c.userId, orgId, accountId)),
+        json(
+          await bank.listTransactions(
+            c.db,
+            c.userId,
+            orgId,
+            accountId,
+            new URL(request.url).searchParams.get('cursor') ?? undefined,
+          ),
+        ),
       db,
     ),
   imports: (
