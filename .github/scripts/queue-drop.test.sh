@@ -12,8 +12,10 @@ cat > "$tmp/bin/gh" <<'FAKE'
 #!/usr/bin/env bash
 # Applies the --jq filter to canned runs and jobs.
 case "$2" in
-  *actions/runs\?*) data='{"workflow_runs":[{"id":7,"head_branch":"gh-readonly-queue/main/pr-12-abc"},{"id":8,"head_branch":"gh-readonly-queue/main/pr-120-abc"}]}' ;;
-  *) data='{"jobs":[{"name":"e2e","conclusion":"failure"},{"name":"lint","conclusion":"success"},{"name":"app","conclusion":"failure"}]}' ;;
+  *actions/runs\?*) data='{"workflow_runs":[{"id":6,"head_branch":"gh-readonly-queue/main/pr-12-abc"},{"id":7,"head_branch":"gh-readonly-queue/main/pr-12-abc"},{"id":5,"head_branch":"gh-readonly-queue/main/pr-12-old"},{"id":8,"head_branch":"gh-readonly-queue/main/pr-120-abc"}]}' ;;
+  *runs/6/jobs) data='{"jobs":[{"name":"policy","conclusion":"skipped"}]}' ;;
+  *runs/7/jobs) data='{"jobs":[{"name":"e2e","conclusion":"failure"},{"name":"lint","conclusion":"success"},{"name":"app","conclusion":"failure"}]}' ;;
+  *) data='{"jobs":[{"name":"stale","conclusion":"failure"}]}' ;;
 esac
 jq -r "${@: -1}" <<<"$data"
 FAKE
