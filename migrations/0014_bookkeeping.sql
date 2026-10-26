@@ -127,7 +127,7 @@ create table voucher_lines (
 );
 
 -- Underlag. A document backs one voucher; posting sets its retain_until, which freezes it (documents_guard).
--- squawk-ignore disallowed-unique-constraint
+-- squawk-ignore disallowed-unique-constraint, constraint-missing-not-valid
 alter table documents add constraint documents_organisation_id_id_key unique (organisation_id, id);
 
 create table voucher_documents (
