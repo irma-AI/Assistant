@@ -1,0 +1,6 @@
+[
+  {"criterion": "A PR removed from the merge queue puts its issue back in Ready with the failing check named (test with a fixture or a dry run of the step).", "passes": true},
+  {"criterion": "The next intake run resumes on that PR.", "passes": true},
+  {"criterion": "next-step ends at \"queued\" and stays within its budget.", "passes": true},
+  {"criterion": "`make check` passes.", "passes": true}
+]
