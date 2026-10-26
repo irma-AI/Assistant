@@ -20,6 +20,8 @@ const refusals: [string, string | undefined, HttpError][] = [
     'outside its fiscal year',
     new HttpError(422, 'outside_fiscal_year'),
   ],
+  ['23514', 'exceed', new HttpError(422, 'credit_exceeds')],
+  ['23514', 'no amount', new HttpError(422, 'no_amount')],
   ['23514', undefined, new HttpError(400, 'bad_request', false)],
 ]
 

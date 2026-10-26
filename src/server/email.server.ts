@@ -6,6 +6,7 @@ export type Mail = {
   text: string
   // The address that turns this kind of email off; sent as the List-Unsubscribe header too.
   unsubscribe?: string
+  attachments?: { filename: string; content: Buffer; contentType: string }[]
 }
 export type Send = (mail: Mail) => Promise<void>
 
@@ -23,6 +24,7 @@ export const sendMail: Send = async (mail) => {
       to: mail.to,
       subject: mail.subject,
       text: mail.text,
+      attachments: mail.attachments,
       headers: mail.unsubscribe
         ? {
             'List-Unsubscribe': `<${mail.unsubscribe}>`,

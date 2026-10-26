@@ -1,9 +1,9 @@
 [
-  {"criterion": "A draft invoice (free-text lines with quantity, unit, unit price and VAT code) is created, edited and deleted by invoices.manage; every member reads it", "passes": false},
-  {"criterion": "Sending numbers the invoice 1, 2, 3 per organisation without gaps, assigned by the database, and sets an OCR reference that passes Luhn and carries a length digit", "passes": false},
-  {"criterion": "A sent invoice and its lines reject UPDATE and DELETE; totals are computed by the database per VAT rate and add up", "passes": false},
-  {"criterion": "A credit note refers to the original, and the database refuses credit notes totalling more than the original", "passes": false},
-  {"criterion": "Sending copies the buyer's and seller's details; reverse charge needs the buyer's VAT number; deleting the customer afterwards leaves the invoice unchanged", "passes": false},
-  {"criterion": "Sending stores the PDF as a retained document and, under the invoice method, books receivable, revenue and output VAT as a posted voucher", "passes": false},
-  {"criterion": "The PDF downloads after sending and carries the mandatory contents; email delivery attaches it and records when and to whom", "passes": false}
+  {"criterion": "A draft invoice (free-text lines with quantity, unit, unit price and VAT code) is created, edited and deleted by invoices.manage; every member reads it", "passes": true},
+  {"criterion": "Sending numbers the invoice 1, 2, 3 per organisation without gaps, assigned by the database, and sets an OCR reference that passes Luhn and carries a length digit", "passes": true},
+  {"criterion": "A sent invoice and its lines reject UPDATE and DELETE; totals are computed by the database per VAT rate and add up", "passes": true},
+  {"criterion": "A credit note refers to the original, and the database refuses credit notes totalling more than the original", "passes": true},
+  {"criterion": "Sending copies the buyer's and seller's details; reverse charge needs the buyer's VAT number; deleting the customer afterwards leaves the invoice unchanged", "passes": true},
+  {"criterion": "Sending stores the PDF as a retained document and, under the invoice method, books receivable, revenue and output VAT as a posted voucher", "passes": true},
+  {"criterion": "The PDF downloads after sending and carries the mandatory contents; email delivery attaches it and records when and to whom", "passes": true}
 ]

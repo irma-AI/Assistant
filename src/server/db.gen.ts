@@ -184,6 +184,54 @@ export interface Invites {
   used_at: Timestamp | null;
 }
 
+export interface InvoiceCounters {
+  last_number: Int8;
+  organisation_id: string;
+}
+
+export interface InvoiceLines {
+  description: string;
+  id: Generated<string>;
+  invoice_id: string;
+  line_no: number;
+  net: Generated<Int8>;
+  organisation_id: string;
+  quantity_milli: Int8;
+  unit: Generated<string>;
+  unit_price: Int8;
+  vat_code: string;
+}
+
+export interface Invoices {
+  buyer: Json | null;
+  created_at: Generated<Timestamp>;
+  created_by: string;
+  created_by_name: string;
+  credits_id: string | null;
+  customer_id: string | null;
+  document_id: string | null;
+  due_date: Timestamp;
+  emailed_at: Timestamp | null;
+  emailed_to: string | null;
+  id: Generated<string>;
+  invoice_date: Timestamp;
+  kind: Generated<string>;
+  number: Int8 | null;
+  ocr: string | null;
+  organisation_id: string;
+  reference: string | null;
+  seller: Json | null;
+  sent_at: Timestamp | null;
+  sent_by: string | null;
+  sent_by_name: string | null;
+  status: Generated<string>;
+  supply_date: Timestamp;
+  total: Int8 | null;
+  total_net: Int8 | null;
+  total_vat: Int8 | null;
+  voucher_id: string | null;
+}
+
 export interface LoginAttempts {
   created_at: Generated<Timestamp>;
   end_user_ip: string;
@@ -326,6 +374,9 @@ export interface DB {
   email_confirmations: EmailConfirmations;
   fiscal_years: FiscalYears;
   invites: Invites;
+  invoice_counters: InvoiceCounters;
+  invoice_lines: InvoiceLines;
+  invoices: Invoices;
   login_attempts: LoginAttempts;
   memberships: Memberships;
   notification_deliveries: NotificationDeliveries;
