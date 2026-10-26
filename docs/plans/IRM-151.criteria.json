@@ -1,0 +1,9 @@
+[
+  {"criterion": "Fiscal years per organisation never overlap, run up to 18 months, and a period lock stops postings dated inside it and only moves forward", "passes": true},
+  {"criterion": "The first fiscal year seeds the organisation's chart from BAS 2026 v1.1 (1282 accounts, 26 not-K2, 2087 = Bunden överkursfond) with the version recorded", "passes": true},
+  {"criterion": "A voucher is a draft until an explicit Bokför numbers it 1, 2, 3 per fiscal year with no gaps; a rolled-back posting returns its number", "passes": true},
+  {"criterion": "Posted vouchers and their lines reject UPDATE and DELETE; an unbalanced voucher cannot be booked (API 422, deferred constraint in the database)", "passes": true},
+  {"criterion": "Storno posts a mirrored voucher linked to the original, which reads reversed; neither can be reversed again", "passes": true},
+  {"criterion": "Underlag attaches to one draft voucher, gets its retention date on posting and is immutable afterwards", "passes": true},
+  {"criterion": "The processing history records user, time and app version, is append-only, and only bookkeeping.manage changes the books while every member reads them", "passes": true}
+]
