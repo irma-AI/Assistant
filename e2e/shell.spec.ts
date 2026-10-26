@@ -1,5 +1,8 @@
 import { expect, test } from '@playwright/test'
 import type { Page } from '@playwright/test'
+import { createElement } from 'react'
+import { renderToStaticMarkup } from 'react-dom/server'
+import { DatumRow } from '../src/ui/DatumRow'
 
 // Needs the in-process fake BankID, so it never runs against a deployed URL.
 test.skip(!!process.env.PLAYWRIGHT_BASE_URL, 'needs the local fake BankID')
@@ -178,4 +181,78 @@ test('at double text size no tab scrolls sideways and tab labels keep their size
       ),
     ).toBe(true)
   }
+})
+
+test('a person without an organisation is told so and can create one', async ({
+  page,
+}) => {
+  // The fake BankID gives each IP its own person, so an unused IP is a person with no organisation.
+  const ip = `198.18.${String(Math.floor(Math.random() * 256))}.${String(1 + Math.floor(Math.random() * 254))}`
+  await page.context().setExtraHTTPHeaders({ 'x-forwarded-for': ip })
+  await page.goto('/app')
+  await page.getByRole('button', { name: /annan enhet/ }).click()
+  await expect(page).toHaveURL(/\/app$/, { timeout: 15_000 })
+  await expect(page.getByText('Du har ingen organisation än')).toBeVisible()
+  await page.getByRole('link', { name: 'Skapa organisation' }).click()
+  const name = `Nya AB ${String(Date.now())}`
+  await page.getByLabel('Namn').fill(name)
+  await page.getByRole('button', { name: 'Skapa organisation' }).click()
+  await tab(page, 'Hem').click()
+  await expect(page.getByRole('heading', { level: 1, name })).toBeVisible()
+})
+
+test('Hem shows four panels with honest empty states and no Cable light pill', async ({
+  page,
+}, testInfo) => {
+  await loginTo(page, '/app/organisation', testInfo.workerIndex)
+  await page.getByLabel('Namn').fill(`Panel AB ${String(Date.now())}`)
+  await page.getByRole('button', { name: 'Skapa organisation' }).click()
+  await tab(page, 'Hem').click()
+  for (const heading of [
+    'Snart dags',
+    'På banken',
+    'Resultat i år',
+    'Att godkänna',
+  ])
+    await expect(
+      page.getByRole('heading', { level: 2, name: heading }),
+    ).toBeVisible()
+  await expect(page.getByText('Ingen bank är kopplad')).toBeVisible()
+  await expect(page.getByText(/kommer snart/i)).toHaveCount(0)
+  await expect(page.locator('main .btn')).toHaveCount(0)
+})
+
+test('at double text size Hem has no sideways scroll and Datumblock rows stack', async ({
+  page,
+}, testInfo) => {
+  await page.setViewportSize({ width: 390, height: 844 })
+  await loginTo(page, '/app', testInfo.workerIndex)
+  // A made-up row in the markup DatumRow really renders; no feature feeds Hem rows yet.
+  const row = renderToStaticMarkup(
+    createElement(DatumRow, {
+      due: '2026-05-12',
+      what: 'Moms',
+      amount: 12500,
+      now: new Date('2026-05-01T10:00:00Z'),
+    }),
+  )
+  // Hem renders after the organisations load.
+  await page.locator('main').waitFor()
+  await page.evaluate((html) => {
+    document.documentElement.style.fontSize = '34px'
+    document
+      .querySelector('main')
+      ?.insertAdjacentHTML('beforeend', `<ul>${html}</ul>`)
+  }, row)
+  const [what, amount] = await Promise.all(
+    ['.datum-what', '.datum-amount'].map((s) => page.locator(s).boundingBox()),
+  )
+  expect(amount?.y).toBeGreaterThan((what?.y ?? 0) + (what?.height ?? 0) - 1)
+  expect(
+    await page.evaluate(
+      () =>
+        document.documentElement.scrollWidth <=
+        document.documentElement.clientWidth,
+    ),
+  ).toBe(true)
 })

@@ -396,3 +396,55 @@ button:active,
 .legal {
   width: min(38rem, 100%);
 }
+
+/* Datumblock row: tile, then what is due and the amount; at large text the amount drops under the name. */
+.datum-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem 0.75rem;
+}
+
+.datum-tile {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-width: 3rem;
+  padding: 0.25rem 0.5rem;
+  border: 1px solid var(--edge);
+  border-radius: 10px;
+  line-height: 1.1;
+}
+
+.datum-tile strong {
+  font-size: 1.5rem;
+}
+
+.datum-tile span {
+  font-size: 0.75rem;
+  text-transform: uppercase;
+}
+
+.datum-what {
+  flex: 1 1 8rem;
+}
+
+.datum-amount {
+  flex: 0 1 auto;
+  margin-left: auto;
+  text-align: right;
+}
+
+/* The name that switches organisation is a 48px target. */
+.company a {
+  display: inline-block;
+  min-height: 48px;
+  color: inherit;
+}
+
+/* Money panels sit side by side while there is room, and stack at large text. */
+.money {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(14rem, 100%), 1fr));
+  column-gap: 0.75rem;
+}
