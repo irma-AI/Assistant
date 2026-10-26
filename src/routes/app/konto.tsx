@@ -1,4 +1,4 @@
-import { createFileRoute } from '@tanstack/react-router'
+import { Link, createFileRoute } from '@tanstack/react-router'
 import { useState } from 'react'
 import { sessions } from '#/api/schemas'
 import { call, useList } from './org/$orgId/-call'
@@ -71,7 +71,7 @@ function Account() {
       <h1>Konto</h1>
       <section className="panel">
         <p>
-          <a href="/app/installningar">Inställningar</a>
+          <Link to="/app/installningar">Inställningar</Link>
         </p>
         <p>
           <a href="/api/v1/me/export" download>
@@ -79,7 +79,9 @@ function Account() {
           </a>
         </p>
         <p>
-          <a href="/app/radera-konto">Radera mitt konto</a>
+          <Link to="/app/radera-konto" search={{ raderat: undefined }}>
+            Radera mitt konto
+          </Link>
         </p>
       </section>
       <Devices />
@@ -90,6 +92,7 @@ function Account() {
           fetch('/api/v1/logout', { method: 'POST' }).then(
             (response) => {
               setFailed(!response.ok)
+              // A full reload on purpose: it clears everything held in memory.
               if (response.ok) location.assign('/app/login')
             },
             () => {

@@ -1,4 +1,4 @@
-import { Link, Outlet, useLocation } from '@tanstack/react-router'
+import { Link, Outlet, useLocation, useNavigate } from '@tanstack/react-router'
 import { useCallback, useEffect, useState } from 'react'
 import { organisations } from '#/api/schemas'
 import { TabBar, tabOf } from './TabBar'
@@ -24,6 +24,7 @@ const tabRoots = ['/app', '/app/organisation', '/app/konto']
 
 export function Shell() {
   const { pathname } = useLocation()
+  const navigate = useNavigate()
   const [orgs, setOrgs] = useState<ShellState['orgs']>()
   const [chosen, setChosen] = useState(recall(orgKey))
 
@@ -35,8 +36,8 @@ export function Shell() {
     }
     // Not logged in: go to login, and come back here afterwards.
     rememberNext(location.pathname + location.search)
-    location.assign('/app/login')
-  }, [])
+    await navigate({ to: '/app/login' })
+  }, [navigate])
   useEffect(() => {
     void reload()
   }, [reload])
