@@ -32,7 +32,7 @@ A rule without an action and an owner is a saved query, not an alert.
 | Error | One feature fails, or unhandled errors appear | Linear issue, same or next working day |
 | Warning | Degraded but working: slow responses, migrations ahead of the code, fake BankID in production | Daily digest, never a notification |
 
-**Ownership follows what the fix needs.** The agent owns every alert whose fix is code, at every severity: it reads production logs and ships the fix as a PR through the merge queue, so a code incident takes at least one merge cycle (accepted). Each such alert becomes a Linear `bug` with the `incident` label in Ready, and intake takes `incident` issues before the oldest Ready one. The owner owns alerts whose fix is infrastructure (server, Dokploy, database container, disk, TLS, network); those issues are assigned to the owner. A critical agent-owned alert is both an Urgent issue and in Ready.
+**Ownership follows what the fix needs.** The agent owns every alert whose fix is code, at every severity: it reads production logs and ships the fix as a PR through the merge queue, so a code incident takes at least one merge cycle (accepted). Each such alert becomes a Linear `bug` with the `incident` label in Ready, and intake starts Ready issues by priority, then oldest, so a critical incident (Urgent) goes first. The owner owns alerts whose fix is infrastructure (server, Dokploy, database container, disk, TLS, network); those issues are assigned to the owner. A critical agent-owned alert is both an Urgent issue and in Ready.
 
 **Engine.** vmalert runs LogsQL rules against VictoriaLogs, the same stack. Repeated identical errors are grouped in the rule (by `event` and `route`), never deduplicated in the logs, so one incident makes one issue.
 

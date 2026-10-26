@@ -1,0 +1,1 @@
+[{"criterion":"Pick order is priority (Urgent first, No priority last), then oldest createdAt","passes":true},{"criterion":"The intake-pick tests pass","passes":true}]

@@ -1,5 +1,6 @@
 # Input: {linear: Linear's answer to the query in intake-dispatch.yml, max: MAX_PARALLEL}.
 # Prints "fire IRM-12 IRM-13", one ID per free slot, or "wait: <why>". Fails on an answer it can't read, so nothing fires on a guess.
+# Ready issues start by priority (Urgent 1 first, No priority 0 last), then oldest.
 # A Ready issue with an open PR is an answered question: the session resumes on that PR.
 (.linear.data // error("Linear answered without data: \(.linear.errors // "" | tostring)")) as $d
 | .max as $max
@@ -12,7 +13,7 @@
   elif ($cloud | length) >= $max
   then "wait: \($cloud | join(", ")) in flight"
   else
-    [$d.ready.nodes | sort_by(.createdAt)[]
+    [$d.ready.nodes | sort_by([(if .priority == 0 then 5 else .priority end), .createdAt])[]
      # A blocker short of Done still blocks, canceled ones included.
      | select(any(.inverseRelations.nodes[]; .type == "blocks" and .issue.state.type != "completed") | not)]
     | if length == 0 then "wait: nothing in Ready qualifies"
