@@ -1,0 +1,4 @@
+[
+  {"criterion": "`.claude/hooks/test.sh` shows a draft PR call refused (exit 2), and a ready or flagless one allowed.", "passes": true},
+  {"criterion": "`make check` passes.", "passes": false}
+]
