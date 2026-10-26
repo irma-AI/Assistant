@@ -3,7 +3,7 @@ import { Part2, Part2b, Part4 } from './-policyTables'
 import { Legal, controller } from './-legal'
 
 export const Route = createFileRoute('/integritetspolicy')({
-  head: () => ({ meta: [{ title: 'Integritetspolicy – Assistant' }] }),
+  head: () => ({ meta: [{ title: 'Integritetspolicy – Redo' }] }),
   component: Policy,
 })
 
