@@ -1,0 +1,4 @@
+[
+  {"criterion": "A smoke job that times out rolls back and files (or comments on) the deploy-failure issue", "passes": true},
+  {"criterion": "A cancelled smoke job (hand cancel) rolls back the same way", "passes": true}
+]

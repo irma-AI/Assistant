@@ -36,6 +36,7 @@ import { Route as ApiV1MeNotificationsRouteImport } from './routes/api/v1/me.not
 import { Route as ApiV1MeSessionsRouteImport } from './routes/api/v1/me.sessions'
 import { Route as ApiV1NotificationsUnsubscribeRouteImport } from './routes/api/v1/notifications/unsubscribe'
 import { Route as ApiV1OrgsIndexRouteImport } from './routes/api/v1/orgs/index'
+import { Route as AppOrgOrgIdFakturorRouteImport } from './routes/app/org/$orgId/fakturor'
 import { Route as AppOrgOrgIdKunderRouteImport } from './routes/app/org/$orgId/kunder'
 import { Route as AppOrgOrgIdKvittonRouteImport } from './routes/app/org/$orgId/kvitton'
 import { Route as AppOrgOrgIdMedlemmarRouteImport } from './routes/app/org/$orgId/medlemmar'
@@ -69,6 +70,8 @@ import { Route as ApiV1OrgsOrgIdMembersIndexRouteImport } from './routes/api/v1/
 import { Route as ApiV1OrgsOrgIdMembersUserIdRouteImport } from './routes/api/v1/orgs/$orgId/members/$userId'
 import { Route as ApiV1OrgsOrgIdMembersMeRouteImport } from './routes/api/v1/orgs/$orgId/members/me'
 import { Route as ApiV1OrgsOrgIdNotificationsIndexRouteImport } from './routes/api/v1/orgs/$orgId/notifications/index'
+import { Route as ApiV1OrgsOrgIdPaymentsIndexRouteImport } from './routes/api/v1/orgs/$orgId/payments/index'
+import { Route as ApiV1OrgsOrgIdPaymentsPaymentIdRouteImport } from './routes/api/v1/orgs/$orgId/payments/$paymentId'
 import { Route as ApiV1OrgsOrgIdReceiptsIndexRouteImport } from './routes/api/v1/orgs/$orgId/receipts/index'
 import { Route as ApiV1OrgsOrgIdReceiptsReceiptIdRouteImport } from './routes/api/v1/orgs/$orgId/receipts/$receiptId'
 import { Route as ApiV1OrgsOrgIdReceiptsSettingsRouteImport } from './routes/api/v1/orgs/$orgId/receipts/settings'
@@ -228,6 +231,11 @@ const ApiV1OrgsIndexRoute = ApiV1OrgsIndexRouteImport.update({
   id: '/api/v1/orgs/',
   path: '/api/v1/orgs/',
   getParentRoute: () => rootRouteImport,
+} as any)
+const AppOrgOrgIdFakturorRoute = AppOrgOrgIdFakturorRouteImport.update({
+  id: '/org/$orgId/fakturor',
+  path: '/org/$orgId/fakturor',
+  getParentRoute: () => AppRouteRoute,
 } as any)
 const AppOrgOrgIdKunderRoute = AppOrgOrgIdKunderRouteImport.update({
   id: '/org/$orgId/kunder',
@@ -408,6 +416,18 @@ const ApiV1OrgsOrgIdNotificationsIndexRoute =
     path: '/api/v1/orgs/$orgId/notifications/',
     getParentRoute: () => rootRouteImport,
   } as any)
+const ApiV1OrgsOrgIdPaymentsIndexRoute =
+  ApiV1OrgsOrgIdPaymentsIndexRouteImport.update({
+    id: '/api/v1/orgs/$orgId/payments/',
+    path: '/api/v1/orgs/$orgId/payments/',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const ApiV1OrgsOrgIdPaymentsPaymentIdRoute =
+  ApiV1OrgsOrgIdPaymentsPaymentIdRouteImport.update({
+    id: '/api/v1/orgs/$orgId/payments/$paymentId',
+    path: '/api/v1/orgs/$orgId/payments/$paymentId',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 const ApiV1OrgsOrgIdReceiptsIndexRoute =
   ApiV1OrgsOrgIdReceiptsIndexRouteImport.update({
     id: '/api/v1/orgs/$orgId/receipts/',
@@ -568,6 +588,7 @@ export interface FileRoutesByFullPath {
   '/api/v1/me/notifications': typeof ApiV1MeNotificationsRouteWithChildren
   '/api/v1/me/sessions': typeof ApiV1MeSessionsRouteWithChildren
   '/api/v1/notifications/unsubscribe': typeof ApiV1NotificationsUnsubscribeRoute
+  '/app/org/$orgId/fakturor': typeof AppOrgOrgIdFakturorRoute
   '/app/org/$orgId/kunder': typeof AppOrgOrgIdKunderRoute
   '/app/org/$orgId/kvitton': typeof AppOrgOrgIdKvittonRoute
   '/app/org/$orgId/medlemmar': typeof AppOrgOrgIdMedlemmarRoute
@@ -595,6 +616,7 @@ export interface FileRoutesByFullPath {
   '/api/v1/orgs/$orgId/invoices/$invoiceId': typeof ApiV1OrgsOrgIdInvoicesInvoiceIdRouteWithChildren
   '/api/v1/orgs/$orgId/members/$userId': typeof ApiV1OrgsOrgIdMembersUserIdRoute
   '/api/v1/orgs/$orgId/members/me': typeof ApiV1OrgsOrgIdMembersMeRoute
+  '/api/v1/orgs/$orgId/payments/$paymentId': typeof ApiV1OrgsOrgIdPaymentsPaymentIdRoute
   '/api/v1/orgs/$orgId/receipts/$receiptId': typeof ApiV1OrgsOrgIdReceiptsReceiptIdRoute
   '/api/v1/orgs/$orgId/receipts/settings': typeof ApiV1OrgsOrgIdReceiptsSettingsRoute
   '/api/v1/orgs/$orgId/receipts/unmatched': typeof ApiV1OrgsOrgIdReceiptsUnmatchedRoute
@@ -606,6 +628,7 @@ export interface FileRoutesByFullPath {
   '/api/v1/orgs/$orgId/invoices/': typeof ApiV1OrgsOrgIdInvoicesIndexRoute
   '/api/v1/orgs/$orgId/members/': typeof ApiV1OrgsOrgIdMembersIndexRoute
   '/api/v1/orgs/$orgId/notifications/': typeof ApiV1OrgsOrgIdNotificationsIndexRoute
+  '/api/v1/orgs/$orgId/payments/': typeof ApiV1OrgsOrgIdPaymentsIndexRoute
   '/api/v1/orgs/$orgId/receipts/': typeof ApiV1OrgsOrgIdReceiptsIndexRoute
   '/api/v1/orgs/$orgId/roles/': typeof ApiV1OrgsOrgIdRolesIndexRoute
   '/api/v1/orgs/$orgId/bank-accounts/$accountId/imports': typeof ApiV1OrgsOrgIdBankAccountsAccountIdImportsRoute
@@ -651,6 +674,7 @@ export interface FileRoutesByTo {
   '/api/v1/me/notifications': typeof ApiV1MeNotificationsRouteWithChildren
   '/api/v1/me/sessions': typeof ApiV1MeSessionsRouteWithChildren
   '/api/v1/notifications/unsubscribe': typeof ApiV1NotificationsUnsubscribeRoute
+  '/app/org/$orgId/fakturor': typeof AppOrgOrgIdFakturorRoute
   '/app/org/$orgId/kunder': typeof AppOrgOrgIdKunderRoute
   '/app/org/$orgId/kvitton': typeof AppOrgOrgIdKvittonRoute
   '/app/org/$orgId/medlemmar': typeof AppOrgOrgIdMedlemmarRoute
@@ -678,6 +702,7 @@ export interface FileRoutesByTo {
   '/api/v1/orgs/$orgId/invoices/$invoiceId': typeof ApiV1OrgsOrgIdInvoicesInvoiceIdRouteWithChildren
   '/api/v1/orgs/$orgId/members/$userId': typeof ApiV1OrgsOrgIdMembersUserIdRoute
   '/api/v1/orgs/$orgId/members/me': typeof ApiV1OrgsOrgIdMembersMeRoute
+  '/api/v1/orgs/$orgId/payments/$paymentId': typeof ApiV1OrgsOrgIdPaymentsPaymentIdRoute
   '/api/v1/orgs/$orgId/receipts/$receiptId': typeof ApiV1OrgsOrgIdReceiptsReceiptIdRoute
   '/api/v1/orgs/$orgId/receipts/settings': typeof ApiV1OrgsOrgIdReceiptsSettingsRoute
   '/api/v1/orgs/$orgId/receipts/unmatched': typeof ApiV1OrgsOrgIdReceiptsUnmatchedRoute
@@ -689,6 +714,7 @@ export interface FileRoutesByTo {
   '/api/v1/orgs/$orgId/invoices': typeof ApiV1OrgsOrgIdInvoicesIndexRoute
   '/api/v1/orgs/$orgId/members': typeof ApiV1OrgsOrgIdMembersIndexRoute
   '/api/v1/orgs/$orgId/notifications': typeof ApiV1OrgsOrgIdNotificationsIndexRoute
+  '/api/v1/orgs/$orgId/payments': typeof ApiV1OrgsOrgIdPaymentsIndexRoute
   '/api/v1/orgs/$orgId/receipts': typeof ApiV1OrgsOrgIdReceiptsIndexRoute
   '/api/v1/orgs/$orgId/roles': typeof ApiV1OrgsOrgIdRolesIndexRoute
   '/api/v1/orgs/$orgId/bank-accounts/$accountId/imports': typeof ApiV1OrgsOrgIdBankAccountsAccountIdImportsRoute
@@ -736,6 +762,7 @@ export interface FileRoutesById {
   '/api/v1/me/notifications': typeof ApiV1MeNotificationsRouteWithChildren
   '/api/v1/me/sessions': typeof ApiV1MeSessionsRouteWithChildren
   '/api/v1/notifications/unsubscribe': typeof ApiV1NotificationsUnsubscribeRoute
+  '/app/org/$orgId/fakturor': typeof AppOrgOrgIdFakturorRoute
   '/app/org/$orgId/kunder': typeof AppOrgOrgIdKunderRoute
   '/app/org/$orgId/kvitton': typeof AppOrgOrgIdKvittonRoute
   '/app/org/$orgId/medlemmar': typeof AppOrgOrgIdMedlemmarRoute
@@ -763,6 +790,7 @@ export interface FileRoutesById {
   '/api/v1/orgs/$orgId/invoices/$invoiceId': typeof ApiV1OrgsOrgIdInvoicesInvoiceIdRouteWithChildren
   '/api/v1/orgs/$orgId/members/$userId': typeof ApiV1OrgsOrgIdMembersUserIdRoute
   '/api/v1/orgs/$orgId/members/me': typeof ApiV1OrgsOrgIdMembersMeRoute
+  '/api/v1/orgs/$orgId/payments/$paymentId': typeof ApiV1OrgsOrgIdPaymentsPaymentIdRoute
   '/api/v1/orgs/$orgId/receipts/$receiptId': typeof ApiV1OrgsOrgIdReceiptsReceiptIdRoute
   '/api/v1/orgs/$orgId/receipts/settings': typeof ApiV1OrgsOrgIdReceiptsSettingsRoute
   '/api/v1/orgs/$orgId/receipts/unmatched': typeof ApiV1OrgsOrgIdReceiptsUnmatchedRoute
@@ -774,6 +802,7 @@ export interface FileRoutesById {
   '/api/v1/orgs/$orgId/invoices/': typeof ApiV1OrgsOrgIdInvoicesIndexRoute
   '/api/v1/orgs/$orgId/members/': typeof ApiV1OrgsOrgIdMembersIndexRoute
   '/api/v1/orgs/$orgId/notifications/': typeof ApiV1OrgsOrgIdNotificationsIndexRoute
+  '/api/v1/orgs/$orgId/payments/': typeof ApiV1OrgsOrgIdPaymentsIndexRoute
   '/api/v1/orgs/$orgId/receipts/': typeof ApiV1OrgsOrgIdReceiptsIndexRoute
   '/api/v1/orgs/$orgId/roles/': typeof ApiV1OrgsOrgIdRolesIndexRoute
   '/api/v1/orgs/$orgId/bank-accounts/$accountId/imports': typeof ApiV1OrgsOrgIdBankAccountsAccountIdImportsRoute
@@ -822,6 +851,7 @@ export interface FileRouteTypes {
     | '/api/v1/me/notifications'
     | '/api/v1/me/sessions'
     | '/api/v1/notifications/unsubscribe'
+    | '/app/org/$orgId/fakturor'
     | '/app/org/$orgId/kunder'
     | '/app/org/$orgId/kvitton'
     | '/app/org/$orgId/medlemmar'
@@ -849,6 +879,7 @@ export interface FileRouteTypes {
     | '/api/v1/orgs/$orgId/invoices/$invoiceId'
     | '/api/v1/orgs/$orgId/members/$userId'
     | '/api/v1/orgs/$orgId/members/me'
+    | '/api/v1/orgs/$orgId/payments/$paymentId'
     | '/api/v1/orgs/$orgId/receipts/$receiptId'
     | '/api/v1/orgs/$orgId/receipts/settings'
     | '/api/v1/orgs/$orgId/receipts/unmatched'
@@ -860,6 +891,7 @@ export interface FileRouteTypes {
     | '/api/v1/orgs/$orgId/invoices/'
     | '/api/v1/orgs/$orgId/members/'
     | '/api/v1/orgs/$orgId/notifications/'
+    | '/api/v1/orgs/$orgId/payments/'
     | '/api/v1/orgs/$orgId/receipts/'
     | '/api/v1/orgs/$orgId/roles/'
     | '/api/v1/orgs/$orgId/bank-accounts/$accountId/imports'
@@ -905,6 +937,7 @@ export interface FileRouteTypes {
     | '/api/v1/me/notifications'
     | '/api/v1/me/sessions'
     | '/api/v1/notifications/unsubscribe'
+    | '/app/org/$orgId/fakturor'
     | '/app/org/$orgId/kunder'
     | '/app/org/$orgId/kvitton'
     | '/app/org/$orgId/medlemmar'
@@ -932,6 +965,7 @@ export interface FileRouteTypes {
     | '/api/v1/orgs/$orgId/invoices/$invoiceId'
     | '/api/v1/orgs/$orgId/members/$userId'
     | '/api/v1/orgs/$orgId/members/me'
+    | '/api/v1/orgs/$orgId/payments/$paymentId'
     | '/api/v1/orgs/$orgId/receipts/$receiptId'
     | '/api/v1/orgs/$orgId/receipts/settings'
     | '/api/v1/orgs/$orgId/receipts/unmatched'
@@ -943,6 +977,7 @@ export interface FileRouteTypes {
     | '/api/v1/orgs/$orgId/invoices'
     | '/api/v1/orgs/$orgId/members'
     | '/api/v1/orgs/$orgId/notifications'
+    | '/api/v1/orgs/$orgId/payments'
     | '/api/v1/orgs/$orgId/receipts'
     | '/api/v1/orgs/$orgId/roles'
     | '/api/v1/orgs/$orgId/bank-accounts/$accountId/imports'
@@ -989,6 +1024,7 @@ export interface FileRouteTypes {
     | '/api/v1/me/notifications'
     | '/api/v1/me/sessions'
     | '/api/v1/notifications/unsubscribe'
+    | '/app/org/$orgId/fakturor'
     | '/app/org/$orgId/kunder'
     | '/app/org/$orgId/kvitton'
     | '/app/org/$orgId/medlemmar'
@@ -1016,6 +1052,7 @@ export interface FileRouteTypes {
     | '/api/v1/orgs/$orgId/invoices/$invoiceId'
     | '/api/v1/orgs/$orgId/members/$userId'
     | '/api/v1/orgs/$orgId/members/me'
+    | '/api/v1/orgs/$orgId/payments/$paymentId'
     | '/api/v1/orgs/$orgId/receipts/$receiptId'
     | '/api/v1/orgs/$orgId/receipts/settings'
     | '/api/v1/orgs/$orgId/receipts/unmatched'
@@ -1027,6 +1064,7 @@ export interface FileRouteTypes {
     | '/api/v1/orgs/$orgId/invoices/'
     | '/api/v1/orgs/$orgId/members/'
     | '/api/v1/orgs/$orgId/notifications/'
+    | '/api/v1/orgs/$orgId/payments/'
     | '/api/v1/orgs/$orgId/receipts/'
     | '/api/v1/orgs/$orgId/roles/'
     | '/api/v1/orgs/$orgId/bank-accounts/$accountId/imports'
@@ -1077,6 +1115,7 @@ export interface RootRouteChildren {
   ApiV1OrgsOrgIdInvoicesInvoiceIdRoute: typeof ApiV1OrgsOrgIdInvoicesInvoiceIdRouteWithChildren
   ApiV1OrgsOrgIdMembersUserIdRoute: typeof ApiV1OrgsOrgIdMembersUserIdRoute
   ApiV1OrgsOrgIdMembersMeRoute: typeof ApiV1OrgsOrgIdMembersMeRoute
+  ApiV1OrgsOrgIdPaymentsPaymentIdRoute: typeof ApiV1OrgsOrgIdPaymentsPaymentIdRoute
   ApiV1OrgsOrgIdReceiptsReceiptIdRoute: typeof ApiV1OrgsOrgIdReceiptsReceiptIdRoute
   ApiV1OrgsOrgIdReceiptsSettingsRoute: typeof ApiV1OrgsOrgIdReceiptsSettingsRoute
   ApiV1OrgsOrgIdReceiptsUnmatchedRoute: typeof ApiV1OrgsOrgIdReceiptsUnmatchedRoute
@@ -1088,6 +1127,7 @@ export interface RootRouteChildren {
   ApiV1OrgsOrgIdInvoicesIndexRoute: typeof ApiV1OrgsOrgIdInvoicesIndexRoute
   ApiV1OrgsOrgIdMembersIndexRoute: typeof ApiV1OrgsOrgIdMembersIndexRoute
   ApiV1OrgsOrgIdNotificationsIndexRoute: typeof ApiV1OrgsOrgIdNotificationsIndexRoute
+  ApiV1OrgsOrgIdPaymentsIndexRoute: typeof ApiV1OrgsOrgIdPaymentsIndexRoute
   ApiV1OrgsOrgIdReceiptsIndexRoute: typeof ApiV1OrgsOrgIdReceiptsIndexRoute
   ApiV1OrgsOrgIdRolesIndexRoute: typeof ApiV1OrgsOrgIdRolesIndexRoute
   ApiV1OrgsOrgIdBankAccountsAccountIdImportsRoute: typeof ApiV1OrgsOrgIdBankAccountsAccountIdImportsRoute
@@ -1292,6 +1332,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/api/v1/orgs/'
       preLoaderRoute: typeof ApiV1OrgsIndexRouteImport
       parentRoute: typeof rootRouteImport
+    }
+    '/app/org/$orgId/fakturor': {
+      id: '/app/org/$orgId/fakturor'
+      path: '/org/$orgId/fakturor'
+      fullPath: '/app/org/$orgId/fakturor'
+      preLoaderRoute: typeof AppOrgOrgIdFakturorRouteImport
+      parentRoute: typeof AppRouteRoute
     }
     '/app/org/$orgId/kunder': {
       id: '/app/org/$orgId/kunder'
@@ -1524,6 +1571,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiV1OrgsOrgIdNotificationsIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/v1/orgs/$orgId/payments/': {
+      id: '/api/v1/orgs/$orgId/payments/'
+      path: '/api/v1/orgs/$orgId/payments'
+      fullPath: '/api/v1/orgs/$orgId/payments/'
+      preLoaderRoute: typeof ApiV1OrgsOrgIdPaymentsIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/v1/orgs/$orgId/payments/$paymentId': {
+      id: '/api/v1/orgs/$orgId/payments/$paymentId'
+      path: '/api/v1/orgs/$orgId/payments/$paymentId'
+      fullPath: '/api/v1/orgs/$orgId/payments/$paymentId'
+      preLoaderRoute: typeof ApiV1OrgsOrgIdPaymentsPaymentIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/v1/orgs/$orgId/receipts/': {
       id: '/api/v1/orgs/$orgId/receipts/'
       path: '/api/v1/orgs/$orgId/receipts'
@@ -1692,6 +1753,7 @@ interface AppRouteRouteChildren {
   AppLoginDemoRoute: typeof AppLoginDemoRoute
   AppLoginReturnRoute: typeof AppLoginReturnRoute
   AppLoginIndexRoute: typeof AppLoginIndexRoute
+  AppOrgOrgIdFakturorRoute: typeof AppOrgOrgIdFakturorRoute
   AppOrgOrgIdKunderRoute: typeof AppOrgOrgIdKunderRoute
   AppOrgOrgIdKvittonRoute: typeof AppOrgOrgIdKvittonRoute
   AppOrgOrgIdMedlemmarRoute: typeof AppOrgOrgIdMedlemmarRoute
@@ -1711,6 +1773,7 @@ const AppRouteRouteChildren: AppRouteRouteChildren = {
   AppLoginDemoRoute: AppLoginDemoRoute,
   AppLoginReturnRoute: AppLoginReturnRoute,
   AppLoginIndexRoute: AppLoginIndexRoute,
+  AppOrgOrgIdFakturorRoute: AppOrgOrgIdFakturorRoute,
   AppOrgOrgIdKunderRoute: AppOrgOrgIdKunderRoute,
   AppOrgOrgIdKvittonRoute: AppOrgOrgIdKvittonRoute,
   AppOrgOrgIdMedlemmarRoute: AppOrgOrgIdMedlemmarRoute,
@@ -1861,6 +1924,7 @@ const rootRouteChildren: RootRouteChildren = {
     ApiV1OrgsOrgIdInvoicesInvoiceIdRouteWithChildren,
   ApiV1OrgsOrgIdMembersUserIdRoute: ApiV1OrgsOrgIdMembersUserIdRoute,
   ApiV1OrgsOrgIdMembersMeRoute: ApiV1OrgsOrgIdMembersMeRoute,
+  ApiV1OrgsOrgIdPaymentsPaymentIdRoute: ApiV1OrgsOrgIdPaymentsPaymentIdRoute,
   ApiV1OrgsOrgIdReceiptsReceiptIdRoute: ApiV1OrgsOrgIdReceiptsReceiptIdRoute,
   ApiV1OrgsOrgIdReceiptsSettingsRoute: ApiV1OrgsOrgIdReceiptsSettingsRoute,
   ApiV1OrgsOrgIdReceiptsUnmatchedRoute: ApiV1OrgsOrgIdReceiptsUnmatchedRoute,
@@ -1872,6 +1936,7 @@ const rootRouteChildren: RootRouteChildren = {
   ApiV1OrgsOrgIdInvoicesIndexRoute: ApiV1OrgsOrgIdInvoicesIndexRoute,
   ApiV1OrgsOrgIdMembersIndexRoute: ApiV1OrgsOrgIdMembersIndexRoute,
   ApiV1OrgsOrgIdNotificationsIndexRoute: ApiV1OrgsOrgIdNotificationsIndexRoute,
+  ApiV1OrgsOrgIdPaymentsIndexRoute: ApiV1OrgsOrgIdPaymentsIndexRoute,
   ApiV1OrgsOrgIdReceiptsIndexRoute: ApiV1OrgsOrgIdReceiptsIndexRoute,
   ApiV1OrgsOrgIdRolesIndexRoute: ApiV1OrgsOrgIdRolesIndexRoute,
   ApiV1OrgsOrgIdBankAccountsAccountIdImportsRoute:

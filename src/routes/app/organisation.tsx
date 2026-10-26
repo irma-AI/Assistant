@@ -1,4 +1,4 @@
-import { createFileRoute } from '@tanstack/react-router'
+import { Link, createFileRoute } from '@tanstack/react-router'
 import { useState } from 'react'
 import type { SyntheticEvent } from 'react'
 import { Field } from '#/ui/Field'
@@ -14,7 +14,12 @@ const OrgLinks = ({ id }: { id: string }) => (
     <a href={`/app/org/${id}/medlemmar`}>Medlemmar</a>{' '}
     <a href={`/app/org/${id}/roller`}>Roller</a>{' '}
     <a href={`/app/org/${id}/kunder`}>Kunder</a>{' '}
-    <a href={`/app/org/${id}/kvitton`}>Kvitton</a>{' '}
+    <Link to="/app/org/$orgId/fakturor" params={{ orgId: id }}>
+      Fakturor
+    </Link>{' '}
+    <Link to="/app/org/$orgId/kvitton" params={{ orgId: id }}>
+      Kvitton
+    </Link>{' '}
     <a href={`/app/org/${id}/notiser`}>Aviseringar</a>{' '}
     <a href={`/app/org/${id}/uppgifter`}>Företagsuppgifter</a>
   </p>
