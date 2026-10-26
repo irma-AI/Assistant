@@ -1,0 +1,7 @@
+[
+  {"criterion": "docs/plans/IRM-220.review.md covers every screen above, with its 390×844 screenshot, and lists the sizes checked.", "passes": true},
+  {"criterion": "Every finding names its rule and says whether it needs the owner.", "passes": true},
+  {"criterion": "A check that couldn't run is named with the reason.", "passes": true},
+  {"criterion": "No file outside docs/plans/ changes; make check passes.", "passes": false},
+  {"criterion": "After merge, a comment on this issue links the review so the owner can react.", "passes": false}
+]
