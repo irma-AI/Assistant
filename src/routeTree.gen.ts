@@ -69,7 +69,16 @@ import { Route as ApiV1OrgsOrgIdRolesIndexRouteImport } from './routes/api/v1/or
 import { Route as ApiV1OrgsOrgIdRolesRoleIdRouteImport } from './routes/api/v1/orgs/$orgId/roles/$roleId'
 import { Route as ApiV1OrgsOrgIdBankAccountsAccountIdImportsRouteImport } from './routes/api/v1/orgs/$orgId/bank-accounts/$accountId/imports'
 import { Route as ApiV1OrgsOrgIdBankAccountsAccountIdTransactionsRouteImport } from './routes/api/v1/orgs/$orgId/bank-accounts/$accountId/transactions'
+import { Route as ApiV1OrgsOrgIdBookkeepingAccountsIndexRouteImport } from './routes/api/v1/orgs/$orgId/bookkeeping/accounts/index'
+import { Route as ApiV1OrgsOrgIdBookkeepingAccountsNumberRouteImport } from './routes/api/v1/orgs/$orgId/bookkeeping/accounts/$number'
+import { Route as ApiV1OrgsOrgIdBookkeepingFiscalYearsIndexRouteImport } from './routes/api/v1/orgs/$orgId/bookkeeping/fiscal-years/index'
+import { Route as ApiV1OrgsOrgIdBookkeepingFiscalYearsYearIdRouteImport } from './routes/api/v1/orgs/$orgId/bookkeeping/fiscal-years/$yearId'
+import { Route as ApiV1OrgsOrgIdBookkeepingVouchersIndexRouteImport } from './routes/api/v1/orgs/$orgId/bookkeeping/vouchers/index'
+import { Route as ApiV1OrgsOrgIdBookkeepingVouchersVoucherIdRouteImport } from './routes/api/v1/orgs/$orgId/bookkeeping/vouchers/$voucherId'
 import { Route as ApiV1OrgsOrgIdNotificationsIdReadRouteImport } from './routes/api/v1/orgs/$orgId/notifications/$id/read'
+import { Route as ApiV1OrgsOrgIdBookkeepingVouchersVoucherIdDocumentsRouteImport } from './routes/api/v1/orgs/$orgId/bookkeeping/vouchers/$voucherId/documents'
+import { Route as ApiV1OrgsOrgIdBookkeepingVouchersVoucherIdPostRouteImport } from './routes/api/v1/orgs/$orgId/bookkeeping/vouchers/$voucherId/post'
+import { Route as ApiV1OrgsOrgIdBookkeepingVouchersVoucherIdReverseRouteImport } from './routes/api/v1/orgs/$orgId/bookkeeping/vouchers/$voucherId/reverse'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -389,11 +398,65 @@ const ApiV1OrgsOrgIdBankAccountsAccountIdTransactionsRoute =
     path: '/api/v1/orgs/$orgId/bank-accounts/$accountId/transactions',
     getParentRoute: () => rootRouteImport,
   } as any)
+const ApiV1OrgsOrgIdBookkeepingAccountsIndexRoute =
+  ApiV1OrgsOrgIdBookkeepingAccountsIndexRouteImport.update({
+    id: '/api/v1/orgs/$orgId/bookkeeping/accounts/',
+    path: '/api/v1/orgs/$orgId/bookkeeping/accounts/',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const ApiV1OrgsOrgIdBookkeepingAccountsNumberRoute =
+  ApiV1OrgsOrgIdBookkeepingAccountsNumberRouteImport.update({
+    id: '/api/v1/orgs/$orgId/bookkeeping/accounts/$number',
+    path: '/api/v1/orgs/$orgId/bookkeeping/accounts/$number',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const ApiV1OrgsOrgIdBookkeepingFiscalYearsIndexRoute =
+  ApiV1OrgsOrgIdBookkeepingFiscalYearsIndexRouteImport.update({
+    id: '/api/v1/orgs/$orgId/bookkeeping/fiscal-years/',
+    path: '/api/v1/orgs/$orgId/bookkeeping/fiscal-years/',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const ApiV1OrgsOrgIdBookkeepingFiscalYearsYearIdRoute =
+  ApiV1OrgsOrgIdBookkeepingFiscalYearsYearIdRouteImport.update({
+    id: '/api/v1/orgs/$orgId/bookkeeping/fiscal-years/$yearId',
+    path: '/api/v1/orgs/$orgId/bookkeeping/fiscal-years/$yearId',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const ApiV1OrgsOrgIdBookkeepingVouchersIndexRoute =
+  ApiV1OrgsOrgIdBookkeepingVouchersIndexRouteImport.update({
+    id: '/api/v1/orgs/$orgId/bookkeeping/vouchers/',
+    path: '/api/v1/orgs/$orgId/bookkeeping/vouchers/',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const ApiV1OrgsOrgIdBookkeepingVouchersVoucherIdRoute =
+  ApiV1OrgsOrgIdBookkeepingVouchersVoucherIdRouteImport.update({
+    id: '/api/v1/orgs/$orgId/bookkeeping/vouchers/$voucherId',
+    path: '/api/v1/orgs/$orgId/bookkeeping/vouchers/$voucherId',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 const ApiV1OrgsOrgIdNotificationsIdReadRoute =
   ApiV1OrgsOrgIdNotificationsIdReadRouteImport.update({
     id: '/api/v1/orgs/$orgId/notifications/$id/read',
     path: '/api/v1/orgs/$orgId/notifications/$id/read',
     getParentRoute: () => rootRouteImport,
+  } as any)
+const ApiV1OrgsOrgIdBookkeepingVouchersVoucherIdDocumentsRoute =
+  ApiV1OrgsOrgIdBookkeepingVouchersVoucherIdDocumentsRouteImport.update({
+    id: '/documents',
+    path: '/documents',
+    getParentRoute: () => ApiV1OrgsOrgIdBookkeepingVouchersVoucherIdRoute,
+  } as any)
+const ApiV1OrgsOrgIdBookkeepingVouchersVoucherIdPostRoute =
+  ApiV1OrgsOrgIdBookkeepingVouchersVoucherIdPostRouteImport.update({
+    id: '/post',
+    path: '/post',
+    getParentRoute: () => ApiV1OrgsOrgIdBookkeepingVouchersVoucherIdRoute,
+  } as any)
+const ApiV1OrgsOrgIdBookkeepingVouchersVoucherIdReverseRoute =
+  ApiV1OrgsOrgIdBookkeepingVouchersVoucherIdReverseRouteImport.update({
+    id: '/reverse',
+    path: '/reverse',
+    getParentRoute: () => ApiV1OrgsOrgIdBookkeepingVouchersVoucherIdRoute,
   } as any)
 
 export interface FileRoutesByFullPath {
@@ -457,7 +520,16 @@ export interface FileRoutesByFullPath {
   '/api/v1/orgs/$orgId/roles/': typeof ApiV1OrgsOrgIdRolesIndexRoute
   '/api/v1/orgs/$orgId/bank-accounts/$accountId/imports': typeof ApiV1OrgsOrgIdBankAccountsAccountIdImportsRoute
   '/api/v1/orgs/$orgId/bank-accounts/$accountId/transactions': typeof ApiV1OrgsOrgIdBankAccountsAccountIdTransactionsRoute
+  '/api/v1/orgs/$orgId/bookkeeping/accounts/$number': typeof ApiV1OrgsOrgIdBookkeepingAccountsNumberRoute
+  '/api/v1/orgs/$orgId/bookkeeping/fiscal-years/$yearId': typeof ApiV1OrgsOrgIdBookkeepingFiscalYearsYearIdRoute
+  '/api/v1/orgs/$orgId/bookkeeping/vouchers/$voucherId': typeof ApiV1OrgsOrgIdBookkeepingVouchersVoucherIdRouteWithChildren
   '/api/v1/orgs/$orgId/notifications/$id/read': typeof ApiV1OrgsOrgIdNotificationsIdReadRoute
+  '/api/v1/orgs/$orgId/bookkeeping/accounts/': typeof ApiV1OrgsOrgIdBookkeepingAccountsIndexRoute
+  '/api/v1/orgs/$orgId/bookkeeping/fiscal-years/': typeof ApiV1OrgsOrgIdBookkeepingFiscalYearsIndexRoute
+  '/api/v1/orgs/$orgId/bookkeeping/vouchers/': typeof ApiV1OrgsOrgIdBookkeepingVouchersIndexRoute
+  '/api/v1/orgs/$orgId/bookkeeping/vouchers/$voucherId/documents': typeof ApiV1OrgsOrgIdBookkeepingVouchersVoucherIdDocumentsRoute
+  '/api/v1/orgs/$orgId/bookkeeping/vouchers/$voucherId/post': typeof ApiV1OrgsOrgIdBookkeepingVouchersVoucherIdPostRoute
+  '/api/v1/orgs/$orgId/bookkeeping/vouchers/$voucherId/reverse': typeof ApiV1OrgsOrgIdBookkeepingVouchersVoucherIdReverseRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -519,7 +591,16 @@ export interface FileRoutesByTo {
   '/api/v1/orgs/$orgId/roles': typeof ApiV1OrgsOrgIdRolesIndexRoute
   '/api/v1/orgs/$orgId/bank-accounts/$accountId/imports': typeof ApiV1OrgsOrgIdBankAccountsAccountIdImportsRoute
   '/api/v1/orgs/$orgId/bank-accounts/$accountId/transactions': typeof ApiV1OrgsOrgIdBankAccountsAccountIdTransactionsRoute
+  '/api/v1/orgs/$orgId/bookkeeping/accounts/$number': typeof ApiV1OrgsOrgIdBookkeepingAccountsNumberRoute
+  '/api/v1/orgs/$orgId/bookkeeping/fiscal-years/$yearId': typeof ApiV1OrgsOrgIdBookkeepingFiscalYearsYearIdRoute
+  '/api/v1/orgs/$orgId/bookkeeping/vouchers/$voucherId': typeof ApiV1OrgsOrgIdBookkeepingVouchersVoucherIdRouteWithChildren
   '/api/v1/orgs/$orgId/notifications/$id/read': typeof ApiV1OrgsOrgIdNotificationsIdReadRoute
+  '/api/v1/orgs/$orgId/bookkeeping/accounts': typeof ApiV1OrgsOrgIdBookkeepingAccountsIndexRoute
+  '/api/v1/orgs/$orgId/bookkeeping/fiscal-years': typeof ApiV1OrgsOrgIdBookkeepingFiscalYearsIndexRoute
+  '/api/v1/orgs/$orgId/bookkeeping/vouchers': typeof ApiV1OrgsOrgIdBookkeepingVouchersIndexRoute
+  '/api/v1/orgs/$orgId/bookkeeping/vouchers/$voucherId/documents': typeof ApiV1OrgsOrgIdBookkeepingVouchersVoucherIdDocumentsRoute
+  '/api/v1/orgs/$orgId/bookkeeping/vouchers/$voucherId/post': typeof ApiV1OrgsOrgIdBookkeepingVouchersVoucherIdPostRoute
+  '/api/v1/orgs/$orgId/bookkeeping/vouchers/$voucherId/reverse': typeof ApiV1OrgsOrgIdBookkeepingVouchersVoucherIdReverseRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -583,7 +664,16 @@ export interface FileRoutesById {
   '/api/v1/orgs/$orgId/roles/': typeof ApiV1OrgsOrgIdRolesIndexRoute
   '/api/v1/orgs/$orgId/bank-accounts/$accountId/imports': typeof ApiV1OrgsOrgIdBankAccountsAccountIdImportsRoute
   '/api/v1/orgs/$orgId/bank-accounts/$accountId/transactions': typeof ApiV1OrgsOrgIdBankAccountsAccountIdTransactionsRoute
+  '/api/v1/orgs/$orgId/bookkeeping/accounts/$number': typeof ApiV1OrgsOrgIdBookkeepingAccountsNumberRoute
+  '/api/v1/orgs/$orgId/bookkeeping/fiscal-years/$yearId': typeof ApiV1OrgsOrgIdBookkeepingFiscalYearsYearIdRoute
+  '/api/v1/orgs/$orgId/bookkeeping/vouchers/$voucherId': typeof ApiV1OrgsOrgIdBookkeepingVouchersVoucherIdRouteWithChildren
   '/api/v1/orgs/$orgId/notifications/$id/read': typeof ApiV1OrgsOrgIdNotificationsIdReadRoute
+  '/api/v1/orgs/$orgId/bookkeeping/accounts/': typeof ApiV1OrgsOrgIdBookkeepingAccountsIndexRoute
+  '/api/v1/orgs/$orgId/bookkeeping/fiscal-years/': typeof ApiV1OrgsOrgIdBookkeepingFiscalYearsIndexRoute
+  '/api/v1/orgs/$orgId/bookkeeping/vouchers/': typeof ApiV1OrgsOrgIdBookkeepingVouchersIndexRoute
+  '/api/v1/orgs/$orgId/bookkeeping/vouchers/$voucherId/documents': typeof ApiV1OrgsOrgIdBookkeepingVouchersVoucherIdDocumentsRoute
+  '/api/v1/orgs/$orgId/bookkeeping/vouchers/$voucherId/post': typeof ApiV1OrgsOrgIdBookkeepingVouchersVoucherIdPostRoute
+  '/api/v1/orgs/$orgId/bookkeeping/vouchers/$voucherId/reverse': typeof ApiV1OrgsOrgIdBookkeepingVouchersVoucherIdReverseRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -648,7 +738,16 @@ export interface FileRouteTypes {
     | '/api/v1/orgs/$orgId/roles/'
     | '/api/v1/orgs/$orgId/bank-accounts/$accountId/imports'
     | '/api/v1/orgs/$orgId/bank-accounts/$accountId/transactions'
+    | '/api/v1/orgs/$orgId/bookkeeping/accounts/$number'
+    | '/api/v1/orgs/$orgId/bookkeeping/fiscal-years/$yearId'
+    | '/api/v1/orgs/$orgId/bookkeeping/vouchers/$voucherId'
     | '/api/v1/orgs/$orgId/notifications/$id/read'
+    | '/api/v1/orgs/$orgId/bookkeeping/accounts/'
+    | '/api/v1/orgs/$orgId/bookkeeping/fiscal-years/'
+    | '/api/v1/orgs/$orgId/bookkeeping/vouchers/'
+    | '/api/v1/orgs/$orgId/bookkeeping/vouchers/$voucherId/documents'
+    | '/api/v1/orgs/$orgId/bookkeeping/vouchers/$voucherId/post'
+    | '/api/v1/orgs/$orgId/bookkeeping/vouchers/$voucherId/reverse'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -710,7 +809,16 @@ export interface FileRouteTypes {
     | '/api/v1/orgs/$orgId/roles'
     | '/api/v1/orgs/$orgId/bank-accounts/$accountId/imports'
     | '/api/v1/orgs/$orgId/bank-accounts/$accountId/transactions'
+    | '/api/v1/orgs/$orgId/bookkeeping/accounts/$number'
+    | '/api/v1/orgs/$orgId/bookkeeping/fiscal-years/$yearId'
+    | '/api/v1/orgs/$orgId/bookkeeping/vouchers/$voucherId'
     | '/api/v1/orgs/$orgId/notifications/$id/read'
+    | '/api/v1/orgs/$orgId/bookkeeping/accounts'
+    | '/api/v1/orgs/$orgId/bookkeeping/fiscal-years'
+    | '/api/v1/orgs/$orgId/bookkeeping/vouchers'
+    | '/api/v1/orgs/$orgId/bookkeeping/vouchers/$voucherId/documents'
+    | '/api/v1/orgs/$orgId/bookkeeping/vouchers/$voucherId/post'
+    | '/api/v1/orgs/$orgId/bookkeeping/vouchers/$voucherId/reverse'
   id:
     | '__root__'
     | '/'
@@ -773,7 +881,16 @@ export interface FileRouteTypes {
     | '/api/v1/orgs/$orgId/roles/'
     | '/api/v1/orgs/$orgId/bank-accounts/$accountId/imports'
     | '/api/v1/orgs/$orgId/bank-accounts/$accountId/transactions'
+    | '/api/v1/orgs/$orgId/bookkeeping/accounts/$number'
+    | '/api/v1/orgs/$orgId/bookkeeping/fiscal-years/$yearId'
+    | '/api/v1/orgs/$orgId/bookkeeping/vouchers/$voucherId'
     | '/api/v1/orgs/$orgId/notifications/$id/read'
+    | '/api/v1/orgs/$orgId/bookkeeping/accounts/'
+    | '/api/v1/orgs/$orgId/bookkeeping/fiscal-years/'
+    | '/api/v1/orgs/$orgId/bookkeeping/vouchers/'
+    | '/api/v1/orgs/$orgId/bookkeeping/vouchers/$voucherId/documents'
+    | '/api/v1/orgs/$orgId/bookkeeping/vouchers/$voucherId/post'
+    | '/api/v1/orgs/$orgId/bookkeeping/vouchers/$voucherId/reverse'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -814,7 +931,13 @@ export interface RootRouteChildren {
   ApiV1OrgsOrgIdRolesIndexRoute: typeof ApiV1OrgsOrgIdRolesIndexRoute
   ApiV1OrgsOrgIdBankAccountsAccountIdImportsRoute: typeof ApiV1OrgsOrgIdBankAccountsAccountIdImportsRoute
   ApiV1OrgsOrgIdBankAccountsAccountIdTransactionsRoute: typeof ApiV1OrgsOrgIdBankAccountsAccountIdTransactionsRoute
+  ApiV1OrgsOrgIdBookkeepingAccountsNumberRoute: typeof ApiV1OrgsOrgIdBookkeepingAccountsNumberRoute
+  ApiV1OrgsOrgIdBookkeepingFiscalYearsYearIdRoute: typeof ApiV1OrgsOrgIdBookkeepingFiscalYearsYearIdRoute
+  ApiV1OrgsOrgIdBookkeepingVouchersVoucherIdRoute: typeof ApiV1OrgsOrgIdBookkeepingVouchersVoucherIdRouteWithChildren
   ApiV1OrgsOrgIdNotificationsIdReadRoute: typeof ApiV1OrgsOrgIdNotificationsIdReadRoute
+  ApiV1OrgsOrgIdBookkeepingAccountsIndexRoute: typeof ApiV1OrgsOrgIdBookkeepingAccountsIndexRoute
+  ApiV1OrgsOrgIdBookkeepingFiscalYearsIndexRoute: typeof ApiV1OrgsOrgIdBookkeepingFiscalYearsIndexRoute
+  ApiV1OrgsOrgIdBookkeepingVouchersIndexRoute: typeof ApiV1OrgsOrgIdBookkeepingVouchersIndexRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -1239,12 +1362,75 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiV1OrgsOrgIdBankAccountsAccountIdTransactionsRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/v1/orgs/$orgId/bookkeeping/accounts/': {
+      id: '/api/v1/orgs/$orgId/bookkeeping/accounts/'
+      path: '/api/v1/orgs/$orgId/bookkeeping/accounts'
+      fullPath: '/api/v1/orgs/$orgId/bookkeeping/accounts/'
+      preLoaderRoute: typeof ApiV1OrgsOrgIdBookkeepingAccountsIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/v1/orgs/$orgId/bookkeeping/accounts/$number': {
+      id: '/api/v1/orgs/$orgId/bookkeeping/accounts/$number'
+      path: '/api/v1/orgs/$orgId/bookkeeping/accounts/$number'
+      fullPath: '/api/v1/orgs/$orgId/bookkeeping/accounts/$number'
+      preLoaderRoute: typeof ApiV1OrgsOrgIdBookkeepingAccountsNumberRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/v1/orgs/$orgId/bookkeeping/fiscal-years/': {
+      id: '/api/v1/orgs/$orgId/bookkeeping/fiscal-years/'
+      path: '/api/v1/orgs/$orgId/bookkeeping/fiscal-years'
+      fullPath: '/api/v1/orgs/$orgId/bookkeeping/fiscal-years/'
+      preLoaderRoute: typeof ApiV1OrgsOrgIdBookkeepingFiscalYearsIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/v1/orgs/$orgId/bookkeeping/fiscal-years/$yearId': {
+      id: '/api/v1/orgs/$orgId/bookkeeping/fiscal-years/$yearId'
+      path: '/api/v1/orgs/$orgId/bookkeeping/fiscal-years/$yearId'
+      fullPath: '/api/v1/orgs/$orgId/bookkeeping/fiscal-years/$yearId'
+      preLoaderRoute: typeof ApiV1OrgsOrgIdBookkeepingFiscalYearsYearIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/v1/orgs/$orgId/bookkeeping/vouchers/': {
+      id: '/api/v1/orgs/$orgId/bookkeeping/vouchers/'
+      path: '/api/v1/orgs/$orgId/bookkeeping/vouchers'
+      fullPath: '/api/v1/orgs/$orgId/bookkeeping/vouchers/'
+      preLoaderRoute: typeof ApiV1OrgsOrgIdBookkeepingVouchersIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/v1/orgs/$orgId/bookkeeping/vouchers/$voucherId': {
+      id: '/api/v1/orgs/$orgId/bookkeeping/vouchers/$voucherId'
+      path: '/api/v1/orgs/$orgId/bookkeeping/vouchers/$voucherId'
+      fullPath: '/api/v1/orgs/$orgId/bookkeeping/vouchers/$voucherId'
+      preLoaderRoute: typeof ApiV1OrgsOrgIdBookkeepingVouchersVoucherIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/v1/orgs/$orgId/notifications/$id/read': {
       id: '/api/v1/orgs/$orgId/notifications/$id/read'
       path: '/api/v1/orgs/$orgId/notifications/$id/read'
       fullPath: '/api/v1/orgs/$orgId/notifications/$id/read'
       preLoaderRoute: typeof ApiV1OrgsOrgIdNotificationsIdReadRouteImport
       parentRoute: typeof rootRouteImport
+    }
+    '/api/v1/orgs/$orgId/bookkeeping/vouchers/$voucherId/documents': {
+      id: '/api/v1/orgs/$orgId/bookkeeping/vouchers/$voucherId/documents'
+      path: '/documents'
+      fullPath: '/api/v1/orgs/$orgId/bookkeeping/vouchers/$voucherId/documents'
+      preLoaderRoute: typeof ApiV1OrgsOrgIdBookkeepingVouchersVoucherIdDocumentsRouteImport
+      parentRoute: typeof ApiV1OrgsOrgIdBookkeepingVouchersVoucherIdRoute
+    }
+    '/api/v1/orgs/$orgId/bookkeeping/vouchers/$voucherId/post': {
+      id: '/api/v1/orgs/$orgId/bookkeeping/vouchers/$voucherId/post'
+      path: '/post'
+      fullPath: '/api/v1/orgs/$orgId/bookkeeping/vouchers/$voucherId/post'
+      preLoaderRoute: typeof ApiV1OrgsOrgIdBookkeepingVouchersVoucherIdPostRouteImport
+      parentRoute: typeof ApiV1OrgsOrgIdBookkeepingVouchersVoucherIdRoute
+    }
+    '/api/v1/orgs/$orgId/bookkeeping/vouchers/$voucherId/reverse': {
+      id: '/api/v1/orgs/$orgId/bookkeeping/vouchers/$voucherId/reverse'
+      path: '/reverse'
+      fullPath: '/api/v1/orgs/$orgId/bookkeeping/vouchers/$voucherId/reverse'
+      preLoaderRoute: typeof ApiV1OrgsOrgIdBookkeepingVouchersVoucherIdReverseRouteImport
+      parentRoute: typeof ApiV1OrgsOrgIdBookkeepingVouchersVoucherIdRoute
     }
   }
 }
@@ -1352,6 +1538,27 @@ const ApiV1InvitesTokenRouteChildren: ApiV1InvitesTokenRouteChildren = {
 const ApiV1InvitesTokenRouteWithChildren =
   ApiV1InvitesTokenRoute._addFileChildren(ApiV1InvitesTokenRouteChildren)
 
+interface ApiV1OrgsOrgIdBookkeepingVouchersVoucherIdRouteChildren {
+  ApiV1OrgsOrgIdBookkeepingVouchersVoucherIdDocumentsRoute: typeof ApiV1OrgsOrgIdBookkeepingVouchersVoucherIdDocumentsRoute
+  ApiV1OrgsOrgIdBookkeepingVouchersVoucherIdPostRoute: typeof ApiV1OrgsOrgIdBookkeepingVouchersVoucherIdPostRoute
+  ApiV1OrgsOrgIdBookkeepingVouchersVoucherIdReverseRoute: typeof ApiV1OrgsOrgIdBookkeepingVouchersVoucherIdReverseRoute
+}
+
+const ApiV1OrgsOrgIdBookkeepingVouchersVoucherIdRouteChildren: ApiV1OrgsOrgIdBookkeepingVouchersVoucherIdRouteChildren =
+  {
+    ApiV1OrgsOrgIdBookkeepingVouchersVoucherIdDocumentsRoute:
+      ApiV1OrgsOrgIdBookkeepingVouchersVoucherIdDocumentsRoute,
+    ApiV1OrgsOrgIdBookkeepingVouchersVoucherIdPostRoute:
+      ApiV1OrgsOrgIdBookkeepingVouchersVoucherIdPostRoute,
+    ApiV1OrgsOrgIdBookkeepingVouchersVoucherIdReverseRoute:
+      ApiV1OrgsOrgIdBookkeepingVouchersVoucherIdReverseRoute,
+  }
+
+const ApiV1OrgsOrgIdBookkeepingVouchersVoucherIdRouteWithChildren =
+  ApiV1OrgsOrgIdBookkeepingVouchersVoucherIdRoute._addFileChildren(
+    ApiV1OrgsOrgIdBookkeepingVouchersVoucherIdRouteChildren,
+  )
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AppRouteRoute: AppRouteRouteWithChildren,
@@ -1394,8 +1601,20 @@ const rootRouteChildren: RootRouteChildren = {
     ApiV1OrgsOrgIdBankAccountsAccountIdImportsRoute,
   ApiV1OrgsOrgIdBankAccountsAccountIdTransactionsRoute:
     ApiV1OrgsOrgIdBankAccountsAccountIdTransactionsRoute,
+  ApiV1OrgsOrgIdBookkeepingAccountsNumberRoute:
+    ApiV1OrgsOrgIdBookkeepingAccountsNumberRoute,
+  ApiV1OrgsOrgIdBookkeepingFiscalYearsYearIdRoute:
+    ApiV1OrgsOrgIdBookkeepingFiscalYearsYearIdRoute,
+  ApiV1OrgsOrgIdBookkeepingVouchersVoucherIdRoute:
+    ApiV1OrgsOrgIdBookkeepingVouchersVoucherIdRouteWithChildren,
   ApiV1OrgsOrgIdNotificationsIdReadRoute:
     ApiV1OrgsOrgIdNotificationsIdReadRoute,
+  ApiV1OrgsOrgIdBookkeepingAccountsIndexRoute:
+    ApiV1OrgsOrgIdBookkeepingAccountsIndexRoute,
+  ApiV1OrgsOrgIdBookkeepingFiscalYearsIndexRoute:
+    ApiV1OrgsOrgIdBookkeepingFiscalYearsIndexRoute,
+  ApiV1OrgsOrgIdBookkeepingVouchersIndexRoute:
+    ApiV1OrgsOrgIdBookkeepingVouchersIndexRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

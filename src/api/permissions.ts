@@ -30,6 +30,10 @@ export const permissionText: Record<
     label: 'Hantera bankkonton',
     help: 'Lägga till bankkonton och importera kontoutdrag. Alla medlemmar kan se transaktionerna.',
   },
+  'bookkeeping.manage': {
+    label: 'Hantera bokföringen',
+    help: 'Skapa räkenskapsår, ändra kontoplanen och skapa, bokföra och korrigera verifikationer. Alla medlemmar kan se bokföringen.',
+  },
 }
 
 const errorText: Record<string, string> = {
@@ -42,6 +46,19 @@ const errorText: Record<string, string> = {
   conflict: 'Det finns redan en roll med det namnet.',
   org_number_taken:
     'Organisationsnumret används redan av en annan organisation. Kontakta supporten om det är fel.',
+  period_locked: 'Perioden är låst. Välj ett senare datum.',
+  outside_fiscal_year: 'Datumet ligger utanför verifikationens räkenskapsår.',
+  no_fiscal_year:
+    'Det finns inget räkenskapsår för det datumet. Skapa det först.',
+  fiscal_year_overlap: 'Räkenskapsåret överlappar ett som redan finns.',
+  unknown_account: 'Ett av kontona finns inte eller är inte aktivt.',
+  unbalanced:
+    'Debet och kredit är inte lika stora. Verifikationen kan inte bokföras.',
+  not_draft:
+    'Verifikationen är redan bokförd. Korrigera den med en ny verifikation.',
+  not_reversible:
+    'Verifikationen går inte att korrigera. Den är inte bokförd eller redan korrigerad.',
+  document_linked: 'Underlaget hör redan till en verifikation.',
   bad_request: 'Uppgifterna är ogiltiga. Kontrollera dem och försök igen.',
   too_large: 'Filen är större än 20 MB.',
   unsupported_type: 'Filen måste vara en PDF, JPEG, PNG eller HEIC.',

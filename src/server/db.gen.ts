@@ -25,6 +25,15 @@ export type JsonValue = JsonArray | JsonObject | JsonPrimitive;
 
 export type Timestamp = ColumnType<Date, Date | string, Date | string>;
 
+export interface Accounts {
+  active: Generated<boolean>;
+  bas_version: string | null;
+  name: string;
+  not_k2: Generated<boolean>;
+  number: string;
+  organisation_id: string;
+}
+
 export interface AuditEvents {
   at: Generated<Timestamp>;
   detail: Generated<Json>;
@@ -69,6 +78,31 @@ export interface BankTransactions {
   reference: string | null;
   source: string;
   value_date: Timestamp | null;
+}
+
+export interface BasAccounts {
+  name: string;
+  not_k2: boolean;
+  number: string;
+  version: string;
+}
+
+export interface BasVersions {
+  sha256: string;
+  source: string;
+  version: string;
+}
+
+export interface BookkeepingHistory {
+  app_version: string;
+  at: Generated<Timestamp>;
+  detail: Generated<Json>;
+  event: string;
+  id: Generated<Int8>;
+  organisation_id: string;
+  user_id: string;
+  user_name: string;
+  voucher_id: string | null;
 }
 
 export interface CompanyDetails {
@@ -126,6 +160,16 @@ export interface EmailConfirmations {
   expires_at: Timestamp;
   token_hash: Buffer;
   user_id: string;
+}
+
+export interface FiscalYears {
+  created_at: Generated<Timestamp>;
+  ends_on: Timestamp;
+  id: Generated<string>;
+  locked_through: Timestamp | null;
+  organisation_id: string;
+  retain_until: Generated<Timestamp>;
+  starts_on: Timestamp;
 }
 
 export interface Invites {
@@ -226,15 +270,61 @@ export interface Users {
   pnr_hmac: Buffer | null;
 }
 
+export interface VoucherCounters {
+  fiscal_year_id: string;
+  last_number: Int8;
+  organisation_id: string;
+}
+
+export interface VoucherDocuments {
+  document_id: string;
+  organisation_id: string;
+  voucher_id: string;
+}
+
+export interface VoucherLines {
+  account: string;
+  credit: Generated<Int8>;
+  debit: Generated<Int8>;
+  id: Generated<string>;
+  line_no: number;
+  organisation_id: string;
+  text: string | null;
+  voucher_id: string;
+}
+
+export interface Vouchers {
+  app_version: string | null;
+  created_at: Generated<Timestamp>;
+  created_by: string;
+  created_by_name: string;
+  description: string;
+  fiscal_year_id: string;
+  id: Generated<string>;
+  number: Int8 | null;
+  organisation_id: string;
+  posted_at: Timestamp | null;
+  posted_by: string | null;
+  posted_by_name: string | null;
+  reverses_id: string | null;
+  status: Generated<string>;
+  voucher_date: Timestamp;
+}
+
 export interface DB {
+  accounts: Accounts;
   audit_events: AuditEvents;
   bank_accounts: BankAccounts;
   bank_imports: BankImports;
   bank_transactions: BankTransactions;
+  bas_accounts: BasAccounts;
+  bas_versions: BasVersions;
+  bookkeeping_history: BookkeepingHistory;
   company_details: CompanyDetails;
   customers: Customers;
   documents: Documents;
   email_confirmations: EmailConfirmations;
+  fiscal_years: FiscalYears;
   invites: Invites;
   login_attempts: LoginAttempts;
   memberships: Memberships;
@@ -246,4 +336,8 @@ export interface DB {
   roles: Roles;
   sessions: Sessions;
   users: Users;
+  voucher_counters: VoucherCounters;
+  voucher_documents: VoucherDocuments;
+  voucher_lines: VoucherLines;
+  vouchers: Vouchers;
 }
