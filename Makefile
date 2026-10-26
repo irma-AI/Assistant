@@ -19,6 +19,8 @@ check-repo:
 	guards/docs.sh
 	guards/shortcuts.test.sh
 	guards/shortcuts.sh
+	guards/migration-order.test.sh
+	guards/migration-order.sh
 	guards/stack.sh
 	bash .claude/hooks/test.sh
 	zizmor --offline --no-progress .github/workflows

@@ -202,6 +202,7 @@ Size limits here count characters or words, and are enforced.
 - Tests run against a real PostgreSQL, never a mock: a GitHub Actions service container in CI, and the PostgreSQL preinstalled in the cloud VM during a session. One major version runs everywhere: the VM's (16 today) is pinned in CI and on Dokploy. Each test tries the forbidden write and asserts that the database refuses it.
 - Migrations are plain `.sql` files. Kysely's migrator runs them through one small provider that reads the files, all pending ones in a single transaction under an advisory lock, and that provider has its own test.
 - A guard requires a PR that adds a migration to change a test.
+- `guards/migration-order.sh` requires every migration a PR adds to be numbered above all on `origin/main`, with no two added sharing a number; `ci` runs it on PRs and in the merge queue.
 - Every migration works with the previous release's code (expand, then contract), so a rollback can run on the newer schema: an image whose database is ahead of it logs `migrations_ahead` and serves. A release that breaks the rule also breaks its own rollback; revisit at the first dropped or renamed column.
 
 **Why.**
