@@ -1,0 +1,6 @@
+[
+  {"criterion": "docs/observability.md states each decision above", "passes": true},
+  {"criterion": "Every alert rule example in docs/observability.md carries Owner, Name, Environment, Severity and Message", "passes": true},
+  {"criterion": "docs/privacy/records.md says 14 days without \"proposed\", and names VictoriaLogs and the client-error lines", "passes": true},
+  {"criterion": "The four follow-up issues exist in Backlog, each with acceptance criteria", "passes": true}
+]
