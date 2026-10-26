@@ -65,6 +65,10 @@ const errorText: Record<string, string> = {
   unknown_format:
     'Filen känns inte igen. Använd en camt.053-fil (XML) eller en CSV-export från Handelsbanken, SEB, Swedbank, Nordea eller Lunar.',
   bad_row: 'En rad i filen går inte att läsa. Inget har importerats.',
+  sum_exceeds:
+    'Beloppen blir större än kvittot eller betalningen. Minska det som kopplas.',
+  receipt_incomplete: 'Fyll i kvittots belopp först.',
+  already_decided: 'Förslaget är redan hanterat. Ladda om sidan.',
   demo_session: 'Det här går inte i demoläget.',
   mandatory: 'Den här aviseringen går inte att stänga av.',
   too_many: 'Vi har nyss skickat en länk. Vänta en minut och försök igen.',

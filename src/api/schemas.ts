@@ -188,3 +188,47 @@ export const receiptVerdict = z.object({
   verdict: z.enum(['confirmed', 'rejected']),
 })
 export const receiptSettings = z.object({ suggestions: z.boolean() })
+
+export const receiptMatch = z.object({
+  id: z.string(),
+  status: z.enum(['suggested', 'confirmed']),
+  confidence: z.number().nullable(),
+  reason: z.string().nullable(),
+  covers_ore: z.number(),
+  transaction: z.object({
+    id: z.string(),
+    amount_ore: z.number(),
+    booking_date: z.string(),
+    counterparty: z.string().nullable(),
+  }),
+})
+export const receiptList = z.array(
+  z.object({
+    id: z.string(),
+    document_id: z.string(),
+    name: z.string(),
+    supplier: z.string().nullable(),
+    amount_ore: z.number().nullable(),
+    receipt_date: z.string().nullable(),
+    reference: z.string().nullable(),
+    giro: z.string().nullable(),
+    source: z.string(),
+    mail_context: z.string().nullable(),
+    matches: z.array(receiptMatch),
+    suggested_account: z
+      .object({ number: z.string(), name: z.string() })
+      .nullable(),
+  }),
+)
+export const unmatchedList = z.array(
+  z.object({
+    id: z.string(),
+    amount_ore: z.number(),
+    booking_date: z.string(),
+    counterparty: z.string().nullable(),
+  }),
+)
+export const receiptSettingsView = z.object({
+  suggestions: z.boolean(),
+  inbox: z.string().nullable(),
+})

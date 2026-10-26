@@ -29,6 +29,6 @@
  },
  {
   "criterion": "The web has a receipts page: upload, edit fields, suggestions with accept/reject/correct, unmatched transactions, the switch; screenshots at 390 and 1280 px in the PR",
-  "passes": false
+  "passes": true
  }
 ]

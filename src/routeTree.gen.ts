@@ -36,6 +36,7 @@ import { Route as ApiV1MeSessionsRouteImport } from './routes/api/v1/me.sessions
 import { Route as ApiV1NotificationsUnsubscribeRouteImport } from './routes/api/v1/notifications/unsubscribe'
 import { Route as ApiV1OrgsIndexRouteImport } from './routes/api/v1/orgs/index'
 import { Route as AppOrgOrgIdKunderRouteImport } from './routes/app/org/$orgId/kunder'
+import { Route as AppOrgOrgIdKvittonRouteImport } from './routes/app/org/$orgId/kvitton'
 import { Route as AppOrgOrgIdMedlemmarRouteImport } from './routes/app/org/$orgId/medlemmar'
 import { Route as AppOrgOrgIdNotiserRouteImport } from './routes/app/org/$orgId/notiser'
 import { Route as AppOrgOrgIdRollerRouteImport } from './routes/app/org/$orgId/roller'
@@ -220,6 +221,11 @@ const ApiV1OrgsIndexRoute = ApiV1OrgsIndexRouteImport.update({
 const AppOrgOrgIdKunderRoute = AppOrgOrgIdKunderRouteImport.update({
   id: '/org/$orgId/kunder',
   path: '/org/$orgId/kunder',
+  getParentRoute: () => AppRouteRoute,
+} as any)
+const AppOrgOrgIdKvittonRoute = AppOrgOrgIdKvittonRouteImport.update({
+  id: '/org/$orgId/kvitton',
+  path: '/org/$orgId/kvitton',
   getParentRoute: () => AppRouteRoute,
 } as any)
 const AppOrgOrgIdMedlemmarRoute = AppOrgOrgIdMedlemmarRouteImport.update({
@@ -521,6 +527,7 @@ export interface FileRoutesByFullPath {
   '/api/v1/me/sessions': typeof ApiV1MeSessionsRouteWithChildren
   '/api/v1/notifications/unsubscribe': typeof ApiV1NotificationsUnsubscribeRoute
   '/app/org/$orgId/kunder': typeof AppOrgOrgIdKunderRoute
+  '/app/org/$orgId/kvitton': typeof AppOrgOrgIdKvittonRoute
   '/app/org/$orgId/medlemmar': typeof AppOrgOrgIdMedlemmarRoute
   '/app/org/$orgId/notiser': typeof AppOrgOrgIdNotiserRoute
   '/app/org/$orgId/roller': typeof AppOrgOrgIdRollerRoute
@@ -597,6 +604,7 @@ export interface FileRoutesByTo {
   '/api/v1/me/sessions': typeof ApiV1MeSessionsRouteWithChildren
   '/api/v1/notifications/unsubscribe': typeof ApiV1NotificationsUnsubscribeRoute
   '/app/org/$orgId/kunder': typeof AppOrgOrgIdKunderRoute
+  '/app/org/$orgId/kvitton': typeof AppOrgOrgIdKvittonRoute
   '/app/org/$orgId/medlemmar': typeof AppOrgOrgIdMedlemmarRoute
   '/app/org/$orgId/notiser': typeof AppOrgOrgIdNotiserRoute
   '/app/org/$orgId/roller': typeof AppOrgOrgIdRollerRoute
@@ -675,6 +683,7 @@ export interface FileRoutesById {
   '/api/v1/me/sessions': typeof ApiV1MeSessionsRouteWithChildren
   '/api/v1/notifications/unsubscribe': typeof ApiV1NotificationsUnsubscribeRoute
   '/app/org/$orgId/kunder': typeof AppOrgOrgIdKunderRoute
+  '/app/org/$orgId/kvitton': typeof AppOrgOrgIdKvittonRoute
   '/app/org/$orgId/medlemmar': typeof AppOrgOrgIdMedlemmarRoute
   '/app/org/$orgId/notiser': typeof AppOrgOrgIdNotiserRoute
   '/app/org/$orgId/roller': typeof AppOrgOrgIdRollerRoute
@@ -754,6 +763,7 @@ export interface FileRouteTypes {
     | '/api/v1/me/sessions'
     | '/api/v1/notifications/unsubscribe'
     | '/app/org/$orgId/kunder'
+    | '/app/org/$orgId/kvitton'
     | '/app/org/$orgId/medlemmar'
     | '/app/org/$orgId/notiser'
     | '/app/org/$orgId/roller'
@@ -830,6 +840,7 @@ export interface FileRouteTypes {
     | '/api/v1/me/sessions'
     | '/api/v1/notifications/unsubscribe'
     | '/app/org/$orgId/kunder'
+    | '/app/org/$orgId/kvitton'
     | '/app/org/$orgId/medlemmar'
     | '/app/org/$orgId/notiser'
     | '/app/org/$orgId/roller'
@@ -907,6 +918,7 @@ export interface FileRouteTypes {
     | '/api/v1/me/sessions'
     | '/api/v1/notifications/unsubscribe'
     | '/app/org/$orgId/kunder'
+    | '/app/org/$orgId/kvitton'
     | '/app/org/$orgId/medlemmar'
     | '/app/org/$orgId/notiser'
     | '/app/org/$orgId/roller'
@@ -1199,6 +1211,13 @@ declare module '@tanstack/react-router' {
       path: '/org/$orgId/kunder'
       fullPath: '/app/org/$orgId/kunder'
       preLoaderRoute: typeof AppOrgOrgIdKunderRouteImport
+      parentRoute: typeof AppRouteRoute
+    }
+    '/app/org/$orgId/kvitton': {
+      id: '/app/org/$orgId/kvitton'
+      path: '/org/$orgId/kvitton'
+      fullPath: '/app/org/$orgId/kvitton'
+      preLoaderRoute: typeof AppOrgOrgIdKvittonRouteImport
       parentRoute: typeof AppRouteRoute
     }
     '/app/org/$orgId/medlemmar': {
@@ -1552,6 +1571,7 @@ interface AppRouteRouteChildren {
   AppLoginReturnRoute: typeof AppLoginReturnRoute
   AppLoginIndexRoute: typeof AppLoginIndexRoute
   AppOrgOrgIdKunderRoute: typeof AppOrgOrgIdKunderRoute
+  AppOrgOrgIdKvittonRoute: typeof AppOrgOrgIdKvittonRoute
   AppOrgOrgIdMedlemmarRoute: typeof AppOrgOrgIdMedlemmarRoute
   AppOrgOrgIdNotiserRoute: typeof AppOrgOrgIdNotiserRoute
   AppOrgOrgIdRollerRoute: typeof AppOrgOrgIdRollerRoute
@@ -1570,6 +1590,7 @@ const AppRouteRouteChildren: AppRouteRouteChildren = {
   AppLoginReturnRoute: AppLoginReturnRoute,
   AppLoginIndexRoute: AppLoginIndexRoute,
   AppOrgOrgIdKunderRoute: AppOrgOrgIdKunderRoute,
+  AppOrgOrgIdKvittonRoute: AppOrgOrgIdKvittonRoute,
   AppOrgOrgIdMedlemmarRoute: AppOrgOrgIdMedlemmarRoute,
   AppOrgOrgIdNotiserRoute: AppOrgOrgIdNotiserRoute,
   AppOrgOrgIdRollerRoute: AppOrgOrgIdRollerRoute,
