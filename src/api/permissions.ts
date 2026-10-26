@@ -34,6 +34,11 @@ const errorText: Record<string, string> = {
   conflict: 'Det finns redan en roll med det namnet.',
   bad_request: 'Uppgifterna är ogiltiga. Kontrollera dem och försök igen.',
   demo_session: 'Det här går inte i demoläget.',
+  mandatory: 'Den här aviseringen går inte att stänga av.',
+  too_many: 'Vi har nyss skickat en länk. Vänta en minut och försök igen.',
+  email_failed:
+    'Vi kunde inte skicka bekräftelsen just nu. Adressen är sparad, försök igen om en stund.',
+  invalid_link: 'Länken fungerar inte längre. Be om en ny under Inställningar.',
 }
 
 // The server's error code in Swedish; anything unknown gets the generic message.

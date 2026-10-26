@@ -13,8 +13,25 @@ const OrgLinks = ({ id }: { id: string }) => (
   <p>
     <a href={`/app/org/${id}/medlemmar`}>Medlemmar</a>{' '}
     <a href={`/app/org/${id}/roller`}>Roller</a>{' '}
-    <a href={`/app/org/${id}/kunder`}>Kunder</a>
+    <a href={`/app/org/${id}/kunder`}>Kunder</a>{' '}
+    <a href={`/app/org/${id}/notiser`}>Aviseringar</a>
   </p>
+)
+
+const AccountLinks = () => (
+  <>
+    <p>
+      <a href="/app/installningar">Inställningar</a>
+    </p>
+    <p>
+      <a href="/api/v1/me/export" download>
+        Ladda ner mina uppgifter
+      </a>
+    </p>
+    <p>
+      <a href="/app/radera-konto">Radera mitt konto</a>
+    </p>
+  </>
 )
 
 function App() {
@@ -90,14 +107,7 @@ function App() {
         </label>
         <button type="submit">Skapa organisation</button>
       </form>
-      <p>
-        <a href="/api/v1/me/export" download>
-          Ladda ner mina uppgifter
-        </a>
-      </p>
-      <p>
-        <a href="/app/radera-konto">Radera mitt konto</a>
-      </p>
+      <AccountLinks />
     </main>
   )
 }

@@ -3,6 +3,7 @@ import { mkdtempSync, readFileSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import { defineConfig, devices } from '@playwright/test'
+import { smtpPort } from './e2e/mail'
 
 // The browser seam: the production build, driven in WebKit with iPhone profiles,
 // the closest Linux gets to iOS Safari. With PLAYWRIGHT_BASE_URL set, the same tests
@@ -43,6 +44,7 @@ function selfSignedCert() {
 
 export default defineConfig({
   testDir: 'e2e',
+  globalSetup: deployed ? undefined : './e2e/global-setup.ts',
   forbidOnly: true,
   retries: 0,
   use: {
@@ -65,6 +67,8 @@ export default defineConfig({
           PII_HASH_KEY: 'e2e-only-pii-hash-key',
           PUBLIC_URL: 'https://127.0.0.1:3100',
           BANKID_FAKE_PORT: '3101',
+          SMTP_URL: `smtp://127.0.0.1:${String(smtpPort)}`,
+          MAIL_FROM: 'Assistant <noreply@example.test>',
           // Every spec starts from the same few fake IPs, and re-runs share the database.
           BANKID_START_LIMIT: '100000',
           ...selfSignedCert(),

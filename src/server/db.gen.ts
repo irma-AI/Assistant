@@ -23,6 +23,8 @@ export type JsonPrimitive = boolean | number | string | null;
 
 export type JsonValue = JsonArray | JsonObject | JsonPrimitive;
 
+export type PgbossJobState = "active" | "cancelled" | "completed" | "created" | "failed" | "retry";
+
 export type Timestamp = ColumnType<Date, Date | string, Date | string>;
 
 export interface AuditEvents {
@@ -51,6 +53,13 @@ export interface Customers {
   payment_terms_days: number | null;
   updated_at: Generated<Timestamp>;
   vat_number: string | null;
+}
+
+export interface EmailConfirmations {
+  email: string;
+  expires_at: Timestamp;
+  token_hash: Buffer;
+  user_id: string;
 }
 
 export interface Invites {
@@ -86,10 +95,230 @@ export interface Memberships {
   user_id: string;
 }
 
+export interface NotificationDeliveries {
+  attempts: Generated<number>;
+  event_id: string;
+  failed_at: Timestamp | null;
+  last_error: string | null;
+  next_attempt_at: Generated<Timestamp>;
+  organisation_id: string;
+  sent_at: Timestamp | null;
+  user_id: string;
+}
+
+export interface NotificationEvents {
+  created_at: Generated<Timestamp>;
+  id: Generated<string>;
+  organisation_id: string;
+  payload: Generated<Json>;
+  type: string;
+}
+
+export interface NotificationPreferences {
+  email: boolean;
+  type: string;
+  user_id: string;
+}
+
+export interface NotificationReads {
+  event_id: string;
+  organisation_id: string;
+  read_at: Generated<Timestamp>;
+  user_id: string;
+}
+
 export interface Organisations {
   created_at: Generated<Timestamp>;
   id: Generated<string>;
   name: string;
+}
+
+export interface PgbossBam {
+  command: string;
+  completed_on: Timestamp | null;
+  created_on: Generated<Timestamp>;
+  error: string | null;
+  id: Generated<string>;
+  name: string;
+  queue: string | null;
+  started_on: Timestamp | null;
+  status: Generated<string>;
+  table_name: string;
+  version: number;
+}
+
+export interface PgbossInstance {
+  application_name: string | null;
+  config: Generated<Json>;
+  crash_restarts: Generated<number>;
+  crash_restarts_since: Timestamp | null;
+  heartbeat_on: Generated<Timestamp>;
+  heartbeat_seconds: number;
+  host: string;
+  id: string;
+  metrics: Json | null;
+  migrate: boolean;
+  name: string | null;
+  node_version: string;
+  persist_queue_stats: boolean;
+  persist_warnings: boolean;
+  pid: number;
+  pool_idle: number | null;
+  pool_max: number | null;
+  pool_total: number | null;
+  pool_waiting: number | null;
+  schedule: boolean;
+  started_on: Generated<Timestamp>;
+  stopped_on: Timestamp | null;
+  supervise: boolean;
+  version: string;
+  workers: Generated<Json>;
+}
+
+export interface PgbossJob {
+  blocked: Generated<boolean>;
+  blocking: Generated<boolean>;
+  completed_on: Timestamp | null;
+  created_on: Generated<Timestamp>;
+  data: Json | null;
+  dead_letter: string | null;
+  deletion_seconds: Generated<number>;
+  expire_seconds: Generated<number>;
+  group_id: string | null;
+  group_tier: string | null;
+  heartbeat_on: Timestamp | null;
+  heartbeat_seconds: number | null;
+  id: Generated<string>;
+  keep_until: Generated<Timestamp>;
+  name: string;
+  output: Json | null;
+  pending_dependencies: Generated<number>;
+  policy: string | null;
+  priority: Generated<number>;
+  retry_backoff: Generated<boolean>;
+  retry_count: Generated<number>;
+  retry_delay: Generated<number>;
+  retry_delay_max: number | null;
+  retry_limit: Generated<number>;
+  singleton_key: string | null;
+  singleton_on: Timestamp | null;
+  source_created_on: Timestamp | null;
+  source_id: string | null;
+  source_name: string | null;
+  source_output: Json | null;
+  source_retry_count: number | null;
+  source_root_id: string | null;
+  start_after: Generated<Timestamp>;
+  started_on: Timestamp | null;
+  state: Generated<PgbossJobState>;
+  trace_context: Json | null;
+  upsert_by_key: boolean | null;
+}
+
+export interface PgbossJobDependency {
+  child_id: string;
+  child_name: string;
+  parent_id: string;
+  parent_name: string;
+}
+
+export interface PgbossQueue {
+  active_count: Generated<number>;
+  blocked_count: Generated<number>;
+  completed_delta: Generated<number>;
+  created_delta: Generated<number>;
+  created_on: Generated<Timestamp>;
+  dead_letter: string | null;
+  deferred_count: Generated<number>;
+  deletion_seconds: number;
+  delta_on: Timestamp | null;
+  delta_seconds: number | null;
+  expire_seconds: number;
+  failed_count: Generated<number>;
+  failed_delta: Generated<number>;
+  heartbeat_seconds: number | null;
+  maintain_on: Timestamp | null;
+  monitor_claim_on: Timestamp | null;
+  monitor_on: Timestamp | null;
+  name: string;
+  notify: Generated<boolean>;
+  partition: boolean;
+  policy: string;
+  queued_count: Generated<number>;
+  ready_count: Generated<number>;
+  ready_history: Generated<number[]>;
+  ready_oldest_seconds: number | null;
+  retained_count: number | null;
+  retained_on: Timestamp | null;
+  retention_seconds: number;
+  retry_backoff: boolean;
+  retry_delay: number;
+  retry_delay_max: number | null;
+  retry_limit: number;
+  run_bins: number[] | null;
+  singletons_active: string[] | null;
+  table_name: string;
+  total_count: Generated<number>;
+  updated_on: Generated<Timestamp>;
+  wait_bins: number[] | null;
+  warning_queued: Generated<number>;
+}
+
+export interface PgbossQueueStats {
+  active_count: Generated<number>;
+  captured_on: Generated<Timestamp>;
+  completed_delta: number | null;
+  created_delta: number | null;
+  deferred_count: Generated<number>;
+  delta_on: Timestamp | null;
+  delta_seconds: number | null;
+  failed_count: Generated<number>;
+  failed_delta: number | null;
+  id: Generated<string>;
+  name: string;
+  queued_count: Generated<number>;
+  ready_count: Generated<number>;
+  ready_oldest_seconds: number | null;
+  run_bins: number[] | null;
+  total_count: Generated<number>;
+  wait_bins: number[] | null;
+}
+
+export interface PgbossSchedule {
+  created_on: Generated<Timestamp>;
+  cron: string;
+  data: Json | null;
+  key: Generated<string>;
+  kind: Generated<string>;
+  last_job_id: string | null;
+  name: string;
+  options: Json | null;
+  timezone: Generated<string | null>;
+  updated_on: Generated<Timestamp>;
+}
+
+export interface PgbossSubscription {
+  created_on: Generated<Timestamp>;
+  event: string;
+  name: string;
+  updated_on: Generated<Timestamp>;
+}
+
+export interface PgbossVersion {
+  bam_on: Timestamp | null;
+  cron_on: Timestamp | null;
+  flow_on: Timestamp | null;
+  monitor_backoff_on: Timestamp | null;
+  reindex_on: Timestamp | null;
+  version: number;
+}
+
+export interface PgbossWarning {
+  created_on: Generated<Timestamp>;
+  data: Json | null;
+  id: Generated<string>;
+  message: string;
+  type: string;
 }
 
 export interface Roles {
@@ -112,6 +341,8 @@ export interface Sessions {
 
 export interface Users {
   created_at: Generated<Timestamp>;
+  email: string | null;
+  email_verified_at: Timestamp | null;
   id: Generated<string>;
   name: string;
   pnr_hmac: Buffer | null;
@@ -120,10 +351,25 @@ export interface Users {
 export interface DB {
   audit_events: AuditEvents;
   customers: Customers;
+  email_confirmations: EmailConfirmations;
   invites: Invites;
   login_attempts: LoginAttempts;
   memberships: Memberships;
+  notification_deliveries: NotificationDeliveries;
+  notification_events: NotificationEvents;
+  notification_preferences: NotificationPreferences;
+  notification_reads: NotificationReads;
   organisations: Organisations;
+  "pgboss.bam": PgbossBam;
+  "pgboss.instance": PgbossInstance;
+  "pgboss.job": PgbossJob;
+  "pgboss.job_dependency": PgbossJobDependency;
+  "pgboss.queue": PgbossQueue;
+  "pgboss.queue_stats": PgbossQueueStats;
+  "pgboss.schedule": PgbossSchedule;
+  "pgboss.subscription": PgbossSubscription;
+  "pgboss.version": PgbossVersion;
+  "pgboss.warning": PgbossWarning;
   roles: Roles;
   sessions: Sessions;
   users: Users;

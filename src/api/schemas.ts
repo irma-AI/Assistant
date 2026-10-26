@@ -126,3 +126,30 @@ export const importResult = z.object({
   errors: z.array(z.object({ row: z.number(), fields: z.array(z.string()) })),
   saved: z.boolean(),
 })
+
+export const notices = z.array(
+  z.object({
+    id: z.string(),
+    title: z.string(),
+    body: z.string(),
+    created_at: z.string(),
+    read: z.boolean(),
+  }),
+)
+export const noticePreferences = z.array(
+  z.object({
+    type: z.string(),
+    label: z.string(),
+    mandatory: z.boolean(),
+    email: z.boolean(),
+  }),
+)
+export const preferenceChange = z.object({ email: z.boolean() })
+export const emailAddress = z.object({
+  email: z.string().nullable(),
+  verified: z.boolean(),
+})
+export const newEmail = z.object({
+  email: z.string().trim().max(254).pipe(z.email()),
+})
+export const emailToken = z.object({ token: z.string().max(100) })

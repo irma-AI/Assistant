@@ -1,7 +1,22 @@
 [
-  {"criterion": "A per-organisation event table records type, recipients, payload, read state and delivery attempts", "passes": false},
-  {"criterion": "A member sees in-app notices only for event types whose permission they hold, and can mark them read", "passes": false},
-  {"criterion": "Per-user preferences choose channels per event type; in-app is always on and mandatory event types can't be turned off", "passes": false},
-  {"criterion": "Email delivery runs as a retried background job over HostUp SMTP, with an unsubscribe link in every non-mandatory email", "passes": false},
-  {"criterion": "Swedish texts follow DESIGN.md's Trust section", "passes": false}
+  {
+    "criterion": "A per-organisation event table records type, recipients, payload, read state and delivery attempts",
+    "passes": true
+  },
+  {
+    "criterion": "A member sees in-app notices only for event types whose permission they hold, and can mark them read",
+    "passes": true
+  },
+  {
+    "criterion": "Per-user preferences choose channels per event type; in-app is always on and mandatory event types can't be turned off",
+    "passes": true
+  },
+  {
+    "criterion": "Email delivery runs as a retried background job over HostUp SMTP, with an unsubscribe link in every non-mandatory email",
+    "passes": true
+  },
+  {
+    "criterion": "Swedish texts follow DESIGN.md's Trust section",
+    "passes": true
+  }
 ]
