@@ -53,6 +53,19 @@ export interface Customers {
   vat_number: string | null;
 }
 
+export interface Documents {
+  content_type: string;
+  created_at: Generated<Timestamp>;
+  created_by: string;
+  id: Generated<string>;
+  name: string;
+  organisation_id: string;
+  retain_until: Timestamp | null;
+  sha256: string;
+  size_bytes: number;
+  storage_key: string;
+}
+
 export interface Invites {
   created_at: Generated<Timestamp>;
   created_by: string;
@@ -120,6 +133,7 @@ export interface Users {
 export interface DB {
   audit_events: AuditEvents;
   customers: Customers;
+  documents: Documents;
   invites: Invites;
   login_attempts: LoginAttempts;
   memberships: Memberships;

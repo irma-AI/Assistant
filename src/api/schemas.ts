@@ -9,6 +9,7 @@ export const permission = z.enum([
   'members.manage',
   'roles.manage',
   'customers.manage',
+  'documents.manage',
 ])
 
 export const newOrganisation = z.object({
