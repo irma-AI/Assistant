@@ -4,6 +4,8 @@ export class ApiError extends Error {
   constructor(
     readonly status: number,
     message: string,
+    // The x-request-id of the failed call, for the error screen.
+    readonly requestId?: string,
   ) {
     super(message)
   }
@@ -18,6 +20,7 @@ export async function getMe(token: string, baseUrl = '') {
     throw new ApiError(
       response.status,
       errorBody.parse(await response.json()).error,
+      response.headers.get('x-request-id') ?? undefined,
     )
   return me.parse(await response.json())
 }

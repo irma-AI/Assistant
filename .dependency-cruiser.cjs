@@ -7,7 +7,10 @@ module.exports = {
       comment:
         'Only src/server/, src/routes/api/ and scripts/ may import *.server.ts. Fix: add an endpoint under src/routes/api/v1/ and call it through src/api/.',
       severity: 'error',
-      from: { pathNot: '^(src/server/|src/routes/api/|scripts/)' },
+      // src/start.ts is the server's entry point: it wraps every request in the log context.
+      from: {
+        pathNot: '^(src/server/|src/routes/api/|scripts/|src/start\\.ts$)',
+      },
       to: { path: '\\.server\\.ts$' },
     },
     {
@@ -15,7 +18,10 @@ module.exports = {
       comment:
         'Only src/server/ and src/routes/api/ import src/server/. Fix: add an endpoint under src/routes/api/v1/ and call it through src/api/.',
       severity: 'error',
-      from: { path: '^src/', pathNot: '^src/(server|routes/api)/' },
+      from: {
+        path: '^src/',
+        pathNot: '^src/(server/|routes/api/|start\\.ts$)',
+      },
       to: { path: '^src/server/' },
     },
     {

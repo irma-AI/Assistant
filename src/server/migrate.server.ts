@@ -4,6 +4,7 @@ import { sql } from 'kysely'
 import { Migrator } from 'kysely/migration'
 import type { Kysely } from 'kysely'
 import type { Migration, MigrationProvider } from 'kysely/migration'
+import { log } from './log.server.ts'
 
 // Plain .sql files, applied in name order. Kysely's migrator runs every pending one
 // in a single transaction under an advisory lock, so a failure applies none of them.
@@ -44,7 +45,10 @@ export async function migrate<T>(db: Kysely<T>, dir = 'migrations') {
     .map((r) => r.name)
     .filter((n) => !known.some((m) => m.name === n))
   if (ahead.length && known.every((m) => m.executedAt)) {
-    console.warn(JSON.stringify({ event: 'migrations_ahead', names: ahead }))
+    log('warn', 'migrations_ahead', {
+      names: ahead,
+      msg: 'Database is ahead of this image: serving on the newer schema',
+    })
     return []
   }
   const { error, results } = await migrator.migrateToLatest()
@@ -52,5 +56,7 @@ export async function migrate<T>(db: Kysely<T>, dir = 'migrations') {
     throw error instanceof Error
       ? error
       : new Error('migration failed', { cause: error })
-  return (results ?? []).map((r) => r.migrationName)
+  const applied = (results ?? []).map((r) => r.migrationName)
+  log('info', 'migrations', { applied })
+  return applied
 }

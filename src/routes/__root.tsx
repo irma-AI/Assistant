@@ -1,5 +1,7 @@
 import { HeadContent, Scripts, createRootRoute } from '@tanstack/react-router'
 
+import { ApiError } from '#/api/client'
+import { pageRequestId } from '#/api/requestId'
 import appCss from '../styles.css?url'
 
 export const Route = createRootRoute({
@@ -32,6 +34,19 @@ export const Route = createRootRoute({
       </p>
     </main>
   ),
+  errorComponent: ({ error }) => {
+    const id = (error instanceof ApiError && error.requestId) || pageRequestId()
+    return (
+      <main>
+        <h1>Något gick fel</h1>
+        <p>
+          Försök igen. Om felet kommer tillbaka, uppge felkoden{' '}
+          {id ? <code>{id}</code> : null}
+          <a href="/app">Till startsidan</a>
+        </p>
+      </main>
+    )
+  },
   shellComponent: RootDocument,
 })
 

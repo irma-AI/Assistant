@@ -4,7 +4,7 @@ How the app logs, what is measured from the logs and how an alert reaches its ow
 
 ## Where logs go
 
-Vector ships the stdout and stderr of the app and database containers to VictoriaLogs (Dokploy compose `logs`). Logs are kept 14 days (revisit: first customer, or a bug that needed older logs) and grouped by the `service` stream field. Today the stream field `service` is the container name (`assistant-u5wrvv` for the app); the examples below write `app` for it, and the log-helper issue makes the two agree. People read them in the VictoriaLogs UI behind Pocket ID; agents use a read-only user. LogsQL examples are in `docs/agents/logs.md`.
+Vector ships the stdout and stderr of the app and database containers to VictoriaLogs (Dokploy compose `logs`). Logs are kept 14 days (revisit: first customer, or a bug that needed older logs) and grouped by the `service` stream field. The stream field `service` is the container name (`assistant-u5wrvv` for the app) and the app's own `service` field is its `SERVICE_NAME` environment variable (default `app`), so the deployment sets `SERVICE_NAME` to the container name; the examples below write `app` for it. People read them in the VictoriaLogs UI behind Pocket ID; agents use a read-only user. LogsQL examples are in `docs/agents/logs.md`.
 
 Traefik's access log stays off: the app's own summary line covers traffic without IP addresses (GDPR data minimisation).
 

@@ -23,6 +23,7 @@ import {
   qrStep,
   remainingSql,
 } from './login.order.server'
+import { log, note } from './log.server'
 import { hashNetwork, hashPnr } from './pii.server'
 import {
   cookieName,
@@ -63,14 +64,12 @@ export async function start(request: Request, db: Kysely<DB> = getDb()) {
   const ip = clientIp(request)
   if (!body.success || !ip) return respond({ error: 'bad_request' }, [], 400)
   if (await tooManyStarts(db, ip)) {
-    console.warn(
-      JSON.stringify({
-        event: 'rate_limited',
-        status: 429,
-        route: 'bankid_start',
-        key: hashNetwork(truncate(ip)),
-      }),
-    )
+    note({ outcome: 'denied' })
+    log('warn', 'rate_limited', {
+      status: 429,
+      limit: 'bankid_start',
+      key: hashNetwork(truncate(ip)),
+    })
     return respond({ error: 'too_many_attempts' }, [], 429)
   }
   await recordAudit(db, { event: 'login_started', sessionKind: 'web', ip })
@@ -233,6 +232,7 @@ export async function pollLogin(request: Request, db: Kysely<DB> = getDb()) {
 export async function cancelLogin(request: Request, db: Kysely<DB> = getDb()) {
   const id = z.uuid().safeParse(cookieValue(request, loginCookie))
   if (id.success) await drop(db, id.data)
+  note({ outcome: 'cancelled', bankid: 'cancelled' })
   return respond(null, [clearLogin])
 }
 
