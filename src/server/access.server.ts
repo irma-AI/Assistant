@@ -2,6 +2,7 @@ import type { Kysely } from 'kysely'
 import { recordAudit } from './audit.server'
 import type { AuditEvent } from './audit.server'
 import type { DB } from './db.gen'
+import { log, note } from './log.server'
 
 // The one list of permissions. Code checks these, never role names.
 export const permissions = [
@@ -43,6 +44,7 @@ export const roleColumns = [
 
 // No cache: read on every request so a role change takes effect at once.
 export async function access(db: Kysely<DB>, userId: string, orgId: string) {
+  note({ org_id: orgId })
   const role = await db
     .selectFrom('memberships')
     .innerJoin('roles', 'roles.id', 'memberships.role_id')
@@ -63,7 +65,13 @@ export async function require(
   permission: Permission,
 ) {
   const a = await access(db, userId, orgId)
-  if (!a.permissions.includes(permission)) throw new HttpError(403, 'forbidden')
+  const allowed = a.permissions.includes(permission)
+  log('info', 'permission_decision', {
+    org_id: orgId,
+    permission,
+    outcome: allowed ? 'allowed' : 'denied',
+  })
+  if (!allowed) throw new HttpError(403, 'forbidden')
   return a
 }
 

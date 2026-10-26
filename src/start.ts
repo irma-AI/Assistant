@@ -2,7 +2,8 @@ import { createMiddleware, createStart } from '@tanstack/react-start'
 import { preflight, withCors } from '#/api/cors'
 import { csrfBlock } from '#/api/csrf'
 import { withNoindex } from '#/api/noindex'
-import { requestLine } from '#/api/requestLog'
+import { inRequest } from '#/server/log.server'
+import { routePattern } from './routePattern'
 
 const cors = createMiddleware().server(async ({ next, request }) => {
   const { pathname } = new URL(request.url)
@@ -19,17 +20,11 @@ const cors = createMiddleware().server(async ({ next, request }) => {
   return { ...result, response: withCors(request, result.response) }
 })
 
-const requestLog = createMiddleware().server(async ({ next, request }) => {
-  if (!new URL(request.url).pathname.startsWith('/api/')) return next()
-  const started = performance.now()
-  let status = 500
-  try {
-    const result = await next()
-    status = result.response.status
-    return result
-  } finally {
-    console.log(requestLine(request, status, performance.now() - started))
-  }
+// Every request but the deploy's health check gets an id and one summary line.
+const requestLog = createMiddleware().server(({ next, request }) => {
+  const { pathname } = new URL(request.url)
+  if (pathname === '/version') return next()
+  return inRequest(request, routePattern(pathname), next)
 })
 
 export const startInstance = createStart(() => ({

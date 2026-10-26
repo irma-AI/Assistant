@@ -5,6 +5,7 @@ import { randomUUID } from 'node:crypto'
 import { Kysely, PostgresDialect, sql } from 'kysely'
 import pg from 'pg'
 import { afterAll, beforeEach, expect, test, vi } from 'vitest'
+import { linesOf } from './log.fixture'
 import { migrate } from './migrate.server'
 
 // Each test gets a fresh database on the real PostgreSQL that DATABASE_URL points at.
@@ -78,12 +79,13 @@ test('a database ahead of the image (a rollback) starts without migrating', asyn
   })
   await migrate(db, newer)
   const older = await dirWith({ '0001_a.sql': 'create table a (id int);' })
-  const warn = vi.spyOn(console, 'warn').mockImplementation(() => {})
+  const out = vi.spyOn(process.stdout, 'write').mockReturnValue(true)
   expect(await migrate(db, older)).toEqual([])
-  expect(warn).toHaveBeenCalledWith(
-    JSON.stringify({ event: 'migrations_ahead', names: ['0002_b'] }),
-  )
-  warn.mockRestore()
+  const lines = linesOf(out.mock.calls)
+  out.mockRestore()
+  expect(lines).toEqual([
+    expect.objectContaining({ event: 'migrations_ahead', names: ['0002_b'] }),
+  ])
 })
 
 test('a database missing one migration and an image adding another still throws', async () => {

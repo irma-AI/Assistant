@@ -3,6 +3,7 @@ import { request } from 'node:https'
 import { request as httpRequest } from 'node:http'
 import { rootCa } from './bankid-ca.server'
 import { createFakeBankId } from './bankid-fake.server'
+import { log, outsideCall } from '../log.server'
 
 const modes = ['fake', 'test', 'production'] as const
 const hosts = {
@@ -35,9 +36,14 @@ export function checkBankidConfig() {
     throw new Error(
       `BANKID_MODE=production with fake setting ${fake.join(', ')}`,
     )
-  const line = `BankID mode: ${mode}`
-  if (mode === 'fake') console.warn(`${line} (synthetic logins, not verified)`)
-  else console.log(line)
+  log(mode === 'fake' ? 'warn' : 'info', 'startup', {
+    bankid_mode: mode,
+    version: process.env.APP_VERSION ?? 'dev',
+    msg:
+      mode === 'fake'
+        ? 'Started; BankID is fake (synthetic logins, not verified)'
+        : `Started; BankID mode ${mode}`,
+  })
 }
 
 // qrStartSecret never leaves the server; the browser only gets the string for the current second.
@@ -104,13 +110,16 @@ export function tlsOptions(mode: 'test' | 'production') {
   return { pfx: Buffer.from(p12, 'base64'), passphrase, ca: rootCa[mode] }
 }
 
-async function call(path: string, body: object): Promise<unknown> {
+const call = (path: string, body: object) =>
+  outsideCall(`bankid.${path}`, () => send(path, body))
+
+async function send(path: string, body: object): Promise<unknown> {
   const mode = bankidMode()
   const url = new URL(`/rp/v6.0/${path}`, await baseFor(mode))
-  const send = mode === 'fake' ? httpRequest : request
+  const open = mode === 'fake' ? httpRequest : request
   const options = mode === 'fake' ? {} : tlsOptions(mode)
   return new Promise((resolve, reject) => {
-    const req = send(
+    const req = open(
       url,
       {
         ...options,

@@ -17,6 +17,8 @@ import {
   sessionCount,
   useDatabase,
 } from './login.fixture'
+import { linesOf, logEveryEvent } from './log.fixture'
+import { events } from './log.server'
 import {
   cancelLogin,
   deleteStaleLoginAttempts,
@@ -221,7 +223,10 @@ test('a login prints no identity number, name, token or full IP to the logs', as
     .executeTakeFirstOrThrow()
   await cancel(row.order_ref)
   await poll(failing.login, failing.id)
-  await cancelLogin(post({ cookie: failing.login }), db)
+  await logEveryEvent(failing.login)
+  vi.stubEnv('BANKID_START_LIMIT', '1')
+  await start(post({ 'x-forwarded-for': ip }, { sameDevice: false }), db)
+  vi.stubEnv('BANKID_START_LIMIT', undefined)
   ;[...spies, ...writes].forEach((s) => {
     s.mockRestore()
   })
@@ -232,8 +237,19 @@ test('a login prints no identity number, name, token or full IP to the logs', as
     .orderBy('created_at', 'desc')
     .executeTakeFirstOrThrow()
   const output = printed.join('\n')
+  const seen = new Set(
+    printed.flatMap((l) =>
+      l.startsWith('{') ? linesOf([[l]]).map((x) => x.event) : [],
+    ),
+  )
+  // migrations_ahead needs a database ahead of the image; migrate.server.test.ts covers it.
+  for (const event of events.filter((e) => e !== 'migrations_ahead'))
+    expect(seen, event).toContain(event)
   const secrets = [
     ip,
+    'tok3n-SECRET',
+    'q-SECRET',
+    'Test Person',
     user.name,
     login.split('=')[1] ?? '',
     cookieOf(done.response, '__Host-session=')?.split('=')[1] ?? '',
@@ -246,9 +262,7 @@ test('a login prints no identity number, name, token or full IP to the logs', as
 })
 
 test('start answers 429 after 20 starts from one /24, without placing an order, and logs no raw IP', async () => {
-  const warn = vi.spyOn(console, 'warn').mockImplementation(() => {
-    // collected below
-  })
+  const warn = vi.spyOn(process.stdout, 'write').mockReturnValue(true)
   const from = (host: number) =>
     post(
       { 'x-forwarded-for': `198.51.100.${String(host)}` },

@@ -1,4 +1,5 @@
 import { X509Certificate, createHash } from 'node:crypto'
+import { linesOf } from '../log.fixture'
 import { afterEach, expect, test, vi } from 'vitest'
 import { rootCa } from './bankid-ca.server'
 import { fakeCancelIp } from './bankid-fake.server'
@@ -105,13 +106,16 @@ test('user messages are the RFA texts', () => {
 test('BANKID_MODE unset runs in fake and warns at startup (local dev)', () => {
   vi.stubEnv('APP_ENV', undefined)
   vi.stubEnv('BANKID_MODE', undefined)
-  const warn = vi.spyOn(console, 'warn').mockImplementation(() => {
-    // silence the expected warning
-  })
+  const out = vi.spyOn(process.stdout, 'write').mockReturnValue(true)
   checkBankidConfig()
   expect(bankidMode()).toBe('fake')
-  expect(warn).toHaveBeenCalledOnce()
-  warn.mockRestore()
+  expect(out).toHaveBeenCalledOnce()
+  expect(linesOf(out.mock.calls)[0]).toMatchObject({
+    level: 'warn',
+    event: 'startup',
+    bankid_mode: 'fake',
+  })
+  out.mockRestore()
 })
 
 test('production refuses to start with a fake setting', () => {
@@ -138,13 +142,11 @@ test.each([
     checkBankidConfig()
   }).toThrow(/BANKID_MODE/)
   vi.stubEnv('BANKID_MODE', 'fake')
-  const warn = vi.spyOn(console, 'warn').mockImplementation(() => {
-    // silence the expected warning
-  })
+  const out = vi.spyOn(process.stdout, 'write').mockReturnValue(true)
   expect(() => {
     checkBankidConfig()
   }).not.toThrow()
-  warn.mockRestore()
+  out.mockRestore()
 })
 
 // Published at https://cdn.bankid.com/pki/bankid/ (linked from developers.bankid.com).

@@ -3,6 +3,7 @@ import type { Kysely } from 'kysely'
 import type { DB } from './db.gen'
 import { sendMail } from './email.server'
 import { deleteStaleLoginAttempts } from './login.server'
+import { cut, job, log } from './log.server'
 import { deliverEmails } from './notifications.delivery.server'
 import { deleteOldEvents } from './notifications.server'
 
@@ -29,11 +30,6 @@ const jobs: { name: string; cron: string; run: Run }[] = [
   },
 ]
 
-// Failures carry the job id and queue only, never the payload, which may hold personal data.
-const logFailure = (what: string, job: { id: string; name: string }) => {
-  console.error(what, job.name, job.id)
-}
-
 // shortcut: runs inside the app process, move to a worker container when a job slows web requests.
 export async function startJobs(
   db: Kysely<DB>,
@@ -42,12 +38,23 @@ export async function startJobs(
 ) {
   const boss = new PgBoss(connectionString)
   boss.on('error', (e) => {
-    console.error('job queue error', e.message)
+    log('error', 'job', {
+      job: 'queue',
+      outcome: 'failed',
+      msg: 'The job queue reported an error: check the database connection',
+      'error.message': cut(e.message),
+    })
   })
   await boss.start()
   await boss.createQueue(deadLetter)
   await boss.work(deadLetter, async (failed) => {
-    for (const job of failed) logFailure('job in dead-letter queue', job)
+    // Only the queue name: a payload may hold personal data.
+    for (const f of failed)
+      log('error', 'job', {
+        job: f.name,
+        outcome: 'dead_letter',
+        msg: 'A job ran out of retries: read its earlier failed runs',
+      })
   })
   for (const { name, cron, run } of jobs) {
     await boss.createQueue(name, {
@@ -58,14 +65,10 @@ export async function startJobs(
       deadLetter,
     })
     await boss.work(name, async (batch) => {
-      for (const job of batch) {
-        try {
-          await (override[name] ?? run)(db)
-        } catch (e) {
-          logFailure('job failed', job)
-          throw e
-        }
-      }
+      // One run per job in the batch, each idempotent.
+      await job(name, async () => {
+        await Promise.all(batch.map(() => (override[name] ?? run)(db)))
+      })
     })
     await boss.schedule(name, cron)
   }

@@ -6,6 +6,7 @@ import type { errorBody, me, sessions } from '#/api/schemas'
 import { clientIp, recordAudit } from './audit.server'
 import type { DB } from './db.gen'
 import { getDb } from './db.server'
+import { log, note } from './log.server'
 
 type Kind = 'web' | 'app' | 'demo'
 
@@ -73,7 +74,16 @@ export async function authenticateSession(
       sql<Date>`now() - ${idleSeconds} * interval '1 second'`,
     )
     .executeTakeFirst()
-  if (!row) return undefined
+  if (!row) {
+    log('info', 'session_resolved', { outcome: 'invalid' })
+    return undefined
+  }
+  note({ user_id: row.user_id })
+  log('info', 'session_resolved', {
+    outcome: 'ok',
+    user_id: row.user_id,
+    session_kind: row.kind,
+  })
   await conn
     .updateTable('sessions')
     .set({ last_used_at: sql<Date>`now()` })

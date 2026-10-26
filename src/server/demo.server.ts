@@ -92,7 +92,6 @@ export async function ensureDemo(db: Kysely<DB>) {
 // Audits (which counts against the network) and logs the alert line without the submitted username or password.
 async function failedAttempt(db: Kysely<DB>, ip: string) {
   await recordAudit(db, { event: 'login_failure', sessionKind: 'demo', ip })
-  console.warn(JSON.stringify({ event: 'demo_login_failed' }))
   return json({ error: 'unauthorized' }, 401)
 }
 
