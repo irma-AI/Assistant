@@ -1,0 +1,1 @@
+[{"criterion": "The review prompt carries the rule.", "passes": true}, {"criterion": "A dry run of the review on a fixture of #159 yields a P1 for the skipped audit/critique despite the description's explanation; record how it was checked.", "passes": true}, {"criterion": "make check passes.", "passes": false}]

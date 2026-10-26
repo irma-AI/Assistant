@@ -1,4 +1,9 @@
-import { createFileRoute, useNavigate } from '@tanstack/react-router'
+import {
+  Link,
+  createFileRoute,
+  useNavigate,
+  useRouter,
+} from '@tanstack/react-router'
 import { useEffect, useState } from 'react'
 import { takeNext } from '#/ui/storage'
 import { expiredMessage, failedMessage, poll } from './-bankid'
@@ -13,6 +18,7 @@ export const Route = createFileRoute('/app/login/return')({
 // The BankID app sends the browser back here with the nonce from the returnUrl in the fragment.
 function Return() {
   const navigate = useNavigate()
+  const { history } = useRouter()
   const { purpose } = Route.useSearch()
   const [message, setMessage] = useState<string>()
   const [hint, setHint] = useState('')
@@ -37,7 +43,7 @@ function Return() {
                 to: '/app/radera-konto',
                 search: { raderat: true },
               })
-            else location.assign(takeNext())
+            else history.push(takeNext())
           } else
             setMessage(next.status === 'failed' ? next.message : expiredMessage)
         },
@@ -47,7 +53,7 @@ function Return() {
     return () => {
       clearInterval(timer)
     }
-  }, [navigate, purpose])
+  }, [navigate, history, purpose])
 
   return (
     <main>
@@ -55,9 +61,9 @@ function Return() {
       {message ? (
         <>
           <p role="alert">{message}</p>
-          <a className="btn" href="/app/login">
+          <Link className="btn" to="/app/login">
             Försök igen
-          </a>
+          </Link>
         </>
       ) : (
         <p role="status">

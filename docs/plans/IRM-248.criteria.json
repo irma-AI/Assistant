@@ -1,0 +1,5 @@
+[
+  {"criterion": "The review states, per screen, the detector result and the audit scores produced by following audit.md, and the critique produced by following critique.md", "passes": true},
+  {"criterion": "Every finding names its rule and whether it needs the owner", "passes": true},
+  {"criterion": "No file outside docs/plans/ changes; make check passes", "passes": true}
+]

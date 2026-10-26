@@ -84,7 +84,9 @@ function Account() {
           </a>
         </p>
         <p>
-          <a href="/app/radera-konto">Radera mitt konto</a>
+          <Link to="/app/radera-konto" search={{ raderat: undefined }}>
+            Radera mitt konto
+          </Link>
         </p>
       </section>
       <Devices />
@@ -95,6 +97,7 @@ function Account() {
           fetch('/api/v1/logout', { method: 'POST' }).then(
             (response) => {
               setFailed(!response.ok)
+              // A full reload on purpose: it clears everything held in memory.
               if (response.ok) location.assign('/app/login')
             },
             () => {

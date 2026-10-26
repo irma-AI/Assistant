@@ -1,0 +1,5 @@
+[
+  {"criterion": "A Playwright test signs in, then follows each path above and shows the document never reloads", "passes": true},
+  {"criterion": "Logga ut still reloads, and /api/v1/me answers 401 afterwards", "passes": true},
+  {"criterion": "make check passes", "passes": true}
+]

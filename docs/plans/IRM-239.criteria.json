@@ -1,0 +1,5 @@
+[
+  {"criterion": "Guard fixtures: a lower number fails, a duplicate number fails, a higher number passes, an unchanged migrations folder passes.", "passes": true},
+  {"criterion": "The guard runs on PRs and in the merge queue.", "passes": true},
+  {"criterion": "make check passes.", "passes": true}
+]

@@ -4,7 +4,9 @@ import { BankIdPanel } from './login/-BankIdPanel'
 
 // Also the public web address for deleting an account, which Google Play's Data safety form asks for.
 export const Route = createFileRoute('/app/radera-konto')({
-  validateSearch: (search) => ({ raderat: search.raderat === true }),
+  validateSearch: (search) => ({
+    raderat: search.raderat === true ? true : undefined,
+  }),
   component: DeleteAccount,
 })
 

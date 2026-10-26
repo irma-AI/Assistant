@@ -6,5 +6,7 @@ cd "$(dirname "$0")/.."
 pnpm build
 rm -rf .output/native
 cp -r .output/public .output/native
+# Precompressed copies are for the web server; Android rejects x.js and x.js.gz as duplicate resources.
+find .output/native \( -name "*.gz" -o -name "*.br" \) -delete
 cp .output/public/app/index.html .output/native/index.html
 pnpm exec cap sync

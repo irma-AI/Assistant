@@ -1,0 +1,18 @@
+[
+ {
+  "criterion": "DESIGN.md and next-step say what the issue writes (wording tightened, meaning unchanged)",
+  "passes": true
+ },
+ {
+  "criterion": "Proof run on Hem and Kunder of main as the demo account at every DESIGN.md size, 390x844 screenshots in the PR, other sizes listed",
+  "passes": true
+ },
+ {
+  "criterion": "Checks that can't run in the intake environment are named in the PR with the reason",
+  "passes": true
+ },
+ {
+  "criterion": "make check passes",
+  "passes": true
+ }
+]

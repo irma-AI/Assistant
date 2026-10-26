@@ -2,6 +2,7 @@ import { useEffect } from 'react'
 import type { ErrorComponentProps } from '@tanstack/react-router'
 import {
   HeadContent,
+  Link,
   Scripts,
   createRootRoute,
   useRouter,
@@ -39,7 +40,7 @@ export const Route = createRootRoute({
       <h1>Sidan finns inte</h1>
       <p>
         Adressen stämmer inte, eller så har sidan flyttats.{' '}
-        <a href="/app">Till startsidan</a>
+        <Link to="/app">Till startsidan</Link>
       </p>
     </main>
   ),
@@ -59,7 +60,7 @@ function RootError({ error }: ErrorComponentProps) {
       <p>
         Försök igen. Om felet kommer tillbaka, uppge felkoden{' '}
         {id ? <code>{id}</code> : null}
-        <a href="/app">Till startsidan</a>
+        <Link to="/app">Till startsidan</Link>
       </p>
     </main>
   )
