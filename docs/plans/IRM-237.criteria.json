@@ -1,0 +1,1 @@
+[{"criterion":"br/gzip request returns compressed file with content-encoding; plain request gets plain file","passes":true},{"criterion":"release smoke test passes after deploy","passes":false},{"criterion":"make check passes","passes":false}]

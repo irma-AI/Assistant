@@ -10,6 +10,7 @@ const config = defineConfig({
   plugins: [
     nitro({
       rollupConfig: { external: [/^@sentry\//] },
+      compressPublicAssets: true,
       plugins: ['./src/server/startup.server.ts'],
     }),
 
