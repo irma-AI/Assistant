@@ -1,0 +1,18 @@
+[
+  {
+    "criterion": "A Vitest test against the real database shows one summary line per request with every field above, and the x-request-id header equal to its request_id.",
+    "passes": false
+  },
+  {
+    "criterion": "The IRM-100 test in login.server.test.ts covers every new event and finds no name, personnummer, token, raw path or full IP address.",
+    "passes": false
+  },
+  {
+    "criterion": "A divergent path (denied, cancelled) sets a field on the summary line, with no extra line at the branch.",
+    "passes": false
+  },
+  {
+    "criterion": "docs/privacy/records.md still matches what is logged.",
+    "passes": false
+  }
+]
