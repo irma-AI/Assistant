@@ -76,6 +76,16 @@ test('Logga ut ends the session and returns to login', async ({
   expect((await page.request.get('/api/v1/me')).status()).toBe(401)
 })
 
+test('Konto lists the active sessions and marks this device', async ({
+  page,
+}, testInfo) => {
+  await loginTo(page, '/app/konto', testInfo.workerIndex)
+  const devices = page.getByRole('region', { name: 'Inloggade enheter' })
+  await expect(devices.getByText('Den här enheten')).toBeVisible()
+  await expect(devices).toContainText('Inloggad')
+  await expect(devices).toContainText('Senast använd')
+})
+
 test('fonts load from the app, never from Google', async ({
   page,
 }, testInfo) => {

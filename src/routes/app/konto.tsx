@@ -1,7 +1,68 @@
 import { createFileRoute } from '@tanstack/react-router'
 import { useState } from 'react'
+import { sessions } from '#/api/schemas'
+import { call, useList } from './org/$orgId/-call'
 
 export const Route = createFileRoute('/app/konto')({ component: Account })
+
+const kinds: Record<string, string> = {
+  web: 'Webben',
+  app: 'Appen',
+  demo: 'Demokonto',
+}
+const when = (iso: string) =>
+  new Date(iso).toLocaleString('sv-SE', {
+    dateStyle: 'short',
+    timeStyle: 'short',
+  })
+
+function Devices() {
+  const [rows, load] = useList('/api/v1/me/sessions', sessions)
+  const [error, setError] = useState<string | null>(null)
+  if (rows === undefined) return <p>Laddar…</p>
+  async function end(url: string) {
+    setError(await call(url, 'DELETE'))
+    await load()
+  }
+  return (
+    <section className="panel" aria-labelledby="devices">
+      <h2 id="devices">Inloggade enheter</h2>
+      <ul>
+        {rows.map((row) => (
+          <li key={row.id}>
+            {kinds[row.kind] ?? row.kind}
+            {row.current && ' · Den här enheten'}
+            <br />
+            Inloggad {when(row.startedAt)} · Senast använd{' '}
+            {when(row.lastUsedAt)}
+            {!row.current && (
+              <>
+                {' '}
+                <button
+                  type="button"
+                  className="secondary"
+                  onClick={() => void end(`/api/v1/me/sessions/${row.id}`)}
+                >
+                  Avsluta
+                </button>
+              </>
+            )}
+          </li>
+        ))}
+      </ul>
+      {rows.length > 1 && (
+        <button
+          type="button"
+          className="secondary"
+          onClick={() => void end('/api/v1/me/sessions')}
+        >
+          Avsluta alla andra
+        </button>
+      )}
+      {error && <p role="alert">{error}</p>}
+    </section>
+  )
+}
 
 function Account() {
   const [failed, setFailed] = useState(false)
@@ -21,6 +82,7 @@ function Account() {
           <a href="/app/radera-konto">Radera mitt konto</a>
         </p>
       </section>
+      <Devices />
       <button
         type="button"
         className="secondary"
