@@ -23,6 +23,8 @@ export type JsonPrimitive = boolean | number | string | null;
 
 export type JsonValue = JsonArray | JsonObject | JsonPrimitive;
 
+export type Numeric = ColumnType<string, number | string, number | string>;
+
 export type Timestamp = ColumnType<Date, Date | string, Date | string>;
 
 export interface Accounts {
@@ -291,6 +293,40 @@ export interface Organisations {
   name: string;
 }
 
+export interface ReceiptMatches {
+  bank_transaction_id: string;
+  confidence: Numeric | null;
+  covers_ore: Int8;
+  created_at: Generated<Timestamp>;
+  decided_at: Timestamp | null;
+  id: Generated<string>;
+  organisation_id: string;
+  pass: number | null;
+  reason: string | null;
+  receipt_id: string;
+  status: string;
+}
+
+export interface Receipts {
+  amount_ore: Int8 | null;
+  created_at: Generated<Timestamp>;
+  document_id: string;
+  giro: string | null;
+  id: Generated<string>;
+  mail_context: string | null;
+  organisation_id: string;
+  receipt_date: Timestamp | null;
+  reference: string | null;
+  source: string;
+  supplier: string | null;
+}
+
+export interface ReceiptSettings {
+  inbox_code: string;
+  organisation_id: string;
+  suggestions: Generated<boolean>;
+}
+
 export interface Roles {
   id: Generated<string>;
   kind: string;
@@ -307,6 +343,12 @@ export interface Sessions {
   revoked_at: Timestamp | null;
   token_hash: Buffer;
   user_id: string;
+}
+
+export interface SupplierAliases {
+  bank_text: string;
+  organisation_id: string;
+  supplier: string;
 }
 
 export interface Users {
@@ -384,8 +426,12 @@ export interface DB {
   notification_preferences: NotificationPreferences;
   notification_reads: NotificationReads;
   organisations: Organisations;
+  receipt_matches: ReceiptMatches;
+  receipt_settings: ReceiptSettings;
+  receipts: Receipts;
   roles: Roles;
   sessions: Sessions;
+  supplier_aliases: SupplierAliases;
   users: Users;
   voucher_counters: VoucherCounters;
   voucher_documents: VoucherDocuments;

@@ -170,3 +170,67 @@ export const newEmail = z.object({
   email: z.string().trim().max(254).pipe(z.email()),
 })
 export const emailToken = z.object({ token: z.string().max(100) })
+
+const text = (max: number) => z.string().trim().min(1).max(max).nullable()
+export const receiptFields = z
+  .strictObject({
+    supplier: text(200),
+    amount_ore: z.number().int().positive().max(999_999_999_999_999).nullable(),
+    receipt_date: z.iso.date().nullable(),
+    reference: text(50),
+    giro: text(20),
+  })
+  .partial()
+  .refine((f) => Object.keys(f).length > 0)
+export const receiptLink = z.object({
+  transactionId: z.uuid(),
+  coversOre: z.number().int().positive().optional(),
+})
+export const receiptVerdict = z.object({
+  verdict: z.enum(['confirmed', 'rejected']),
+})
+export const receiptSettings = z.object({ suggestions: z.boolean() })
+
+export const receiptMatch = z.object({
+  id: z.string(),
+  status: z.enum(['suggested', 'confirmed']),
+  confidence: z.number().nullable(),
+  reason: z.string().nullable(),
+  covers_ore: z.number(),
+  transaction: z.object({
+    id: z.string(),
+    amount_ore: z.number(),
+    booking_date: z.string(),
+    counterparty: z.string().nullable(),
+  }),
+})
+const account = z.object({ number: z.string(), name: z.string() }).nullable()
+export const receiptList = z.array(
+  z.object({
+    id: z.string(),
+    document_id: z.string(),
+    name: z.string(),
+    supplier: z.string().nullable(),
+    amount_ore: z.number().nullable(),
+    receipt_date: z.string().nullable(),
+    reference: z.string().nullable(),
+    giro: z.string().nullable(),
+    source: z.string(),
+    mail_context: z.string().nullable(),
+    matches: z.array(receiptMatch),
+    suggested_account: account,
+    suggested_vat_account: account,
+  }),
+)
+export const unmatchedList = z.array(
+  z.object({
+    id: z.string(),
+    amount_ore: z.number(),
+    booking_date: z.string(),
+    counterparty: z.string().nullable(),
+  }),
+)
+export const receiptSettingsView = z.object({
+  suggestions: z.boolean(),
+  inbox: z.string().nullable(),
+})

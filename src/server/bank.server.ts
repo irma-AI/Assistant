@@ -4,6 +4,7 @@ import type { Audit } from './access.server'
 import { access, audited, HttpError, require } from './access.server'
 import { dedupKeys, parseStatement } from './bank.parse.server'
 import type { DB } from './db.gen'
+import { suggest } from './receipts.suggest.server'
 import { inOrganisation } from './tenant.server'
 
 export const maxBytes = 10 * 1024 * 1024
@@ -114,6 +115,7 @@ export const importStatement = (
         'created_at',
       ])
       .executeTakeFirstOrThrow()
+    await suggest(trx, orgId)
     await audited(trx, 'bank_statement_imported', base, orgId, {
       account: accountId,
       import: batch.id,

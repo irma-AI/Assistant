@@ -69,6 +69,8 @@ export default defineConfig({
           BANKID_FAKE_PORT: '3101',
           SMTP_URL: `smtp://127.0.0.1:${String(smtpPort)}`,
           MAIL_FROM: 'Assistant <noreply@example.test>',
+          STORAGE_DIR: mkdtempSync(join(tmpdir(), 'e2e-files-')),
+          RECEIPT_MAIL_ADDRESS: 'kvitto@example.test',
           // Every spec starts from the same few fake IPs, and re-runs share the database.
           BANKID_START_LIMIT: '100000',
           ...selfSignedCert(),

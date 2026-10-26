@@ -6,6 +6,7 @@ import { deleteStaleLoginAttempts } from './login.server'
 import { cut, job, log } from './log.server'
 import { deliverEmails } from './notifications.delivery.server'
 import { deleteOldEvents } from './notifications.server'
+import { fetchReceiptMail } from './receipts.mail.server'
 
 const deadLetter = 'dead-letter'
 
@@ -23,6 +24,7 @@ const jobs: { name: string; cron: string; run: Run }[] = [
     cron: '* * * * *',
     run: (db) => deliverEmails(db, sendMail),
   },
+  { name: 'receipt-mail', cron: '*/5 * * * *', run: fetchReceiptMail },
   {
     name: 'notification-sweep',
     cron: '17 3 * * *',
