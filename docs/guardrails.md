@@ -139,7 +139,7 @@ Size limits here count characters or words, and are enforced.
 
 - **Wrong framework.** It fails on `src/pages/`, `app/layout.tsx`, `"use server"`, `getServerSideProps`, imports from `next/`, `react-router-dom` or the non-existent `@tanstack/start`, and `createServerFn` imported from `@tanstack/react-router`. Its fixtures come from TanStack's own list of agent failure modes.
 - **No server functions.** It fails any `createServerFn` in `src/`, with a fix message pointing to `/api/v1`; the pinned TanStack skills still teach server functions, and this guard redirects agents without editing the upstream copies.
-- **API login.** Every `/api/v1` handler requires a session or sits on an explicit public list ([2.8](#28-declared-test-seams-swept)). *Not built yet.*
+- **API login.** Every `/api/v1` handler requires a session or sits on an explicit public list, swept by `src/routes/api/v1/-auth.sweep.test.ts` ([2.8](#28-declared-test-seams-swept)); it is a Vitest test, not a guard.
 - **Secrets in the browser.** It fails on a `process.env` read at module scope and on a secret with a `VITE_` prefix, which Vite ships to the browser ([2.14](#214-permissions-and-network-replace-stop-and-ask)).
 
 **Why.**
@@ -219,7 +219,7 @@ Size limits here count characters or words, and are enforced.
 
 - There are three: API routes and server code tested with Vitest against a real PostgreSQL, pure functions tested on stored sample records, and the browser tested through Playwright. `CLAUDE.md` states them.
 - Tests don't mock the project's own modules, and small local servers that behave like external services, such as an AI model's API, may stand in for them.
-- Sweep tests check every member of a set, so a new member is tested automatically: every `/api/v1` handler requires a session or sits on an explicit public list ([2.3](#23-guard-framework)), and every value of a closed set is handled. Parity tests read both copies of any fact stored in two places and fail if they differ. *Not built yet.*
+- Sweep tests check every member of a set, so a new member is tested automatically: every `/api/v1` handler requires a session or sits on an explicit public list ([2.3](#23-guard-framework); built), and every value of a closed set is handled. Parity tests read both copies of any fact stored in two places and fail if they differ. *Not built yet:* the closed-set and parity sweeps.
 - A Playwright test with two browser contexts shows an edit in one appear in the other without a reload, and a write the database refuses roll back visibly ([2.29](#229-one-write-path-with-live-updates)). *Not built yet.*
 - Fake people come from libraries, not code of our own: [`@faker-js/faker`](https://fakerjs.dev) makes the values, with `faker.internet.exampleEmail()` for addresses at the domains RFC 2606 reserves, Swedish and other locales, phone numbers from a range the national regulator reserves for fiction (`faker.helpers.fromRegExp`), and a fixed seed so every run makes the same people. [kysely-ctl](https://github.com/kysely-org/kysely-ctl)'s seed files in `seeds/` insert them through Kysely, for `make dev`, the tests and the data in screenshots, so real personal data never goes into a fixture or a public PR. Set up: `seeds/people.ts` is the Faker people factory (fixed seed, Swedish locale, personal identity numbers from a committed snapshot of Skatteverket's published test numbers); `seeds/users.ts` inserts the fake users.
 - `guards/synthetic-data.sh` holds that to the first table of people. It fails `make check` when a migration stores people while no file in `seeds/` imports `@faker-js/faker` and uses `exampleEmail`. It reads each migration as SQL, across line breaks, quotes, comments and `DO $$ ... $$` bodies, and counts as people any `name` or `mail` column, the usual words for emails, phones, addresses, personal numbers and birth dates in English, Swedish, German and Dutch, and tables of candidates, users, contacts, respondents and the like. A false hit only means setting up the seeds sooner; a people table that names nothing on the list, or a schema made outside `migrations/`, gets past it.
@@ -249,7 +249,7 @@ Size limits here count characters or words, and are enforced.
 
 **What it is.** A dependency-cruiser config says which layers may import from which, and a guard in `policy` enforces it.
 
-- Server-only code lives in `*.server.ts` files, such as `db.server.ts`, and only `src/server/` and `src/routes/api/` may import them.
+- Server-only code lives in `*.server.ts` files, such as `db.server.ts`, and only `src/server/`, `src/routes/api/` and `scripts/` may import them.
 - Every UI (landing page, `/app`, `src/features/`, `src/components/`, `src/platform/`) reaches the server only through `/api/v1`, whose handlers sit in `src/routes/api/v1/` and call `src/server/`. Server functions are banned.
 - `src/server/` never imports UI code, `src/api/` (the contract and typed client) imports no other app code, and only `src/platform/` imports `@capacitor/*`.
 - TanStack's import protection fails the build when a `*.server.*` file reaches the browser bundle, so the boundary is checked twice before the AI review sees it.

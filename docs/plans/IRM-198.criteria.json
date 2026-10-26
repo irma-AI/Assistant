@@ -1,0 +1,5 @@
+[
+  {"criterion": "Every stale claim found in docs/guardrails.md and docs/agents/logs.md matches the code.", "passes": true},
+  {"criterion": "The unverifiable \"about 45 seconds\" claim is removed.", "passes": true},
+  {"criterion": "make check passes.", "passes": true}
+]
