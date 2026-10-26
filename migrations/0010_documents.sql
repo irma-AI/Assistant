@@ -2,7 +2,7 @@ set local lock_timeout = '1s';
 set local statement_timeout = '5s';
 
 -- Stored files (receipts, invoice PDFs, attachments). The bytes live in file storage under storage_key; this row holds
--- what proves them: the SHA-256 of the original bytes (BFL 7 kap. 1 §: kept as received). A document is a draft until
+-- what proves them (who uploaded it is in audit_events, so deleting an account never meets a document): the SHA-256 of the original bytes (BFL 7 kap. 1 §: kept as received). A document is a draft until
 -- a posted entry links it by setting retain_until (31 December of the seventh year after the fiscal year, BFL 7 kap. 2 §).
 create table documents (
   id uuid primary key default gen_random_uuid(),
@@ -15,7 +15,6 @@ create table documents (
   sha256 text not null check (sha256 ~ '^[0-9a-f]{64}$'),
   storage_key text not null unique,
   retain_until date,
-  created_by uuid not null references users (id) on delete restrict,
   created_at timestamptz not null default now()
 );
 
@@ -42,9 +41,9 @@ begin
   if old.retain_until is not null then
     raise exception 'document % is linked and immutable', old.id using errcode = 'restrict_violation';
   end if;
-  if (new.organisation_id, new.name, new.content_type, new.size_bytes, new.sha256, new.storage_key, new.created_by, new.created_at)
+  if (new.organisation_id, new.name, new.content_type, new.size_bytes, new.sha256, new.storage_key, new.created_at)
     is distinct from
-    (old.organisation_id, old.name, old.content_type, old.size_bytes, old.sha256, old.storage_key, old.created_by, old.created_at) then
+    (old.organisation_id, old.name, old.content_type, old.size_bytes, old.sha256, old.storage_key, old.created_at) then
     raise exception 'document % content is immutable', old.id using errcode = 'restrict_violation';
   end if;
   return new;

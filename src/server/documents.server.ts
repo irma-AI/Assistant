@@ -74,13 +74,12 @@ export const uploadDocument = (
         size_bytes: bytes.length,
         sha256: createHash('sha256').update(bytes).digest('hex'),
         storage_key: `${orgId}/${id}`,
-        created_by: userId,
       })
       .returning(columns)
       .executeTakeFirstOrThrow()
-    // Inside the transaction: if the file can't be written, the row rolls back with it.
-    await storage.put(`${orgId}/${id}`, bytes)
     await audited(trx, 'document_uploaded', base, orgId, { document: id })
+    // Last, inside the transaction: if the file can't be written, the row rolls back with it.
+    await storage.put(`${orgId}/${id}`, bytes)
     return row
   })
 

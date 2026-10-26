@@ -56,7 +56,6 @@ export interface Customers {
 export interface Documents {
   content_type: string;
   created_at: Generated<Timestamp>;
-  created_by: string;
   id: Generated<string>;
   name: string;
   organisation_id: string;
