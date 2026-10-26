@@ -23,9 +23,6 @@ function Notices() {
 
   return (
     <main>
-      <p>
-        <a href="/app">Tillbaka</a>
-      </p>
       <h1>Aviseringar</h1>
       {error && <p role="alert">{error}</p>}
       {list.length === 0 && <p>Inga aviseringar.</p>}

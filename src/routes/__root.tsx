@@ -13,7 +13,7 @@ export const Route = createRootRoute({
         content: 'width=device-width, initial-scale=1',
       },
       {
-        title: 'Assistant',
+        title: 'Redo',
       },
     ],
     links: [
@@ -23,6 +23,15 @@ export const Route = createRootRoute({
       },
     ],
   }),
+  notFoundComponent: () => (
+    <main>
+      <h1>Sidan finns inte</h1>
+      <p>
+        Adressen stämmer inte, eller så har sidan flyttats.{' '}
+        <a href="/app">Till startsidan</a>
+      </p>
+    </main>
+  ),
   shellComponent: RootDocument,
 })
 

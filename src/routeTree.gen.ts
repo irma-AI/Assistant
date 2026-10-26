@@ -18,6 +18,8 @@ import { Route as VillkorRouteImport } from './routes/villkor'
 import { Route as AppIndexRouteImport } from './routes/app/index'
 import { Route as AppBekraftaEpostRouteImport } from './routes/app/bekrafta-epost'
 import { Route as AppInstallningarRouteImport } from './routes/app/installningar'
+import { Route as AppKontoRouteImport } from './routes/app/konto'
+import { Route as AppOrganisationRouteImport } from './routes/app/organisation'
 import { Route as AppRaderaKontoRouteImport } from './routes/app/radera-konto'
 import { Route as ApiV1LogoutRouteImport } from './routes/api/v1/logout'
 import { Route as ApiV1McpRouteImport } from './routes/api/v1/mcp'
@@ -106,6 +108,16 @@ const AppBekraftaEpostRoute = AppBekraftaEpostRouteImport.update({
 const AppInstallningarRoute = AppInstallningarRouteImport.update({
   id: '/installningar',
   path: '/installningar',
+  getParentRoute: () => AppRouteRoute,
+} as any)
+const AppKontoRoute = AppKontoRouteImport.update({
+  id: '/konto',
+  path: '/konto',
+  getParentRoute: () => AppRouteRoute,
+} as any)
+const AppOrganisationRoute = AppOrganisationRouteImport.update({
+  id: '/organisation',
+  path: '/organisation',
   getParentRoute: () => AppRouteRoute,
 } as any)
 const AppRaderaKontoRoute = AppRaderaKontoRouteImport.update({
@@ -348,6 +360,8 @@ export interface FileRoutesByFullPath {
   '/villkor': typeof VillkorRoute
   '/app/bekrafta-epost': typeof AppBekraftaEpostRoute
   '/app/installningar': typeof AppInstallningarRoute
+  '/app/konto': typeof AppKontoRoute
+  '/app/organisation': typeof AppOrganisationRoute
   '/app/radera-konto': typeof AppRaderaKontoRoute
   '/app/': typeof AppIndexRoute
   '/api/v1/logout': typeof ApiV1LogoutRoute
@@ -401,6 +415,8 @@ export interface FileRoutesByTo {
   '/villkor': typeof VillkorRoute
   '/app/bekrafta-epost': typeof AppBekraftaEpostRoute
   '/app/installningar': typeof AppInstallningarRoute
+  '/app/konto': typeof AppKontoRoute
+  '/app/organisation': typeof AppOrganisationRoute
   '/app/radera-konto': typeof AppRaderaKontoRoute
   '/app': typeof AppIndexRoute
   '/api/v1/logout': typeof ApiV1LogoutRoute
@@ -456,6 +472,8 @@ export interface FileRoutesById {
   '/villkor': typeof VillkorRoute
   '/app/bekrafta-epost': typeof AppBekraftaEpostRoute
   '/app/installningar': typeof AppInstallningarRoute
+  '/app/konto': typeof AppKontoRoute
+  '/app/organisation': typeof AppOrganisationRoute
   '/app/radera-konto': typeof AppRaderaKontoRoute
   '/app/': typeof AppIndexRoute
   '/api/v1/logout': typeof ApiV1LogoutRoute
@@ -512,6 +530,8 @@ export interface FileRouteTypes {
     | '/villkor'
     | '/app/bekrafta-epost'
     | '/app/installningar'
+    | '/app/konto'
+    | '/app/organisation'
     | '/app/radera-konto'
     | '/app/'
     | '/api/v1/logout'
@@ -565,6 +585,8 @@ export interface FileRouteTypes {
     | '/villkor'
     | '/app/bekrafta-epost'
     | '/app/installningar'
+    | '/app/konto'
+    | '/app/organisation'
     | '/app/radera-konto'
     | '/app'
     | '/api/v1/logout'
@@ -619,6 +641,8 @@ export interface FileRouteTypes {
     | '/villkor'
     | '/app/bekrafta-epost'
     | '/app/installningar'
+    | '/app/konto'
+    | '/app/organisation'
     | '/app/radera-konto'
     | '/app/'
     | '/api/v1/logout'
@@ -765,6 +789,20 @@ declare module '@tanstack/react-router' {
       path: '/installningar'
       fullPath: '/app/installningar'
       preLoaderRoute: typeof AppInstallningarRouteImport
+      parentRoute: typeof AppRouteRoute
+    }
+    '/app/konto': {
+      id: '/app/konto'
+      path: '/konto'
+      fullPath: '/app/konto'
+      preLoaderRoute: typeof AppKontoRouteImport
+      parentRoute: typeof AppRouteRoute
+    }
+    '/app/organisation': {
+      id: '/app/organisation'
+      path: '/organisation'
+      fullPath: '/app/organisation'
+      preLoaderRoute: typeof AppOrganisationRouteImport
       parentRoute: typeof AppRouteRoute
     }
     '/app/radera-konto': {
@@ -1074,6 +1112,8 @@ declare module '@tanstack/react-router' {
 interface AppRouteRouteChildren {
   AppBekraftaEpostRoute: typeof AppBekraftaEpostRoute
   AppInstallningarRoute: typeof AppInstallningarRoute
+  AppKontoRoute: typeof AppKontoRoute
+  AppOrganisationRoute: typeof AppOrganisationRoute
   AppRaderaKontoRoute: typeof AppRaderaKontoRoute
   AppIndexRoute: typeof AppIndexRoute
   AppInviteTokenRoute: typeof AppInviteTokenRoute
@@ -1089,6 +1129,8 @@ interface AppRouteRouteChildren {
 const AppRouteRouteChildren: AppRouteRouteChildren = {
   AppBekraftaEpostRoute: AppBekraftaEpostRoute,
   AppInstallningarRoute: AppInstallningarRoute,
+  AppKontoRoute: AppKontoRoute,
+  AppOrganisationRoute: AppOrganisationRoute,
   AppRaderaKontoRoute: AppRaderaKontoRoute,
   AppIndexRoute: AppIndexRoute,
   AppInviteTokenRoute: AppInviteTokenRoute,

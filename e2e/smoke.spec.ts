@@ -2,7 +2,7 @@ import { expect, test } from '@playwright/test'
 
 test('the home page renders', async ({ page }) => {
   await page.goto('/')
-  await expect(page.getByRole('heading', { level: 1 })).toHaveText('Assistant')
+  await expect(page.getByRole('heading', { level: 1 })).toHaveText('Redo')
 })
 
 // Locally the server runs as version e2e; after a deploy, APP_VERSION is the deployed commit.
@@ -31,16 +31,19 @@ test('the API answers a cross-origin call from the app origin', async ({
   expect(status).toBe(401)
 })
 
-test('/app renders its placeholder screen in the browser', async ({ page }) => {
+test('/app sends a logged-out visitor to the login screen', async ({
+  page,
+}) => {
   await page.goto('/app')
-  await expect(page.getByRole('heading', { level: 1 })).toHaveText('App')
+  await expect(page).toHaveURL(/\/app\/login$/)
+  await expect(page.getByRole('heading', { level: 1 })).toHaveText('Logga in')
 })
 
 test('/ is server-rendered and /app is a client-only shell', async ({
   request,
 }) => {
-  expect(await (await request.get('/')).text()).toContain('<h1>Assistant</h1>')
-  expect(await (await request.get('/app')).text()).not.toContain('<h1>App</h1>')
+  expect(await (await request.get('/')).text()).toContain('<h1>Redo</h1>')
+  expect(await (await request.get('/app')).text()).not.toContain('<h1>')
 })
 
 // Pages stay out of search engines everywhere but production (locally APP_ENV is unset).

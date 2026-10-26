@@ -1,21 +1,324 @@
+@font-face {
+  font-family: Newsreader;
+  font-weight: 400;
+  font-display: swap;
+  src: url('./fonts/newsreader-400.woff2') format('woff2');
+}
+
+@font-face {
+  font-family: Newsreader;
+  font-weight: 600;
+  font-display: swap;
+  src: url('./fonts/newsreader-600.woff2') format('woff2');
+}
+
+@font-face {
+  font-family: 'Schibsted Grotesk';
+  font-weight: 400;
+  font-display: swap;
+  src: url('./fonts/schibsted-grotesk-400.woff2') format('woff2');
+}
+
+@font-face {
+  font-family: 'Schibsted Grotesk';
+  font-weight: 600;
+  font-display: swap;
+  src: url('./fonts/schibsted-grotesk-600.woff2') format('woff2');
+}
+
+/* Colours from DESIGN.md, Look. The light theme is the default. */
+:root {
+  color-scheme: light dark;
+  --ground: #e9edf2;
+  --ground-glow: none;
+  --panel: #fff;
+  --edge: #d3d9e1;
+  --text: #0b1322;
+  --text-2: #4c5566;
+  --accent-text: #7a4e0e;
+  --button: #0b1322;
+  --button-text: #fff;
+  --serif: Newsreader, Georgia, serif;
+  --sans: 'Schibsted Grotesk', system-ui, sans-serif;
+  /* Controls need 3:1 against the ground. */
+  --control-edge: #6b7686;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --ground: #0b1322;
+    --ground-glow: radial-gradient(
+      ellipse at top right,
+      #1a2a44 0%,
+      transparent 70%
+    );
+    --panel: rgb(255 255 255 / 4%);
+    --edge: #2a3447;
+    --text: #fff;
+    --text-2: rgb(255 255 255 / 72%);
+    --accent-text: #f5d9a8;
+    --button: #f5d9a8;
+    --button-text: #0b1322;
+    --control-edge: #8a96a8;
+  }
+}
+
 * {
   box-sizing: border-box;
 }
 
+/* 17px at the default text size; follows the system text size on Apple platforms. */
+html {
+  font-size: 106.25%;
+  -webkit-text-size-adjust: 100%;
+}
+
+@supports (font: -apple-system-body) {
+  html {
+    font: -apple-system-body;
+  }
+}
+
 body {
   margin: 0;
-  font-family: system-ui, sans-serif;
+  min-height: 100vh;
+  background-color: var(--ground);
+  background-image: var(--ground-glow);
+  background-attachment: fixed;
+  color: var(--text);
+  font-family: var(--sans);
+  font-size: 1rem;
+  line-height: 1.45;
+  font-variant-numeric: tabular-nums;
+  overflow-wrap: anywhere;
+  hyphens: auto;
+  padding: env(safe-area-inset-top) env(safe-area-inset-right) 0
+    env(safe-area-inset-left);
+}
+
+h1,
+h2 {
+  font-family: var(--serif);
+  font-weight: 400;
+  line-height: 1.15;
+}
+
+h1 {
+  font-size: 1.75rem;
+  margin: 0 0 1rem;
+}
+
+h2 {
+  font-size: 1.25rem;
+}
+
+a {
+  color: var(--accent-text);
 }
 
 main {
-  width: min(42rem, calc(100% - 2rem));
-  margin: 4rem auto;
+  width: min(42rem, 100%);
+  margin: 0 auto;
+  padding: 1.5rem 1rem 2rem;
+}
+
+ul {
+  padding: 0;
+  list-style: none;
+}
+
+input,
+select,
+button {
+  font: inherit;
+  font-size: max(1rem, 16px);
+}
+
+input,
+select {
+  display: block;
+  width: 100%;
+  min-height: 48px;
+  margin-top: 0.25rem;
+  padding: 0.5rem 0.75rem;
+  border: 1px solid var(--control-edge);
+  border-radius: 14px;
+  background: transparent;
+  color: var(--text);
+}
+
+input[type='checkbox'] {
+  display: inline-block;
+  width: 1.5rem;
+  min-height: 0;
+  height: 1.5rem;
+  margin-right: 0.5rem;
+}
+
+label {
+  display: block;
+  margin-bottom: 0.75rem;
+}
+
+/* A pill, at least 48px tall; the main button is Cable light. */
+button,
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 48px;
+  padding: 0.5rem 1.5rem;
+  border: 1px solid transparent;
+  border-radius: 999px;
+  background: var(--button);
+  color: var(--button-text);
+  font-weight: 600;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+button.secondary,
+.btn.secondary {
+  background: transparent;
+  border-color: var(--control-edge);
+  color: var(--text);
+}
+
+button:active,
+.btn:active {
+  filter: brightness(0.9);
+}
+
+:focus-visible {
+  outline: 3px solid var(--accent-text);
+  outline-offset: 2px;
+}
+
+.panel {
+  padding: 1rem;
+  margin: 0 0 0.75rem;
+  background: var(--panel);
+  border: 1px solid var(--edge);
+  border-radius: 14px;
+}
+
+.panel h2 {
+  margin-top: 0;
+}
+
+.error {
+  margin: 0.25rem 0 0;
+  color: var(--accent-text);
+}
+
+.muted {
+  color: var(--text-2);
+}
+
+/* An organisation to choose; the chosen one has Cable light on its edge. */
+.org-choice {
+  display: block;
+  width: 100%;
+  height: auto;
+  padding: 1rem;
+  border: 1px solid var(--edge);
+  border-radius: 14px;
+  background: var(--panel);
+  color: var(--text);
+  text-align: left;
+  font-weight: 400;
+}
+
+.org-choice[aria-pressed='true'] {
+  border-color: var(--accent-text);
+}
+
+.company {
+  font-family: var(--serif);
+  font-size: min(2rem, 9vw);
+  line-height: 1.1;
+  overflow-wrap: normal;
+  hyphens: manual;
+  word-break: normal;
+  margin: 0;
+}
+
+/* The shell: a top bar below a tab, the screen, and the tab bar at the bottom. */
+.shell-body {
+  padding-bottom: calc(64px + env(safe-area-inset-bottom));
+}
+
+.topbar {
+  position: sticky;
+  top: 0;
+  display: flex;
+  align-items: center;
+  min-height: 48px;
+  padding: 0 1rem;
+  background: var(--ground);
+  border-bottom: 1px solid var(--edge);
+}
+
+.topbar a {
+  display: inline-flex;
+  align-items: center;
+  min-width: 48px;
+  min-height: 48px;
+  text-decoration: none;
+}
+
+.tabbar {
+  position: fixed;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  padding-bottom: env(safe-area-inset-bottom);
+  background: var(--ground);
+  border-top: 1px solid var(--edge);
+}
+
+/* In px, so the labels keep their size at 200 % text, as on iOS. */
+.tabbar a {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  height: 64px;
+  min-height: 48px;
+  color: var(--text-2);
+  font-size: 12px;
+  line-height: 1.2;
+  text-decoration: none;
+}
+
+.tabbar a[aria-current='page'] {
+  color: var(--accent-text);
+  font-weight: 600;
+}
+
+.tabbar svg {
+  width: 24px;
+  height: 24px;
+  fill: none;
+  stroke: currentcolor;
+  stroke-width: 1.75;
+  stroke-linecap: round;
+  stroke-linejoin: round;
 }
 
 .qr {
   display: block;
   padding: 0;
   border: 0;
+  border-radius: 0;
   background: white;
 }
 

@@ -12,6 +12,7 @@ test('an Ägare adds a business customer, imports a CSV and sees them listed', a
   await page.goto('/app/login')
   await page.getByRole('button', { name: /annan enhet/ }).click()
   await expect(page).toHaveURL(/\/app$/, { timeout: 15_000 })
+  await page.getByRole('link', { name: 'Organisation', exact: true }).click()
   await page.getByLabel('Namn').fill('Kunder AB')
   await page.getByRole('button', { name: 'Skapa organisation' }).click()
   await page.getByRole('link', { name: 'Kunder' }).click()
