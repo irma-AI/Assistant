@@ -13,6 +13,10 @@ const publicHandlers: Record<string, string> = {
   'auth/demo/delete POST': 'demo: deletes the demo account by its own token',
   'invites/$token GET':
     'the invite screen reads the organisation name before login',
+  'notifications/unsubscribe GET':
+    'the link in an email carries a signed proof, and the reader has no session',
+  'notifications/unsubscribe POST':
+    "a mail provider's one-click unsubscribe sends the same signed link",
   'logout POST': 'logging out twice is not an error',
 }
 

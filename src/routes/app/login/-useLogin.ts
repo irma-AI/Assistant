@@ -11,6 +11,7 @@ import {
   startLogin,
 } from './-bankid'
 import type { Purpose } from './-bankid'
+import { takeNext } from '#/ui/storage'
 import { isMobile } from './-isMobile'
 
 type Phase =
@@ -41,7 +42,7 @@ function useDone(
     (startedOnThisDevice: boolean) => {
       if (purpose === 'login') {
         if (loggedIn) loggedIn()
-        else void navigate({ to: '/app' })
+        else location.assign(takeNext())
       } else if (startedOnThisDevice)
         setPhase({ name: 'idle', message: otherTabMessage })
       else void navigate({ to: '/app/radera-konto', search: { raderat: true } })

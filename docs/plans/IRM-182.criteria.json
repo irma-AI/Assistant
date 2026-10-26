@@ -1,0 +1,1 @@
+[{"criterion":"Test passes for a user_id whose last block is 12 digits (pinned)","passes":true},{"criterion":"Check still fails on a cookie, token or full IP","passes":true}]

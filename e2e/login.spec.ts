@@ -105,14 +105,22 @@ test('a cross-site POST with the session cookie is rejected', async ({
 
 test('creates an organisation after logging in and sees it listed', async ({
   page,
-}) => {
+}, testInfo) => {
+  // The fake gives 127.0.0.1 one person, shared by both projects and by re-runs on the same
+  // database, so a fixed name would be listed more than once.
+  const name = `Bolaget ${testInfo.project.name} ${String(Date.now())}`
   await page.goto('/app/login')
   await page.getByRole('button', { name: /annan enhet/ }).click()
   await expect(page).toHaveURL(/\/app$/, { timeout: 15_000 })
-  await page.getByLabel('Namn').fill('Bolaget AB')
+  await page.getByRole('link', { name: 'Organisation', exact: true }).click()
+  await page.getByLabel('Namn').fill(name)
   await page.getByRole('button', { name: 'Skapa organisation' }).click()
-  await expect(page.getByText('Bolaget AB (Ägare)')).toBeVisible()
-  await expect(page.getByRole('note')).toBeVisible()
+  await expect(
+    page.getByRole('listitem').filter({ hasText: name }).getByRole('note'),
+  ).toBeVisible()
+  await expect(
+    page.getByRole('button', { name: new RegExp(`${name}.*Ägare`) }),
+  ).toBeVisible()
 })
 
 test('deletes the account after a fresh BankID confirmation', async ({
@@ -133,6 +141,7 @@ test('deletes the account after a fresh BankID confirmation', async ({
     request.get(`${baseURL ?? ''}/api/v1/me`, { headers: { cookie } })
   expect((await me()).status()).toBe(200)
 
+  await page.getByRole('link', { name: 'Konto', exact: true }).click()
   await page.getByRole('link', { name: 'Radera mitt konto' }).click()
   await expect(page.getByText(/bokföringslagen/)).toBeVisible()
   await page.getByRole('button', { name: /annan enhet/ }).click()
@@ -151,6 +160,7 @@ test('downloads the export as JSON', async ({ page }, testInfo) => {
   await page.goto('/app/login')
   await page.getByRole('button', { name: /annan enhet/ }).click()
   await expect(page).toHaveURL(/\/app$/, { timeout: 15_000 })
+  await page.getByRole('link', { name: 'Konto', exact: true }).click()
   const download = page.waitForEvent('download')
   await page.getByRole('link', { name: 'Ladda ner mina uppgifter' }).click()
   const path = await (await download).path()
@@ -210,6 +220,7 @@ test('an admin invites a second user by link, who logs in and joins', async ({
   await page.goto('/app/login')
   await page.getByRole('button', { name: /annan enhet/ }).click()
   await expect(page).toHaveURL(/\/app$/, { timeout: 15_000 })
+  await page.getByRole('link', { name: 'Organisation', exact: true }).click()
   await page.getByLabel('Namn').fill(`Inbjudan AB ${n}`)
   await page.getByRole('button', { name: 'Skapa organisation' }).click()
   await page.getByRole('button', { name: 'Skapa inbjudningslänk' }).click()
@@ -229,7 +240,12 @@ test('an admin invites a second user by link, who logs in and joins', async ({
   ).toBeVisible()
   await second.getByRole('button', { name: /annan enhet/ }).click()
   await expect(second).toHaveURL(/\/app$/, { timeout: 15_000 })
-  await expect(second.getByText(`Inbjudan AB ${n} (Medlem)`)).toBeVisible()
+  await second.getByRole('link', { name: 'Organisation', exact: true }).click()
+  await expect(
+    second.getByRole('button', {
+      name: new RegExp(`Inbjudan AB ${n}.*Medlem`),
+    }),
+  ).toBeVisible()
 
   // The link is single-use.
   await second.goto(link)
@@ -248,6 +264,7 @@ test('an Ägare creates a role, gives it to a member, who then lacks the control
   await page.goto('/app/login')
   await page.getByRole('button', { name: /annan enhet/ }).click()
   await expect(page).toHaveURL(/\/app$/, { timeout: 15_000 })
+  await page.getByRole('link', { name: 'Organisation', exact: true }).click()
   await page.getByLabel('Namn').fill(`Roller AB ${n}`)
   await page.getByRole('button', { name: 'Skapa organisation' }).click()
   const link = await (async () => {
@@ -283,6 +300,7 @@ test('an Ägare creates a role, gives it to a member, who then lacks the control
   await expect(page.getByLabel(/^Roll för /).last()).toHaveValue(/.+/)
 
   // The member now sees the list without controls.
+  await second.getByRole('link', { name: 'Organisation', exact: true }).click()
   await second.getByRole('link', { name: 'Roller' }).click()
   await expect(second.getByRole('heading', { name: 'Roller' })).toBeVisible()
   await expect(second.getByRole('button', { name: 'Skapa roll' })).toHaveCount(

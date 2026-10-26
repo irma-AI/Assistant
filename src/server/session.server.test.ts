@@ -147,6 +147,8 @@ test('the personal identity number is stored nowhere readable', async () => {
   )
   expect(columns.rows.map((c) => c.column_name)).toEqual([
     'created_at',
+    'email',
+    'email_verified_at',
     'id',
     'name',
     'pnr_hmac',

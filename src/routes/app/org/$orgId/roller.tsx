@@ -52,9 +52,6 @@ function Roles() {
 
   return (
     <main>
-      <p>
-        <a href="/app">Tillbaka</a>
-      </p>
       <h1>Roller</h1>
       {error && editing === null && <p role="alert">{error}</p>}
       <ul>

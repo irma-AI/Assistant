@@ -1,7 +1,10 @@
 import { PgBoss } from 'pg-boss'
 import type { Kysely } from 'kysely'
 import type { DB } from './db.gen'
+import { sendMail } from './email.server'
 import { deleteStaleLoginAttempts } from './login.server'
+import { deliverEmails } from './notifications.delivery.server'
+import { deleteOldEvents } from './notifications.server'
 
 const deadLetter = 'dead-letter'
 
@@ -13,6 +16,16 @@ const jobs: { name: string; cron: string; run: Run }[] = [
     name: 'login-attempt-sweep',
     cron: '*/15 * * * *',
     run: deleteStaleLoginAttempts,
+  },
+  {
+    name: 'notification-email',
+    cron: '* * * * *',
+    run: (db) => deliverEmails(db, sendMail),
+  },
+  {
+    name: 'notification-sweep',
+    cron: '17 3 * * *',
+    run: deleteOldEvents,
   },
 ]
 

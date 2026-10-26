@@ -109,9 +109,6 @@ function Company() {
 
   return (
     <main>
-      <p>
-        <a href="/app">Tillbaka</a>
-      </p>
       <h1>Företagsuppgifter</h1>
       {vat && <p>Momsregistreringsnummer: {vat}</p>}
       {error && <p role="alert">{error}</p>}

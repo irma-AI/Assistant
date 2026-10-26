@@ -16,6 +16,10 @@ import { Route as PersonuppgiftsbitradesavtalRouteImport } from './routes/person
 import { Route as VersionRouteImport } from './routes/version'
 import { Route as VillkorRouteImport } from './routes/villkor'
 import { Route as AppIndexRouteImport } from './routes/app/index'
+import { Route as AppBekraftaEpostRouteImport } from './routes/app/bekrafta-epost'
+import { Route as AppInstallningarRouteImport } from './routes/app/installningar'
+import { Route as AppKontoRouteImport } from './routes/app/konto'
+import { Route as AppOrganisationRouteImport } from './routes/app/organisation'
 import { Route as AppRaderaKontoRouteImport } from './routes/app/radera-konto'
 import { Route as ApiV1LogoutRouteImport } from './routes/api/v1/logout'
 import { Route as ApiV1McpRouteImport } from './routes/api/v1/mcp'
@@ -25,9 +29,14 @@ import { Route as AppLoginIndexRouteImport } from './routes/app/login/index'
 import { Route as AppLoginDemoRouteImport } from './routes/app/login/demo'
 import { Route as AppLoginReturnRouteImport } from './routes/app/login/return'
 import { Route as ApiV1InvitesTokenRouteImport } from './routes/api/v1/invites/$token'
+import { Route as ApiV1MeEmailRouteImport } from './routes/api/v1/me.email'
 import { Route as ApiV1MeExportRouteImport } from './routes/api/v1/me.export'
+import { Route as ApiV1MeNotificationsRouteImport } from './routes/api/v1/me.notifications'
+import { Route as ApiV1NotificationsUnsubscribeRouteImport } from './routes/api/v1/notifications/unsubscribe'
 import { Route as ApiV1OrgsIndexRouteImport } from './routes/api/v1/orgs/index'
+import { Route as AppOrgOrgIdKunderRouteImport } from './routes/app/org/$orgId/kunder'
 import { Route as AppOrgOrgIdMedlemmarRouteImport } from './routes/app/org/$orgId/medlemmar'
+import { Route as AppOrgOrgIdNotiserRouteImport } from './routes/app/org/$orgId/notiser'
 import { Route as AppOrgOrgIdRollerRouteImport } from './routes/app/org/$orgId/roller'
 import { Route as AppOrgOrgIdUppgifterRouteImport } from './routes/app/org/$orgId/uppgifter'
 import { Route as ApiV1AuthBankidCancelRouteImport } from './routes/api/v1/auth/bankid/cancel'
@@ -38,15 +47,27 @@ import { Route as ApiV1AuthBankidStatusRouteImport } from './routes/api/v1/auth/
 import { Route as ApiV1AuthDemoIndexRouteImport } from './routes/api/v1/auth/demo/index'
 import { Route as ApiV1AuthDemoDeleteRouteImport } from './routes/api/v1/auth/demo/delete'
 import { Route as ApiV1InvitesTokenAcceptRouteImport } from './routes/api/v1/invites/$token/accept'
+import { Route as ApiV1MeEmailConfirmRouteImport } from './routes/api/v1/me.email.confirm'
+import { Route as ApiV1MeNotificationsTypeRouteImport } from './routes/api/v1/me.notifications.$type'
 import { Route as ApiV1OrgsOrgIdCompanyRouteImport } from './routes/api/v1/orgs/$orgId/company'
 import { Route as ApiV1OrgsOrgIdMeRouteImport } from './routes/api/v1/orgs/$orgId/me'
+import { Route as ApiV1OrgsOrgIdBankAccountsIndexRouteImport } from './routes/api/v1/orgs/$orgId/bank-accounts/index'
+import { Route as ApiV1OrgsOrgIdCustomersIndexRouteImport } from './routes/api/v1/orgs/$orgId/customers/index'
+import { Route as ApiV1OrgsOrgIdCustomersCustomerIdRouteImport } from './routes/api/v1/orgs/$orgId/customers/$customerId'
+import { Route as ApiV1OrgsOrgIdCustomersImportRouteImport } from './routes/api/v1/orgs/$orgId/customers/import'
+import { Route as ApiV1OrgsOrgIdDocumentsIndexRouteImport } from './routes/api/v1/orgs/$orgId/documents/index'
+import { Route as ApiV1OrgsOrgIdDocumentsDocumentIdRouteImport } from './routes/api/v1/orgs/$orgId/documents/$documentId'
 import { Route as ApiV1OrgsOrgIdInvitesIndexRouteImport } from './routes/api/v1/orgs/$orgId/invites/index'
 import { Route as ApiV1OrgsOrgIdInvitesInviteIdRouteImport } from './routes/api/v1/orgs/$orgId/invites/$inviteId'
 import { Route as ApiV1OrgsOrgIdMembersIndexRouteImport } from './routes/api/v1/orgs/$orgId/members/index'
 import { Route as ApiV1OrgsOrgIdMembersUserIdRouteImport } from './routes/api/v1/orgs/$orgId/members/$userId'
 import { Route as ApiV1OrgsOrgIdMembersMeRouteImport } from './routes/api/v1/orgs/$orgId/members/me'
+import { Route as ApiV1OrgsOrgIdNotificationsIndexRouteImport } from './routes/api/v1/orgs/$orgId/notifications/index'
 import { Route as ApiV1OrgsOrgIdRolesIndexRouteImport } from './routes/api/v1/orgs/$orgId/roles/index'
 import { Route as ApiV1OrgsOrgIdRolesRoleIdRouteImport } from './routes/api/v1/orgs/$orgId/roles/$roleId'
+import { Route as ApiV1OrgsOrgIdBankAccountsAccountIdImportsRouteImport } from './routes/api/v1/orgs/$orgId/bank-accounts/$accountId/imports'
+import { Route as ApiV1OrgsOrgIdBankAccountsAccountIdTransactionsRouteImport } from './routes/api/v1/orgs/$orgId/bank-accounts/$accountId/transactions'
+import { Route as ApiV1OrgsOrgIdNotificationsIdReadRouteImport } from './routes/api/v1/orgs/$orgId/notifications/$id/read'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -82,6 +103,26 @@ const VillkorRoute = VillkorRouteImport.update({
 const AppIndexRoute = AppIndexRouteImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => AppRouteRoute,
+} as any)
+const AppBekraftaEpostRoute = AppBekraftaEpostRouteImport.update({
+  id: '/bekrafta-epost',
+  path: '/bekrafta-epost',
+  getParentRoute: () => AppRouteRoute,
+} as any)
+const AppInstallningarRoute = AppInstallningarRouteImport.update({
+  id: '/installningar',
+  path: '/installningar',
+  getParentRoute: () => AppRouteRoute,
+} as any)
+const AppKontoRoute = AppKontoRouteImport.update({
+  id: '/konto',
+  path: '/konto',
+  getParentRoute: () => AppRouteRoute,
+} as any)
+const AppOrganisationRoute = AppOrganisationRouteImport.update({
+  id: '/organisation',
+  path: '/organisation',
   getParentRoute: () => AppRouteRoute,
 } as any)
 const AppRaderaKontoRoute = AppRaderaKontoRouteImport.update({
@@ -129,19 +170,45 @@ const ApiV1InvitesTokenRoute = ApiV1InvitesTokenRouteImport.update({
   path: '/api/v1/invites/$token',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiV1MeEmailRoute = ApiV1MeEmailRouteImport.update({
+  id: '/email',
+  path: '/email',
+  getParentRoute: () => ApiV1MeRoute,
+} as any)
 const ApiV1MeExportRoute = ApiV1MeExportRouteImport.update({
   id: '/export',
   path: '/export',
   getParentRoute: () => ApiV1MeRoute,
 } as any)
+const ApiV1MeNotificationsRoute = ApiV1MeNotificationsRouteImport.update({
+  id: '/notifications',
+  path: '/notifications',
+  getParentRoute: () => ApiV1MeRoute,
+} as any)
+const ApiV1NotificationsUnsubscribeRoute =
+  ApiV1NotificationsUnsubscribeRouteImport.update({
+    id: '/api/v1/notifications/unsubscribe',
+    path: '/api/v1/notifications/unsubscribe',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 const ApiV1OrgsIndexRoute = ApiV1OrgsIndexRouteImport.update({
   id: '/api/v1/orgs/',
   path: '/api/v1/orgs/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AppOrgOrgIdKunderRoute = AppOrgOrgIdKunderRouteImport.update({
+  id: '/org/$orgId/kunder',
+  path: '/org/$orgId/kunder',
+  getParentRoute: () => AppRouteRoute,
+} as any)
 const AppOrgOrgIdMedlemmarRoute = AppOrgOrgIdMedlemmarRouteImport.update({
   id: '/org/$orgId/medlemmar',
   path: '/org/$orgId/medlemmar',
+  getParentRoute: () => AppRouteRoute,
+} as any)
+const AppOrgOrgIdNotiserRoute = AppOrgOrgIdNotiserRouteImport.update({
+  id: '/org/$orgId/notiser',
+  path: '/org/$orgId/notiser',
   getParentRoute: () => AppRouteRoute,
 } as any)
 const AppOrgOrgIdRollerRoute = AppOrgOrgIdRollerRouteImport.update({
@@ -194,6 +261,17 @@ const ApiV1InvitesTokenAcceptRoute = ApiV1InvitesTokenAcceptRouteImport.update({
   path: '/accept',
   getParentRoute: () => ApiV1InvitesTokenRoute,
 } as any)
+const ApiV1MeEmailConfirmRoute = ApiV1MeEmailConfirmRouteImport.update({
+  id: '/confirm',
+  path: '/confirm',
+  getParentRoute: () => ApiV1MeEmailRoute,
+} as any)
+const ApiV1MeNotificationsTypeRoute =
+  ApiV1MeNotificationsTypeRouteImport.update({
+    id: '/$type',
+    path: '/$type',
+    getParentRoute: () => ApiV1MeNotificationsRoute,
+  } as any)
 const ApiV1OrgsOrgIdCompanyRoute = ApiV1OrgsOrgIdCompanyRouteImport.update({
   id: '/api/v1/orgs/$orgId/company',
   path: '/api/v1/orgs/$orgId/company',
@@ -204,6 +282,42 @@ const ApiV1OrgsOrgIdMeRoute = ApiV1OrgsOrgIdMeRouteImport.update({
   path: '/api/v1/orgs/$orgId/me',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiV1OrgsOrgIdBankAccountsIndexRoute =
+  ApiV1OrgsOrgIdBankAccountsIndexRouteImport.update({
+    id: '/api/v1/orgs/$orgId/bank-accounts/',
+    path: '/api/v1/orgs/$orgId/bank-accounts/',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const ApiV1OrgsOrgIdCustomersIndexRoute =
+  ApiV1OrgsOrgIdCustomersIndexRouteImport.update({
+    id: '/api/v1/orgs/$orgId/customers/',
+    path: '/api/v1/orgs/$orgId/customers/',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const ApiV1OrgsOrgIdCustomersCustomerIdRoute =
+  ApiV1OrgsOrgIdCustomersCustomerIdRouteImport.update({
+    id: '/api/v1/orgs/$orgId/customers/$customerId',
+    path: '/api/v1/orgs/$orgId/customers/$customerId',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const ApiV1OrgsOrgIdCustomersImportRoute =
+  ApiV1OrgsOrgIdCustomersImportRouteImport.update({
+    id: '/api/v1/orgs/$orgId/customers/import',
+    path: '/api/v1/orgs/$orgId/customers/import',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const ApiV1OrgsOrgIdDocumentsIndexRoute =
+  ApiV1OrgsOrgIdDocumentsIndexRouteImport.update({
+    id: '/api/v1/orgs/$orgId/documents/',
+    path: '/api/v1/orgs/$orgId/documents/',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const ApiV1OrgsOrgIdDocumentsDocumentIdRoute =
+  ApiV1OrgsOrgIdDocumentsDocumentIdRouteImport.update({
+    id: '/api/v1/orgs/$orgId/documents/$documentId',
+    path: '/api/v1/orgs/$orgId/documents/$documentId',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 const ApiV1OrgsOrgIdInvitesIndexRoute =
   ApiV1OrgsOrgIdInvitesIndexRouteImport.update({
     id: '/api/v1/orgs/$orgId/invites/',
@@ -233,6 +347,12 @@ const ApiV1OrgsOrgIdMembersMeRoute = ApiV1OrgsOrgIdMembersMeRouteImport.update({
   path: '/api/v1/orgs/$orgId/members/me',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiV1OrgsOrgIdNotificationsIndexRoute =
+  ApiV1OrgsOrgIdNotificationsIndexRouteImport.update({
+    id: '/api/v1/orgs/$orgId/notifications/',
+    path: '/api/v1/orgs/$orgId/notifications/',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 const ApiV1OrgsOrgIdRolesIndexRoute =
   ApiV1OrgsOrgIdRolesIndexRouteImport.update({
     id: '/api/v1/orgs/$orgId/roles/',
@@ -245,6 +365,24 @@ const ApiV1OrgsOrgIdRolesRoleIdRoute =
     path: '/api/v1/orgs/$orgId/roles/$roleId',
     getParentRoute: () => rootRouteImport,
   } as any)
+const ApiV1OrgsOrgIdBankAccountsAccountIdImportsRoute =
+  ApiV1OrgsOrgIdBankAccountsAccountIdImportsRouteImport.update({
+    id: '/api/v1/orgs/$orgId/bank-accounts/$accountId/imports',
+    path: '/api/v1/orgs/$orgId/bank-accounts/$accountId/imports',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const ApiV1OrgsOrgIdBankAccountsAccountIdTransactionsRoute =
+  ApiV1OrgsOrgIdBankAccountsAccountIdTransactionsRouteImport.update({
+    id: '/api/v1/orgs/$orgId/bank-accounts/$accountId/transactions',
+    path: '/api/v1/orgs/$orgId/bank-accounts/$accountId/transactions',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const ApiV1OrgsOrgIdNotificationsIdReadRoute =
+  ApiV1OrgsOrgIdNotificationsIdReadRouteImport.update({
+    id: '/api/v1/orgs/$orgId/notifications/$id/read',
+    path: '/api/v1/orgs/$orgId/notifications/$id/read',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -253,6 +391,10 @@ export interface FileRoutesByFullPath {
   '/personuppgiftsbitradesavtal': typeof PersonuppgiftsbitradesavtalRoute
   '/version': typeof VersionRoute
   '/villkor': typeof VillkorRoute
+  '/app/bekrafta-epost': typeof AppBekraftaEpostRoute
+  '/app/installningar': typeof AppInstallningarRoute
+  '/app/konto': typeof AppKontoRoute
+  '/app/organisation': typeof AppOrganisationRoute
   '/app/radera-konto': typeof AppRaderaKontoRoute
   '/app/': typeof AppIndexRoute
   '/api/v1/logout': typeof ApiV1LogoutRoute
@@ -263,8 +405,13 @@ export interface FileRoutesByFullPath {
   '/app/login/return': typeof AppLoginReturnRoute
   '/app/login/': typeof AppLoginIndexRoute
   '/api/v1/invites/$token': typeof ApiV1InvitesTokenRouteWithChildren
+  '/api/v1/me/email': typeof ApiV1MeEmailRouteWithChildren
   '/api/v1/me/export': typeof ApiV1MeExportRoute
+  '/api/v1/me/notifications': typeof ApiV1MeNotificationsRouteWithChildren
+  '/api/v1/notifications/unsubscribe': typeof ApiV1NotificationsUnsubscribeRoute
+  '/app/org/$orgId/kunder': typeof AppOrgOrgIdKunderRoute
   '/app/org/$orgId/medlemmar': typeof AppOrgOrgIdMedlemmarRoute
+  '/app/org/$orgId/notiser': typeof AppOrgOrgIdNotiserRoute
   '/app/org/$orgId/roller': typeof AppOrgOrgIdRollerRoute
   '/app/org/$orgId/uppgifter': typeof AppOrgOrgIdUppgifterRoute
   '/api/v1/orgs/': typeof ApiV1OrgsIndexRoute
@@ -275,16 +422,28 @@ export interface FileRoutesByFullPath {
   '/api/v1/auth/bankid/status': typeof ApiV1AuthBankidStatusRoute
   '/api/v1/auth/demo/delete': typeof ApiV1AuthDemoDeleteRoute
   '/api/v1/invites/$token/accept': typeof ApiV1InvitesTokenAcceptRoute
+  '/api/v1/me/email/confirm': typeof ApiV1MeEmailConfirmRoute
+  '/api/v1/me/notifications/$type': typeof ApiV1MeNotificationsTypeRoute
   '/api/v1/orgs/$orgId/company': typeof ApiV1OrgsOrgIdCompanyRoute
   '/api/v1/orgs/$orgId/me': typeof ApiV1OrgsOrgIdMeRoute
   '/api/v1/auth/demo/': typeof ApiV1AuthDemoIndexRoute
+  '/api/v1/orgs/$orgId/customers/$customerId': typeof ApiV1OrgsOrgIdCustomersCustomerIdRoute
+  '/api/v1/orgs/$orgId/customers/import': typeof ApiV1OrgsOrgIdCustomersImportRoute
+  '/api/v1/orgs/$orgId/documents/$documentId': typeof ApiV1OrgsOrgIdDocumentsDocumentIdRoute
   '/api/v1/orgs/$orgId/invites/$inviteId': typeof ApiV1OrgsOrgIdInvitesInviteIdRoute
   '/api/v1/orgs/$orgId/members/$userId': typeof ApiV1OrgsOrgIdMembersUserIdRoute
   '/api/v1/orgs/$orgId/members/me': typeof ApiV1OrgsOrgIdMembersMeRoute
   '/api/v1/orgs/$orgId/roles/$roleId': typeof ApiV1OrgsOrgIdRolesRoleIdRoute
+  '/api/v1/orgs/$orgId/bank-accounts/': typeof ApiV1OrgsOrgIdBankAccountsIndexRoute
+  '/api/v1/orgs/$orgId/customers/': typeof ApiV1OrgsOrgIdCustomersIndexRoute
+  '/api/v1/orgs/$orgId/documents/': typeof ApiV1OrgsOrgIdDocumentsIndexRoute
   '/api/v1/orgs/$orgId/invites/': typeof ApiV1OrgsOrgIdInvitesIndexRoute
   '/api/v1/orgs/$orgId/members/': typeof ApiV1OrgsOrgIdMembersIndexRoute
+  '/api/v1/orgs/$orgId/notifications/': typeof ApiV1OrgsOrgIdNotificationsIndexRoute
   '/api/v1/orgs/$orgId/roles/': typeof ApiV1OrgsOrgIdRolesIndexRoute
+  '/api/v1/orgs/$orgId/bank-accounts/$accountId/imports': typeof ApiV1OrgsOrgIdBankAccountsAccountIdImportsRoute
+  '/api/v1/orgs/$orgId/bank-accounts/$accountId/transactions': typeof ApiV1OrgsOrgIdBankAccountsAccountIdTransactionsRoute
+  '/api/v1/orgs/$orgId/notifications/$id/read': typeof ApiV1OrgsOrgIdNotificationsIdReadRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -292,6 +451,10 @@ export interface FileRoutesByTo {
   '/personuppgiftsbitradesavtal': typeof PersonuppgiftsbitradesavtalRoute
   '/version': typeof VersionRoute
   '/villkor': typeof VillkorRoute
+  '/app/bekrafta-epost': typeof AppBekraftaEpostRoute
+  '/app/installningar': typeof AppInstallningarRoute
+  '/app/konto': typeof AppKontoRoute
+  '/app/organisation': typeof AppOrganisationRoute
   '/app/radera-konto': typeof AppRaderaKontoRoute
   '/app': typeof AppIndexRoute
   '/api/v1/logout': typeof ApiV1LogoutRoute
@@ -302,8 +465,13 @@ export interface FileRoutesByTo {
   '/app/login/return': typeof AppLoginReturnRoute
   '/app/login': typeof AppLoginIndexRoute
   '/api/v1/invites/$token': typeof ApiV1InvitesTokenRouteWithChildren
+  '/api/v1/me/email': typeof ApiV1MeEmailRouteWithChildren
   '/api/v1/me/export': typeof ApiV1MeExportRoute
+  '/api/v1/me/notifications': typeof ApiV1MeNotificationsRouteWithChildren
+  '/api/v1/notifications/unsubscribe': typeof ApiV1NotificationsUnsubscribeRoute
+  '/app/org/$orgId/kunder': typeof AppOrgOrgIdKunderRoute
   '/app/org/$orgId/medlemmar': typeof AppOrgOrgIdMedlemmarRoute
+  '/app/org/$orgId/notiser': typeof AppOrgOrgIdNotiserRoute
   '/app/org/$orgId/roller': typeof AppOrgOrgIdRollerRoute
   '/app/org/$orgId/uppgifter': typeof AppOrgOrgIdUppgifterRoute
   '/api/v1/orgs': typeof ApiV1OrgsIndexRoute
@@ -314,16 +482,28 @@ export interface FileRoutesByTo {
   '/api/v1/auth/bankid/status': typeof ApiV1AuthBankidStatusRoute
   '/api/v1/auth/demo/delete': typeof ApiV1AuthDemoDeleteRoute
   '/api/v1/invites/$token/accept': typeof ApiV1InvitesTokenAcceptRoute
+  '/api/v1/me/email/confirm': typeof ApiV1MeEmailConfirmRoute
+  '/api/v1/me/notifications/$type': typeof ApiV1MeNotificationsTypeRoute
   '/api/v1/orgs/$orgId/company': typeof ApiV1OrgsOrgIdCompanyRoute
   '/api/v1/orgs/$orgId/me': typeof ApiV1OrgsOrgIdMeRoute
   '/api/v1/auth/demo': typeof ApiV1AuthDemoIndexRoute
+  '/api/v1/orgs/$orgId/customers/$customerId': typeof ApiV1OrgsOrgIdCustomersCustomerIdRoute
+  '/api/v1/orgs/$orgId/customers/import': typeof ApiV1OrgsOrgIdCustomersImportRoute
+  '/api/v1/orgs/$orgId/documents/$documentId': typeof ApiV1OrgsOrgIdDocumentsDocumentIdRoute
   '/api/v1/orgs/$orgId/invites/$inviteId': typeof ApiV1OrgsOrgIdInvitesInviteIdRoute
   '/api/v1/orgs/$orgId/members/$userId': typeof ApiV1OrgsOrgIdMembersUserIdRoute
   '/api/v1/orgs/$orgId/members/me': typeof ApiV1OrgsOrgIdMembersMeRoute
   '/api/v1/orgs/$orgId/roles/$roleId': typeof ApiV1OrgsOrgIdRolesRoleIdRoute
+  '/api/v1/orgs/$orgId/bank-accounts': typeof ApiV1OrgsOrgIdBankAccountsIndexRoute
+  '/api/v1/orgs/$orgId/customers': typeof ApiV1OrgsOrgIdCustomersIndexRoute
+  '/api/v1/orgs/$orgId/documents': typeof ApiV1OrgsOrgIdDocumentsIndexRoute
   '/api/v1/orgs/$orgId/invites': typeof ApiV1OrgsOrgIdInvitesIndexRoute
   '/api/v1/orgs/$orgId/members': typeof ApiV1OrgsOrgIdMembersIndexRoute
+  '/api/v1/orgs/$orgId/notifications': typeof ApiV1OrgsOrgIdNotificationsIndexRoute
   '/api/v1/orgs/$orgId/roles': typeof ApiV1OrgsOrgIdRolesIndexRoute
+  '/api/v1/orgs/$orgId/bank-accounts/$accountId/imports': typeof ApiV1OrgsOrgIdBankAccountsAccountIdImportsRoute
+  '/api/v1/orgs/$orgId/bank-accounts/$accountId/transactions': typeof ApiV1OrgsOrgIdBankAccountsAccountIdTransactionsRoute
+  '/api/v1/orgs/$orgId/notifications/$id/read': typeof ApiV1OrgsOrgIdNotificationsIdReadRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -333,6 +513,10 @@ export interface FileRoutesById {
   '/personuppgiftsbitradesavtal': typeof PersonuppgiftsbitradesavtalRoute
   '/version': typeof VersionRoute
   '/villkor': typeof VillkorRoute
+  '/app/bekrafta-epost': typeof AppBekraftaEpostRoute
+  '/app/installningar': typeof AppInstallningarRoute
+  '/app/konto': typeof AppKontoRoute
+  '/app/organisation': typeof AppOrganisationRoute
   '/app/radera-konto': typeof AppRaderaKontoRoute
   '/app/': typeof AppIndexRoute
   '/api/v1/logout': typeof ApiV1LogoutRoute
@@ -343,8 +527,13 @@ export interface FileRoutesById {
   '/app/login/return': typeof AppLoginReturnRoute
   '/app/login/': typeof AppLoginIndexRoute
   '/api/v1/invites/$token': typeof ApiV1InvitesTokenRouteWithChildren
+  '/api/v1/me/email': typeof ApiV1MeEmailRouteWithChildren
   '/api/v1/me/export': typeof ApiV1MeExportRoute
+  '/api/v1/me/notifications': typeof ApiV1MeNotificationsRouteWithChildren
+  '/api/v1/notifications/unsubscribe': typeof ApiV1NotificationsUnsubscribeRoute
+  '/app/org/$orgId/kunder': typeof AppOrgOrgIdKunderRoute
   '/app/org/$orgId/medlemmar': typeof AppOrgOrgIdMedlemmarRoute
+  '/app/org/$orgId/notiser': typeof AppOrgOrgIdNotiserRoute
   '/app/org/$orgId/roller': typeof AppOrgOrgIdRollerRoute
   '/app/org/$orgId/uppgifter': typeof AppOrgOrgIdUppgifterRoute
   '/api/v1/orgs/': typeof ApiV1OrgsIndexRoute
@@ -355,16 +544,28 @@ export interface FileRoutesById {
   '/api/v1/auth/bankid/status': typeof ApiV1AuthBankidStatusRoute
   '/api/v1/auth/demo/delete': typeof ApiV1AuthDemoDeleteRoute
   '/api/v1/invites/$token/accept': typeof ApiV1InvitesTokenAcceptRoute
+  '/api/v1/me/email/confirm': typeof ApiV1MeEmailConfirmRoute
+  '/api/v1/me/notifications/$type': typeof ApiV1MeNotificationsTypeRoute
   '/api/v1/orgs/$orgId/company': typeof ApiV1OrgsOrgIdCompanyRoute
   '/api/v1/orgs/$orgId/me': typeof ApiV1OrgsOrgIdMeRoute
   '/api/v1/auth/demo/': typeof ApiV1AuthDemoIndexRoute
+  '/api/v1/orgs/$orgId/customers/$customerId': typeof ApiV1OrgsOrgIdCustomersCustomerIdRoute
+  '/api/v1/orgs/$orgId/customers/import': typeof ApiV1OrgsOrgIdCustomersImportRoute
+  '/api/v1/orgs/$orgId/documents/$documentId': typeof ApiV1OrgsOrgIdDocumentsDocumentIdRoute
   '/api/v1/orgs/$orgId/invites/$inviteId': typeof ApiV1OrgsOrgIdInvitesInviteIdRoute
   '/api/v1/orgs/$orgId/members/$userId': typeof ApiV1OrgsOrgIdMembersUserIdRoute
   '/api/v1/orgs/$orgId/members/me': typeof ApiV1OrgsOrgIdMembersMeRoute
   '/api/v1/orgs/$orgId/roles/$roleId': typeof ApiV1OrgsOrgIdRolesRoleIdRoute
+  '/api/v1/orgs/$orgId/bank-accounts/': typeof ApiV1OrgsOrgIdBankAccountsIndexRoute
+  '/api/v1/orgs/$orgId/customers/': typeof ApiV1OrgsOrgIdCustomersIndexRoute
+  '/api/v1/orgs/$orgId/documents/': typeof ApiV1OrgsOrgIdDocumentsIndexRoute
   '/api/v1/orgs/$orgId/invites/': typeof ApiV1OrgsOrgIdInvitesIndexRoute
   '/api/v1/orgs/$orgId/members/': typeof ApiV1OrgsOrgIdMembersIndexRoute
+  '/api/v1/orgs/$orgId/notifications/': typeof ApiV1OrgsOrgIdNotificationsIndexRoute
   '/api/v1/orgs/$orgId/roles/': typeof ApiV1OrgsOrgIdRolesIndexRoute
+  '/api/v1/orgs/$orgId/bank-accounts/$accountId/imports': typeof ApiV1OrgsOrgIdBankAccountsAccountIdImportsRoute
+  '/api/v1/orgs/$orgId/bank-accounts/$accountId/transactions': typeof ApiV1OrgsOrgIdBankAccountsAccountIdTransactionsRoute
+  '/api/v1/orgs/$orgId/notifications/$id/read': typeof ApiV1OrgsOrgIdNotificationsIdReadRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -375,6 +576,10 @@ export interface FileRouteTypes {
     | '/personuppgiftsbitradesavtal'
     | '/version'
     | '/villkor'
+    | '/app/bekrafta-epost'
+    | '/app/installningar'
+    | '/app/konto'
+    | '/app/organisation'
     | '/app/radera-konto'
     | '/app/'
     | '/api/v1/logout'
@@ -385,8 +590,13 @@ export interface FileRouteTypes {
     | '/app/login/return'
     | '/app/login/'
     | '/api/v1/invites/$token'
+    | '/api/v1/me/email'
     | '/api/v1/me/export'
+    | '/api/v1/me/notifications'
+    | '/api/v1/notifications/unsubscribe'
+    | '/app/org/$orgId/kunder'
     | '/app/org/$orgId/medlemmar'
+    | '/app/org/$orgId/notiser'
     | '/app/org/$orgId/roller'
     | '/app/org/$orgId/uppgifter'
     | '/api/v1/orgs/'
@@ -397,16 +607,28 @@ export interface FileRouteTypes {
     | '/api/v1/auth/bankid/status'
     | '/api/v1/auth/demo/delete'
     | '/api/v1/invites/$token/accept'
+    | '/api/v1/me/email/confirm'
+    | '/api/v1/me/notifications/$type'
     | '/api/v1/orgs/$orgId/company'
     | '/api/v1/orgs/$orgId/me'
     | '/api/v1/auth/demo/'
+    | '/api/v1/orgs/$orgId/customers/$customerId'
+    | '/api/v1/orgs/$orgId/customers/import'
+    | '/api/v1/orgs/$orgId/documents/$documentId'
     | '/api/v1/orgs/$orgId/invites/$inviteId'
     | '/api/v1/orgs/$orgId/members/$userId'
     | '/api/v1/orgs/$orgId/members/me'
     | '/api/v1/orgs/$orgId/roles/$roleId'
+    | '/api/v1/orgs/$orgId/bank-accounts/'
+    | '/api/v1/orgs/$orgId/customers/'
+    | '/api/v1/orgs/$orgId/documents/'
     | '/api/v1/orgs/$orgId/invites/'
     | '/api/v1/orgs/$orgId/members/'
+    | '/api/v1/orgs/$orgId/notifications/'
     | '/api/v1/orgs/$orgId/roles/'
+    | '/api/v1/orgs/$orgId/bank-accounts/$accountId/imports'
+    | '/api/v1/orgs/$orgId/bank-accounts/$accountId/transactions'
+    | '/api/v1/orgs/$orgId/notifications/$id/read'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -414,6 +636,10 @@ export interface FileRouteTypes {
     | '/personuppgiftsbitradesavtal'
     | '/version'
     | '/villkor'
+    | '/app/bekrafta-epost'
+    | '/app/installningar'
+    | '/app/konto'
+    | '/app/organisation'
     | '/app/radera-konto'
     | '/app'
     | '/api/v1/logout'
@@ -424,8 +650,13 @@ export interface FileRouteTypes {
     | '/app/login/return'
     | '/app/login'
     | '/api/v1/invites/$token'
+    | '/api/v1/me/email'
     | '/api/v1/me/export'
+    | '/api/v1/me/notifications'
+    | '/api/v1/notifications/unsubscribe'
+    | '/app/org/$orgId/kunder'
     | '/app/org/$orgId/medlemmar'
+    | '/app/org/$orgId/notiser'
     | '/app/org/$orgId/roller'
     | '/app/org/$orgId/uppgifter'
     | '/api/v1/orgs'
@@ -436,16 +667,28 @@ export interface FileRouteTypes {
     | '/api/v1/auth/bankid/status'
     | '/api/v1/auth/demo/delete'
     | '/api/v1/invites/$token/accept'
+    | '/api/v1/me/email/confirm'
+    | '/api/v1/me/notifications/$type'
     | '/api/v1/orgs/$orgId/company'
     | '/api/v1/orgs/$orgId/me'
     | '/api/v1/auth/demo'
+    | '/api/v1/orgs/$orgId/customers/$customerId'
+    | '/api/v1/orgs/$orgId/customers/import'
+    | '/api/v1/orgs/$orgId/documents/$documentId'
     | '/api/v1/orgs/$orgId/invites/$inviteId'
     | '/api/v1/orgs/$orgId/members/$userId'
     | '/api/v1/orgs/$orgId/members/me'
     | '/api/v1/orgs/$orgId/roles/$roleId'
+    | '/api/v1/orgs/$orgId/bank-accounts'
+    | '/api/v1/orgs/$orgId/customers'
+    | '/api/v1/orgs/$orgId/documents'
     | '/api/v1/orgs/$orgId/invites'
     | '/api/v1/orgs/$orgId/members'
+    | '/api/v1/orgs/$orgId/notifications'
     | '/api/v1/orgs/$orgId/roles'
+    | '/api/v1/orgs/$orgId/bank-accounts/$accountId/imports'
+    | '/api/v1/orgs/$orgId/bank-accounts/$accountId/transactions'
+    | '/api/v1/orgs/$orgId/notifications/$id/read'
   id:
     | '__root__'
     | '/'
@@ -454,6 +697,10 @@ export interface FileRouteTypes {
     | '/personuppgiftsbitradesavtal'
     | '/version'
     | '/villkor'
+    | '/app/bekrafta-epost'
+    | '/app/installningar'
+    | '/app/konto'
+    | '/app/organisation'
     | '/app/radera-konto'
     | '/app/'
     | '/api/v1/logout'
@@ -464,8 +711,13 @@ export interface FileRouteTypes {
     | '/app/login/return'
     | '/app/login/'
     | '/api/v1/invites/$token'
+    | '/api/v1/me/email'
     | '/api/v1/me/export'
+    | '/api/v1/me/notifications'
+    | '/api/v1/notifications/unsubscribe'
+    | '/app/org/$orgId/kunder'
     | '/app/org/$orgId/medlemmar'
+    | '/app/org/$orgId/notiser'
     | '/app/org/$orgId/roller'
     | '/app/org/$orgId/uppgifter'
     | '/api/v1/orgs/'
@@ -476,16 +728,28 @@ export interface FileRouteTypes {
     | '/api/v1/auth/bankid/status'
     | '/api/v1/auth/demo/delete'
     | '/api/v1/invites/$token/accept'
+    | '/api/v1/me/email/confirm'
+    | '/api/v1/me/notifications/$type'
     | '/api/v1/orgs/$orgId/company'
     | '/api/v1/orgs/$orgId/me'
     | '/api/v1/auth/demo/'
+    | '/api/v1/orgs/$orgId/customers/$customerId'
+    | '/api/v1/orgs/$orgId/customers/import'
+    | '/api/v1/orgs/$orgId/documents/$documentId'
     | '/api/v1/orgs/$orgId/invites/$inviteId'
     | '/api/v1/orgs/$orgId/members/$userId'
     | '/api/v1/orgs/$orgId/members/me'
     | '/api/v1/orgs/$orgId/roles/$roleId'
+    | '/api/v1/orgs/$orgId/bank-accounts/'
+    | '/api/v1/orgs/$orgId/customers/'
+    | '/api/v1/orgs/$orgId/documents/'
     | '/api/v1/orgs/$orgId/invites/'
     | '/api/v1/orgs/$orgId/members/'
+    | '/api/v1/orgs/$orgId/notifications/'
     | '/api/v1/orgs/$orgId/roles/'
+    | '/api/v1/orgs/$orgId/bank-accounts/$accountId/imports'
+    | '/api/v1/orgs/$orgId/bank-accounts/$accountId/transactions'
+    | '/api/v1/orgs/$orgId/notifications/$id/read'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -499,6 +763,7 @@ export interface RootRouteChildren {
   ApiV1McpRoute: typeof ApiV1McpRoute
   ApiV1MeRoute: typeof ApiV1MeRouteWithChildren
   ApiV1InvitesTokenRoute: typeof ApiV1InvitesTokenRouteWithChildren
+  ApiV1NotificationsUnsubscribeRoute: typeof ApiV1NotificationsUnsubscribeRoute
   ApiV1OrgsIndexRoute: typeof ApiV1OrgsIndexRoute
   ApiV1AuthBankidCancelRoute: typeof ApiV1AuthBankidCancelRoute
   ApiV1AuthBankidExtendRoute: typeof ApiV1AuthBankidExtendRoute
@@ -509,13 +774,23 @@ export interface RootRouteChildren {
   ApiV1OrgsOrgIdCompanyRoute: typeof ApiV1OrgsOrgIdCompanyRoute
   ApiV1OrgsOrgIdMeRoute: typeof ApiV1OrgsOrgIdMeRoute
   ApiV1AuthDemoIndexRoute: typeof ApiV1AuthDemoIndexRoute
+  ApiV1OrgsOrgIdCustomersCustomerIdRoute: typeof ApiV1OrgsOrgIdCustomersCustomerIdRoute
+  ApiV1OrgsOrgIdCustomersImportRoute: typeof ApiV1OrgsOrgIdCustomersImportRoute
+  ApiV1OrgsOrgIdDocumentsDocumentIdRoute: typeof ApiV1OrgsOrgIdDocumentsDocumentIdRoute
   ApiV1OrgsOrgIdInvitesInviteIdRoute: typeof ApiV1OrgsOrgIdInvitesInviteIdRoute
   ApiV1OrgsOrgIdMembersUserIdRoute: typeof ApiV1OrgsOrgIdMembersUserIdRoute
   ApiV1OrgsOrgIdMembersMeRoute: typeof ApiV1OrgsOrgIdMembersMeRoute
   ApiV1OrgsOrgIdRolesRoleIdRoute: typeof ApiV1OrgsOrgIdRolesRoleIdRoute
+  ApiV1OrgsOrgIdBankAccountsIndexRoute: typeof ApiV1OrgsOrgIdBankAccountsIndexRoute
+  ApiV1OrgsOrgIdCustomersIndexRoute: typeof ApiV1OrgsOrgIdCustomersIndexRoute
+  ApiV1OrgsOrgIdDocumentsIndexRoute: typeof ApiV1OrgsOrgIdDocumentsIndexRoute
   ApiV1OrgsOrgIdInvitesIndexRoute: typeof ApiV1OrgsOrgIdInvitesIndexRoute
   ApiV1OrgsOrgIdMembersIndexRoute: typeof ApiV1OrgsOrgIdMembersIndexRoute
+  ApiV1OrgsOrgIdNotificationsIndexRoute: typeof ApiV1OrgsOrgIdNotificationsIndexRoute
   ApiV1OrgsOrgIdRolesIndexRoute: typeof ApiV1OrgsOrgIdRolesIndexRoute
+  ApiV1OrgsOrgIdBankAccountsAccountIdImportsRoute: typeof ApiV1OrgsOrgIdBankAccountsAccountIdImportsRoute
+  ApiV1OrgsOrgIdBankAccountsAccountIdTransactionsRoute: typeof ApiV1OrgsOrgIdBankAccountsAccountIdTransactionsRoute
+  ApiV1OrgsOrgIdNotificationsIdReadRoute: typeof ApiV1OrgsOrgIdNotificationsIdReadRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -567,6 +842,34 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/app/'
       preLoaderRoute: typeof AppIndexRouteImport
+      parentRoute: typeof AppRouteRoute
+    }
+    '/app/bekrafta-epost': {
+      id: '/app/bekrafta-epost'
+      path: '/bekrafta-epost'
+      fullPath: '/app/bekrafta-epost'
+      preLoaderRoute: typeof AppBekraftaEpostRouteImport
+      parentRoute: typeof AppRouteRoute
+    }
+    '/app/installningar': {
+      id: '/app/installningar'
+      path: '/installningar'
+      fullPath: '/app/installningar'
+      preLoaderRoute: typeof AppInstallningarRouteImport
+      parentRoute: typeof AppRouteRoute
+    }
+    '/app/konto': {
+      id: '/app/konto'
+      path: '/konto'
+      fullPath: '/app/konto'
+      preLoaderRoute: typeof AppKontoRouteImport
+      parentRoute: typeof AppRouteRoute
+    }
+    '/app/organisation': {
+      id: '/app/organisation'
+      path: '/organisation'
+      fullPath: '/app/organisation'
+      preLoaderRoute: typeof AppOrganisationRouteImport
       parentRoute: typeof AppRouteRoute
     }
     '/app/radera-konto': {
@@ -632,12 +935,33 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiV1InvitesTokenRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/v1/me/email': {
+      id: '/api/v1/me/email'
+      path: '/email'
+      fullPath: '/api/v1/me/email'
+      preLoaderRoute: typeof ApiV1MeEmailRouteImport
+      parentRoute: typeof ApiV1MeRoute
+    }
     '/api/v1/me/export': {
       id: '/api/v1/me/export'
       path: '/export'
       fullPath: '/api/v1/me/export'
       preLoaderRoute: typeof ApiV1MeExportRouteImport
       parentRoute: typeof ApiV1MeRoute
+    }
+    '/api/v1/me/notifications': {
+      id: '/api/v1/me/notifications'
+      path: '/notifications'
+      fullPath: '/api/v1/me/notifications'
+      preLoaderRoute: typeof ApiV1MeNotificationsRouteImport
+      parentRoute: typeof ApiV1MeRoute
+    }
+    '/api/v1/notifications/unsubscribe': {
+      id: '/api/v1/notifications/unsubscribe'
+      path: '/api/v1/notifications/unsubscribe'
+      fullPath: '/api/v1/notifications/unsubscribe'
+      preLoaderRoute: typeof ApiV1NotificationsUnsubscribeRouteImport
+      parentRoute: typeof rootRouteImport
     }
     '/api/v1/orgs/': {
       id: '/api/v1/orgs/'
@@ -646,11 +970,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiV1OrgsIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/app/org/$orgId/kunder': {
+      id: '/app/org/$orgId/kunder'
+      path: '/org/$orgId/kunder'
+      fullPath: '/app/org/$orgId/kunder'
+      preLoaderRoute: typeof AppOrgOrgIdKunderRouteImport
+      parentRoute: typeof AppRouteRoute
+    }
     '/app/org/$orgId/medlemmar': {
       id: '/app/org/$orgId/medlemmar'
       path: '/org/$orgId/medlemmar'
       fullPath: '/app/org/$orgId/medlemmar'
       preLoaderRoute: typeof AppOrgOrgIdMedlemmarRouteImport
+      parentRoute: typeof AppRouteRoute
+    }
+    '/app/org/$orgId/notiser': {
+      id: '/app/org/$orgId/notiser'
+      path: '/org/$orgId/notiser'
+      fullPath: '/app/org/$orgId/notiser'
+      preLoaderRoute: typeof AppOrgOrgIdNotiserRouteImport
       parentRoute: typeof AppRouteRoute
     }
     '/app/org/$orgId/roller': {
@@ -723,6 +1061,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiV1InvitesTokenAcceptRouteImport
       parentRoute: typeof ApiV1InvitesTokenRoute
     }
+    '/api/v1/me/email/confirm': {
+      id: '/api/v1/me/email/confirm'
+      path: '/confirm'
+      fullPath: '/api/v1/me/email/confirm'
+      preLoaderRoute: typeof ApiV1MeEmailConfirmRouteImport
+      parentRoute: typeof ApiV1MeEmailRoute
+    }
+    '/api/v1/me/notifications/$type': {
+      id: '/api/v1/me/notifications/$type'
+      path: '/$type'
+      fullPath: '/api/v1/me/notifications/$type'
+      preLoaderRoute: typeof ApiV1MeNotificationsTypeRouteImport
+      parentRoute: typeof ApiV1MeNotificationsRoute
+    }
     '/api/v1/orgs/$orgId/company': {
       id: '/api/v1/orgs/$orgId/company'
       path: '/api/v1/orgs/$orgId/company'
@@ -735,6 +1087,48 @@ declare module '@tanstack/react-router' {
       path: '/api/v1/orgs/$orgId/me'
       fullPath: '/api/v1/orgs/$orgId/me'
       preLoaderRoute: typeof ApiV1OrgsOrgIdMeRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/v1/orgs/$orgId/bank-accounts/': {
+      id: '/api/v1/orgs/$orgId/bank-accounts/'
+      path: '/api/v1/orgs/$orgId/bank-accounts'
+      fullPath: '/api/v1/orgs/$orgId/bank-accounts/'
+      preLoaderRoute: typeof ApiV1OrgsOrgIdBankAccountsIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/v1/orgs/$orgId/customers/': {
+      id: '/api/v1/orgs/$orgId/customers/'
+      path: '/api/v1/orgs/$orgId/customers'
+      fullPath: '/api/v1/orgs/$orgId/customers/'
+      preLoaderRoute: typeof ApiV1OrgsOrgIdCustomersIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/v1/orgs/$orgId/customers/$customerId': {
+      id: '/api/v1/orgs/$orgId/customers/$customerId'
+      path: '/api/v1/orgs/$orgId/customers/$customerId'
+      fullPath: '/api/v1/orgs/$orgId/customers/$customerId'
+      preLoaderRoute: typeof ApiV1OrgsOrgIdCustomersCustomerIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/v1/orgs/$orgId/customers/import': {
+      id: '/api/v1/orgs/$orgId/customers/import'
+      path: '/api/v1/orgs/$orgId/customers/import'
+      fullPath: '/api/v1/orgs/$orgId/customers/import'
+      preLoaderRoute: typeof ApiV1OrgsOrgIdCustomersImportRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/v1/orgs/$orgId/documents/': {
+      id: '/api/v1/orgs/$orgId/documents/'
+      path: '/api/v1/orgs/$orgId/documents'
+      fullPath: '/api/v1/orgs/$orgId/documents/'
+      preLoaderRoute: typeof ApiV1OrgsOrgIdDocumentsIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/v1/orgs/$orgId/documents/$documentId': {
+      id: '/api/v1/orgs/$orgId/documents/$documentId'
+      path: '/api/v1/orgs/$orgId/documents/$documentId'
+      fullPath: '/api/v1/orgs/$orgId/documents/$documentId'
+      preLoaderRoute: typeof ApiV1OrgsOrgIdDocumentsDocumentIdRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/api/v1/orgs/$orgId/invites/': {
@@ -772,6 +1166,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiV1OrgsOrgIdMembersMeRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/v1/orgs/$orgId/notifications/': {
+      id: '/api/v1/orgs/$orgId/notifications/'
+      path: '/api/v1/orgs/$orgId/notifications'
+      fullPath: '/api/v1/orgs/$orgId/notifications/'
+      preLoaderRoute: typeof ApiV1OrgsOrgIdNotificationsIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/v1/orgs/$orgId/roles/': {
       id: '/api/v1/orgs/$orgId/roles/'
       path: '/api/v1/orgs/$orgId/roles'
@@ -786,29 +1187,62 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiV1OrgsOrgIdRolesRoleIdRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/v1/orgs/$orgId/bank-accounts/$accountId/imports': {
+      id: '/api/v1/orgs/$orgId/bank-accounts/$accountId/imports'
+      path: '/api/v1/orgs/$orgId/bank-accounts/$accountId/imports'
+      fullPath: '/api/v1/orgs/$orgId/bank-accounts/$accountId/imports'
+      preLoaderRoute: typeof ApiV1OrgsOrgIdBankAccountsAccountIdImportsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/v1/orgs/$orgId/bank-accounts/$accountId/transactions': {
+      id: '/api/v1/orgs/$orgId/bank-accounts/$accountId/transactions'
+      path: '/api/v1/orgs/$orgId/bank-accounts/$accountId/transactions'
+      fullPath: '/api/v1/orgs/$orgId/bank-accounts/$accountId/transactions'
+      preLoaderRoute: typeof ApiV1OrgsOrgIdBankAccountsAccountIdTransactionsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/v1/orgs/$orgId/notifications/$id/read': {
+      id: '/api/v1/orgs/$orgId/notifications/$id/read'
+      path: '/api/v1/orgs/$orgId/notifications/$id/read'
+      fullPath: '/api/v1/orgs/$orgId/notifications/$id/read'
+      preLoaderRoute: typeof ApiV1OrgsOrgIdNotificationsIdReadRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
 interface AppRouteRouteChildren {
+  AppBekraftaEpostRoute: typeof AppBekraftaEpostRoute
+  AppInstallningarRoute: typeof AppInstallningarRoute
+  AppKontoRoute: typeof AppKontoRoute
+  AppOrganisationRoute: typeof AppOrganisationRoute
   AppRaderaKontoRoute: typeof AppRaderaKontoRoute
   AppIndexRoute: typeof AppIndexRoute
   AppInviteTokenRoute: typeof AppInviteTokenRoute
   AppLoginDemoRoute: typeof AppLoginDemoRoute
   AppLoginReturnRoute: typeof AppLoginReturnRoute
   AppLoginIndexRoute: typeof AppLoginIndexRoute
+  AppOrgOrgIdKunderRoute: typeof AppOrgOrgIdKunderRoute
   AppOrgOrgIdMedlemmarRoute: typeof AppOrgOrgIdMedlemmarRoute
+  AppOrgOrgIdNotiserRoute: typeof AppOrgOrgIdNotiserRoute
   AppOrgOrgIdRollerRoute: typeof AppOrgOrgIdRollerRoute
   AppOrgOrgIdUppgifterRoute: typeof AppOrgOrgIdUppgifterRoute
 }
 
 const AppRouteRouteChildren: AppRouteRouteChildren = {
+  AppBekraftaEpostRoute: AppBekraftaEpostRoute,
+  AppInstallningarRoute: AppInstallningarRoute,
+  AppKontoRoute: AppKontoRoute,
+  AppOrganisationRoute: AppOrganisationRoute,
   AppRaderaKontoRoute: AppRaderaKontoRoute,
   AppIndexRoute: AppIndexRoute,
   AppInviteTokenRoute: AppInviteTokenRoute,
   AppLoginDemoRoute: AppLoginDemoRoute,
   AppLoginReturnRoute: AppLoginReturnRoute,
   AppLoginIndexRoute: AppLoginIndexRoute,
+  AppOrgOrgIdKunderRoute: AppOrgOrgIdKunderRoute,
   AppOrgOrgIdMedlemmarRoute: AppOrgOrgIdMedlemmarRoute,
+  AppOrgOrgIdNotiserRoute: AppOrgOrgIdNotiserRoute,
   AppOrgOrgIdRollerRoute: AppOrgOrgIdRollerRoute,
   AppOrgOrgIdUppgifterRoute: AppOrgOrgIdUppgifterRoute,
 }
@@ -817,12 +1251,39 @@ const AppRouteRouteWithChildren = AppRouteRoute._addFileChildren(
   AppRouteRouteChildren,
 )
 
+interface ApiV1MeEmailRouteChildren {
+  ApiV1MeEmailConfirmRoute: typeof ApiV1MeEmailConfirmRoute
+}
+
+const ApiV1MeEmailRouteChildren: ApiV1MeEmailRouteChildren = {
+  ApiV1MeEmailConfirmRoute: ApiV1MeEmailConfirmRoute,
+}
+
+const ApiV1MeEmailRouteWithChildren = ApiV1MeEmailRoute._addFileChildren(
+  ApiV1MeEmailRouteChildren,
+)
+
+interface ApiV1MeNotificationsRouteChildren {
+  ApiV1MeNotificationsTypeRoute: typeof ApiV1MeNotificationsTypeRoute
+}
+
+const ApiV1MeNotificationsRouteChildren: ApiV1MeNotificationsRouteChildren = {
+  ApiV1MeNotificationsTypeRoute: ApiV1MeNotificationsTypeRoute,
+}
+
+const ApiV1MeNotificationsRouteWithChildren =
+  ApiV1MeNotificationsRoute._addFileChildren(ApiV1MeNotificationsRouteChildren)
+
 interface ApiV1MeRouteChildren {
+  ApiV1MeEmailRoute: typeof ApiV1MeEmailRouteWithChildren
   ApiV1MeExportRoute: typeof ApiV1MeExportRoute
+  ApiV1MeNotificationsRoute: typeof ApiV1MeNotificationsRouteWithChildren
 }
 
 const ApiV1MeRouteChildren: ApiV1MeRouteChildren = {
+  ApiV1MeEmailRoute: ApiV1MeEmailRouteWithChildren,
   ApiV1MeExportRoute: ApiV1MeExportRoute,
+  ApiV1MeNotificationsRoute: ApiV1MeNotificationsRouteWithChildren,
 }
 
 const ApiV1MeRouteWithChildren =
@@ -850,6 +1311,7 @@ const rootRouteChildren: RootRouteChildren = {
   ApiV1McpRoute: ApiV1McpRoute,
   ApiV1MeRoute: ApiV1MeRouteWithChildren,
   ApiV1InvitesTokenRoute: ApiV1InvitesTokenRouteWithChildren,
+  ApiV1NotificationsUnsubscribeRoute: ApiV1NotificationsUnsubscribeRoute,
   ApiV1OrgsIndexRoute: ApiV1OrgsIndexRoute,
   ApiV1AuthBankidCancelRoute: ApiV1AuthBankidCancelRoute,
   ApiV1AuthBankidExtendRoute: ApiV1AuthBankidExtendRoute,
@@ -860,13 +1322,28 @@ const rootRouteChildren: RootRouteChildren = {
   ApiV1OrgsOrgIdCompanyRoute: ApiV1OrgsOrgIdCompanyRoute,
   ApiV1OrgsOrgIdMeRoute: ApiV1OrgsOrgIdMeRoute,
   ApiV1AuthDemoIndexRoute: ApiV1AuthDemoIndexRoute,
+  ApiV1OrgsOrgIdCustomersCustomerIdRoute:
+    ApiV1OrgsOrgIdCustomersCustomerIdRoute,
+  ApiV1OrgsOrgIdCustomersImportRoute: ApiV1OrgsOrgIdCustomersImportRoute,
+  ApiV1OrgsOrgIdDocumentsDocumentIdRoute:
+    ApiV1OrgsOrgIdDocumentsDocumentIdRoute,
   ApiV1OrgsOrgIdInvitesInviteIdRoute: ApiV1OrgsOrgIdInvitesInviteIdRoute,
   ApiV1OrgsOrgIdMembersUserIdRoute: ApiV1OrgsOrgIdMembersUserIdRoute,
   ApiV1OrgsOrgIdMembersMeRoute: ApiV1OrgsOrgIdMembersMeRoute,
   ApiV1OrgsOrgIdRolesRoleIdRoute: ApiV1OrgsOrgIdRolesRoleIdRoute,
+  ApiV1OrgsOrgIdBankAccountsIndexRoute: ApiV1OrgsOrgIdBankAccountsIndexRoute,
+  ApiV1OrgsOrgIdCustomersIndexRoute: ApiV1OrgsOrgIdCustomersIndexRoute,
+  ApiV1OrgsOrgIdDocumentsIndexRoute: ApiV1OrgsOrgIdDocumentsIndexRoute,
   ApiV1OrgsOrgIdInvitesIndexRoute: ApiV1OrgsOrgIdInvitesIndexRoute,
   ApiV1OrgsOrgIdMembersIndexRoute: ApiV1OrgsOrgIdMembersIndexRoute,
+  ApiV1OrgsOrgIdNotificationsIndexRoute: ApiV1OrgsOrgIdNotificationsIndexRoute,
   ApiV1OrgsOrgIdRolesIndexRoute: ApiV1OrgsOrgIdRolesIndexRoute,
+  ApiV1OrgsOrgIdBankAccountsAccountIdImportsRoute:
+    ApiV1OrgsOrgIdBankAccountsAccountIdImportsRoute,
+  ApiV1OrgsOrgIdBankAccountsAccountIdTransactionsRoute:
+    ApiV1OrgsOrgIdBankAccountsAccountIdTransactionsRoute,
+  ApiV1OrgsOrgIdNotificationsIdReadRoute:
+    ApiV1OrgsOrgIdNotificationsIdReadRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

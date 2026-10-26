@@ -37,6 +37,40 @@ export interface AuditEvents {
   user_id: string | null;
 }
 
+export interface BankAccounts {
+  created_at: Generated<Timestamp>;
+  id: Generated<string>;
+  organisation_id: string;
+  title: string;
+}
+
+export interface BankImports {
+  added: Generated<number>;
+  bank_account_id: string;
+  created_at: Generated<Timestamp>;
+  file_name: string;
+  format: string;
+  id: Generated<string>;
+  organisation_id: string;
+  skipped: Generated<number>;
+}
+
+export interface BankTransactions {
+  amount_ore: Int8;
+  bank_account_id: string;
+  bank_id: string | null;
+  bank_import_id: string;
+  booking_date: Timestamp;
+  counterparty: string | null;
+  created_at: Generated<Timestamp>;
+  dedup_key: string;
+  id: Generated<string>;
+  organisation_id: string;
+  reference: string | null;
+  source: string;
+  value_date: Timestamp | null;
+}
+
 export interface CompanyDetails {
   accounting_method: string;
   city: string;
@@ -57,6 +91,41 @@ export interface CompanyDetails {
   swish: string | null;
   updated_at: Generated<Timestamp>;
   vat_period: string;
+}
+
+export interface Customers {
+  address: string;
+  contact: string | null;
+  created_at: Generated<Timestamp>;
+  email: string | null;
+  id: Generated<string>;
+  kind: string;
+  language: Generated<string>;
+  name: string;
+  org_number: string | null;
+  organisation_id: string;
+  payment_terms_days: number | null;
+  updated_at: Generated<Timestamp>;
+  vat_number: string | null;
+}
+
+export interface Documents {
+  content_type: string;
+  created_at: Generated<Timestamp>;
+  id: Generated<string>;
+  name: string;
+  organisation_id: string;
+  retain_until: Timestamp | null;
+  sha256: string;
+  size_bytes: number;
+  storage_key: string;
+}
+
+export interface EmailConfirmations {
+  email: string;
+  expires_at: Timestamp;
+  token_hash: Buffer;
+  user_id: string;
 }
 
 export interface Invites {
@@ -92,6 +161,38 @@ export interface Memberships {
   user_id: string;
 }
 
+export interface NotificationDeliveries {
+  attempts: Generated<number>;
+  event_id: string;
+  failed_at: Timestamp | null;
+  last_error: string | null;
+  next_attempt_at: Generated<Timestamp>;
+  organisation_id: string;
+  sent_at: Timestamp | null;
+  user_id: string;
+}
+
+export interface NotificationEvents {
+  created_at: Generated<Timestamp>;
+  id: Generated<string>;
+  organisation_id: string;
+  payload: Generated<Json>;
+  type: string;
+}
+
+export interface NotificationPreferences {
+  email: boolean;
+  type: string;
+  user_id: string;
+}
+
+export interface NotificationReads {
+  event_id: string;
+  organisation_id: string;
+  read_at: Generated<Timestamp>;
+  user_id: string;
+}
+
 export interface Organisations {
   created_at: Generated<Timestamp>;
   id: Generated<string>;
@@ -118,6 +219,8 @@ export interface Sessions {
 
 export interface Users {
   created_at: Generated<Timestamp>;
+  email: string | null;
+  email_verified_at: Timestamp | null;
   id: Generated<string>;
   name: string;
   pnr_hmac: Buffer | null;
@@ -125,10 +228,20 @@ export interface Users {
 
 export interface DB {
   audit_events: AuditEvents;
+  bank_accounts: BankAccounts;
+  bank_imports: BankImports;
+  bank_transactions: BankTransactions;
   company_details: CompanyDetails;
+  customers: Customers;
+  documents: Documents;
+  email_confirmations: EmailConfirmations;
   invites: Invites;
   login_attempts: LoginAttempts;
   memberships: Memberships;
+  notification_deliveries: NotificationDeliveries;
+  notification_events: NotificationEvents;
+  notification_preferences: NotificationPreferences;
+  notification_reads: NotificationReads;
   organisations: Organisations;
   roles: Roles;
   sessions: Sessions;
