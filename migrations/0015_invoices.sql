@@ -1,6 +1,9 @@
 set local lock_timeout = '1s';
 set local statement_timeout = '30s';
 
+-- squawk-ignore disallowed-unique-constraint, constraint-missing-not-valid
+alter table customers add constraint customers_organisation_id_id_key unique (organisation_id, id);
+
 -- Invoices and credit notes (IRM-145). Same principle as the vouchers: the law is enforced here, by triggers and
 -- constraints, and a code path that hits one is wrong, not the trigger.
 
@@ -21,7 +24,7 @@ create table invoices (
   number bigint check (number > 0),
   ocr text check (ocr ~ '^[0-9]{2,25}$'),
   credits_id uuid,
-  customer_id uuid references customers (id) on delete set null,
+  customer_id uuid,
   invoice_date date not null,
   supply_date date not null,
   due_date date not null,
@@ -43,6 +46,7 @@ create table invoices (
   sent_at timestamptz,
   unique (organisation_id, id),
   unique (organisation_id, number),
+  foreign key (organisation_id, customer_id) references customers (organisation_id, id) on delete set null (customer_id),
   foreign key (organisation_id, credits_id) references invoices (organisation_id, id) on delete restrict,
   foreign key (organisation_id, voucher_id) references vouchers (organisation_id, id) on delete restrict,
   foreign key (organisation_id, document_id) references documents (organisation_id, id),
@@ -141,6 +145,9 @@ begin
     return old;
   end if;
   if old.status = 'draft' and new.status = 'draft' then
+    if (new.kind, new.credits_id) is distinct from (old.kind, old.credits_id) then
+      raise exception 'invoice % cannot change what it credits', old.id using errcode = 'restrict_violation';
+    end if;
     return new;
   end if;
   if old.status = 'draft' and new.status = 'sent' then
@@ -166,6 +173,12 @@ begin
       -- Locking the original makes two concurrent credit notes take turns.
       select * into orig from invoices
         where organisation_id = new.organisation_id and id = new.credits_id for update;
+      if orig.status is distinct from 'sent' or orig.kind <> 'invoice' then
+        raise exception 'only a sent invoice can be credited' using errcode = 'restrict_violation';
+      end if;
+      if new.invoice_date < orig.invoice_date then
+        raise exception 'a credit note is dated before its invoice' using errcode = 'check_violation';
+      end if;
       select coalesce(sum(total), 0) into credited from invoices
         where organisation_id = new.organisation_id and credits_id = new.credits_id and status = 'sent';
       if credited + new.total > orig.total then
@@ -202,6 +215,9 @@ create function invoice_children_guard() returns trigger language plpgsql as $$
 declare
   s text;
 begin
+  if tg_op = 'UPDATE' and new.invoice_id <> old.invoice_id then
+    raise exception 'a line stays on its invoice' using errcode = 'restrict_violation';
+  end if;
   select status into s from invoices where id = coalesce(new.invoice_id, old.invoice_id);
   -- No parent row: the foreign key rejects an insert, and a cascade from a deleted draft passes.
   if s is not null and s <> 'draft' then

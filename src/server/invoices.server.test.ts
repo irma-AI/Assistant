@@ -243,3 +243,48 @@ test('sending copies the buyer, so editing or deleting the customer changes noth
     'customer_missing',
   )
 })
+
+test('the database refuses moving lines, re-pointing a credit note, a foreign customer and a credit dated before its invoice', async () => {
+  const { owner, org, customer } = await setup()
+  const other = await setup()
+  const sent = (
+    await sendOk(owner, org, (await draft(owner, org, body(customer))).id)
+  ).invoice
+  const d = await draft(owner, org, body(customer))
+  const credit = invoice.parse(
+    await (await api.credit(req(owner, 'POST'), org, sent.id, db)).json(),
+  )
+  const attempts = [
+    sql`update invoice_lines set invoice_id = ${d.id}::uuid, line_no = 5 where invoice_id = ${sent.id}`,
+    sql`update invoices set credits_id = ${d.id}::uuid where id = ${credit.id}`,
+    sql`update invoices set customer_id = ${other.customer}::uuid where id = ${d.id}`,
+  ]
+  for (const attempt of attempts)
+    await expect(
+      inOrganisation(db, org, async (trx) => {
+        await sql`set local role assistant_app`.execute(trx)
+        await attempt.execute(trx)
+      }),
+    ).rejects.toThrow(/stays on|cannot change|foreign key|violates/)
+  const early = await api.replaceDraft(
+    req(owner, 'PUT', { ...body(customer), invoice_date: '2026-01-02' }),
+    org,
+    credit.id,
+    db,
+  )
+  expect(early.status).toBe(200)
+  expect(await errorOf(await send(owner, org, credit.id))).toBe(
+    'credit_before_invoice',
+  )
+})
+
+test('a free line does not stop the booking', async () => {
+  const { owner, org, customer } = await setup()
+  const free = { ...hours(1, '0'), unit_price: 0 }
+  const r = await sendOk(
+    owner,
+    org,
+    (await draft(owner, org, body(customer, [hours(1), free]))).id,
+  )
+  expect(r.invoice.voucher_id).not.toBeNull()
+})

@@ -70,6 +70,8 @@ const errorText: Record<string, string> = {
   buyer_email_required: 'Kunden saknar e-postadress för fakturor.',
   not_creditable: 'Bara en skickad faktura går att kreditera.',
   credit_exceeds: 'Kreditfakturorna blir större än den ursprungliga fakturan.',
+  credit_before_invoice:
+    'Kreditfakturan kan inte vara daterad före fakturan den avser.',
   no_amount: 'Fakturan har inget belopp att fakturera.',
   invoice_email_failed:
     'Fakturan är skickad men mejlet gick inte iväg. Ladda ner PDF:en eller försök igen om en stund.',

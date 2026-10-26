@@ -26,7 +26,7 @@ export async function book(
   const add = (account: string, n: number) =>
     amounts.set(account, (amounts.get(account) ?? 0) + n)
   for (const r of v.rates) {
-    if (isCode(sales, r.vat_code)) add(sales[r.vat_code], r.net)
+    if (isCode(sales, r.vat_code) && r.net > 0) add(sales[r.vat_code], r.net)
     if (isCode(outputVat, r.vat_code) && r.vat > 0)
       add(outputVat[r.vat_code], r.vat)
   }
