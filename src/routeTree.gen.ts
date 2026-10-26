@@ -49,6 +49,7 @@ import { Route as ApiV1InvitesTokenAcceptRouteImport } from './routes/api/v1/inv
 import { Route as ApiV1MeEmailConfirmRouteImport } from './routes/api/v1/me.email.confirm'
 import { Route as ApiV1MeNotificationsTypeRouteImport } from './routes/api/v1/me.notifications.$type'
 import { Route as ApiV1OrgsOrgIdMeRouteImport } from './routes/api/v1/orgs/$orgId/me'
+import { Route as ApiV1OrgsOrgIdBankAccountsIndexRouteImport } from './routes/api/v1/orgs/$orgId/bank-accounts/index'
 import { Route as ApiV1OrgsOrgIdCustomersIndexRouteImport } from './routes/api/v1/orgs/$orgId/customers/index'
 import { Route as ApiV1OrgsOrgIdCustomersCustomerIdRouteImport } from './routes/api/v1/orgs/$orgId/customers/$customerId'
 import { Route as ApiV1OrgsOrgIdCustomersImportRouteImport } from './routes/api/v1/orgs/$orgId/customers/import'
@@ -62,6 +63,8 @@ import { Route as ApiV1OrgsOrgIdMembersMeRouteImport } from './routes/api/v1/org
 import { Route as ApiV1OrgsOrgIdNotificationsIndexRouteImport } from './routes/api/v1/orgs/$orgId/notifications/index'
 import { Route as ApiV1OrgsOrgIdRolesIndexRouteImport } from './routes/api/v1/orgs/$orgId/roles/index'
 import { Route as ApiV1OrgsOrgIdRolesRoleIdRouteImport } from './routes/api/v1/orgs/$orgId/roles/$roleId'
+import { Route as ApiV1OrgsOrgIdBankAccountsAccountIdImportsRouteImport } from './routes/api/v1/orgs/$orgId/bank-accounts/$accountId/imports'
+import { Route as ApiV1OrgsOrgIdBankAccountsAccountIdTransactionsRouteImport } from './routes/api/v1/orgs/$orgId/bank-accounts/$accountId/transactions'
 import { Route as ApiV1OrgsOrgIdNotificationsIdReadRouteImport } from './routes/api/v1/orgs/$orgId/notifications/$id/read'
 
 const IndexRoute = IndexRouteImport.update({
@@ -267,6 +270,12 @@ const ApiV1OrgsOrgIdMeRoute = ApiV1OrgsOrgIdMeRouteImport.update({
   path: '/api/v1/orgs/$orgId/me',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiV1OrgsOrgIdBankAccountsIndexRoute =
+  ApiV1OrgsOrgIdBankAccountsIndexRouteImport.update({
+    id: '/api/v1/orgs/$orgId/bank-accounts/',
+    path: '/api/v1/orgs/$orgId/bank-accounts/',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 const ApiV1OrgsOrgIdCustomersIndexRoute =
   ApiV1OrgsOrgIdCustomersIndexRouteImport.update({
     id: '/api/v1/orgs/$orgId/customers/',
@@ -344,6 +353,18 @@ const ApiV1OrgsOrgIdRolesRoleIdRoute =
     path: '/api/v1/orgs/$orgId/roles/$roleId',
     getParentRoute: () => rootRouteImport,
   } as any)
+const ApiV1OrgsOrgIdBankAccountsAccountIdImportsRoute =
+  ApiV1OrgsOrgIdBankAccountsAccountIdImportsRouteImport.update({
+    id: '/api/v1/orgs/$orgId/bank-accounts/$accountId/imports',
+    path: '/api/v1/orgs/$orgId/bank-accounts/$accountId/imports',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const ApiV1OrgsOrgIdBankAccountsAccountIdTransactionsRoute =
+  ApiV1OrgsOrgIdBankAccountsAccountIdTransactionsRouteImport.update({
+    id: '/api/v1/orgs/$orgId/bank-accounts/$accountId/transactions',
+    path: '/api/v1/orgs/$orgId/bank-accounts/$accountId/transactions',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 const ApiV1OrgsOrgIdNotificationsIdReadRoute =
   ApiV1OrgsOrgIdNotificationsIdReadRouteImport.update({
     id: '/api/v1/orgs/$orgId/notifications/$id/read',
@@ -399,12 +420,15 @@ export interface FileRoutesByFullPath {
   '/api/v1/orgs/$orgId/members/$userId': typeof ApiV1OrgsOrgIdMembersUserIdRoute
   '/api/v1/orgs/$orgId/members/me': typeof ApiV1OrgsOrgIdMembersMeRoute
   '/api/v1/orgs/$orgId/roles/$roleId': typeof ApiV1OrgsOrgIdRolesRoleIdRoute
+  '/api/v1/orgs/$orgId/bank-accounts/': typeof ApiV1OrgsOrgIdBankAccountsIndexRoute
   '/api/v1/orgs/$orgId/customers/': typeof ApiV1OrgsOrgIdCustomersIndexRoute
   '/api/v1/orgs/$orgId/documents/': typeof ApiV1OrgsOrgIdDocumentsIndexRoute
   '/api/v1/orgs/$orgId/invites/': typeof ApiV1OrgsOrgIdInvitesIndexRoute
   '/api/v1/orgs/$orgId/members/': typeof ApiV1OrgsOrgIdMembersIndexRoute
   '/api/v1/orgs/$orgId/notifications/': typeof ApiV1OrgsOrgIdNotificationsIndexRoute
   '/api/v1/orgs/$orgId/roles/': typeof ApiV1OrgsOrgIdRolesIndexRoute
+  '/api/v1/orgs/$orgId/bank-accounts/$accountId/imports': typeof ApiV1OrgsOrgIdBankAccountsAccountIdImportsRoute
+  '/api/v1/orgs/$orgId/bank-accounts/$accountId/transactions': typeof ApiV1OrgsOrgIdBankAccountsAccountIdTransactionsRoute
   '/api/v1/orgs/$orgId/notifications/$id/read': typeof ApiV1OrgsOrgIdNotificationsIdReadRoute
 }
 export interface FileRoutesByTo {
@@ -454,12 +478,15 @@ export interface FileRoutesByTo {
   '/api/v1/orgs/$orgId/members/$userId': typeof ApiV1OrgsOrgIdMembersUserIdRoute
   '/api/v1/orgs/$orgId/members/me': typeof ApiV1OrgsOrgIdMembersMeRoute
   '/api/v1/orgs/$orgId/roles/$roleId': typeof ApiV1OrgsOrgIdRolesRoleIdRoute
+  '/api/v1/orgs/$orgId/bank-accounts': typeof ApiV1OrgsOrgIdBankAccountsIndexRoute
   '/api/v1/orgs/$orgId/customers': typeof ApiV1OrgsOrgIdCustomersIndexRoute
   '/api/v1/orgs/$orgId/documents': typeof ApiV1OrgsOrgIdDocumentsIndexRoute
   '/api/v1/orgs/$orgId/invites': typeof ApiV1OrgsOrgIdInvitesIndexRoute
   '/api/v1/orgs/$orgId/members': typeof ApiV1OrgsOrgIdMembersIndexRoute
   '/api/v1/orgs/$orgId/notifications': typeof ApiV1OrgsOrgIdNotificationsIndexRoute
   '/api/v1/orgs/$orgId/roles': typeof ApiV1OrgsOrgIdRolesIndexRoute
+  '/api/v1/orgs/$orgId/bank-accounts/$accountId/imports': typeof ApiV1OrgsOrgIdBankAccountsAccountIdImportsRoute
+  '/api/v1/orgs/$orgId/bank-accounts/$accountId/transactions': typeof ApiV1OrgsOrgIdBankAccountsAccountIdTransactionsRoute
   '/api/v1/orgs/$orgId/notifications/$id/read': typeof ApiV1OrgsOrgIdNotificationsIdReadRoute
 }
 export interface FileRoutesById {
@@ -511,12 +538,15 @@ export interface FileRoutesById {
   '/api/v1/orgs/$orgId/members/$userId': typeof ApiV1OrgsOrgIdMembersUserIdRoute
   '/api/v1/orgs/$orgId/members/me': typeof ApiV1OrgsOrgIdMembersMeRoute
   '/api/v1/orgs/$orgId/roles/$roleId': typeof ApiV1OrgsOrgIdRolesRoleIdRoute
+  '/api/v1/orgs/$orgId/bank-accounts/': typeof ApiV1OrgsOrgIdBankAccountsIndexRoute
   '/api/v1/orgs/$orgId/customers/': typeof ApiV1OrgsOrgIdCustomersIndexRoute
   '/api/v1/orgs/$orgId/documents/': typeof ApiV1OrgsOrgIdDocumentsIndexRoute
   '/api/v1/orgs/$orgId/invites/': typeof ApiV1OrgsOrgIdInvitesIndexRoute
   '/api/v1/orgs/$orgId/members/': typeof ApiV1OrgsOrgIdMembersIndexRoute
   '/api/v1/orgs/$orgId/notifications/': typeof ApiV1OrgsOrgIdNotificationsIndexRoute
   '/api/v1/orgs/$orgId/roles/': typeof ApiV1OrgsOrgIdRolesIndexRoute
+  '/api/v1/orgs/$orgId/bank-accounts/$accountId/imports': typeof ApiV1OrgsOrgIdBankAccountsAccountIdImportsRoute
+  '/api/v1/orgs/$orgId/bank-accounts/$accountId/transactions': typeof ApiV1OrgsOrgIdBankAccountsAccountIdTransactionsRoute
   '/api/v1/orgs/$orgId/notifications/$id/read': typeof ApiV1OrgsOrgIdNotificationsIdReadRoute
 }
 export interface FileRouteTypes {
@@ -569,12 +599,15 @@ export interface FileRouteTypes {
     | '/api/v1/orgs/$orgId/members/$userId'
     | '/api/v1/orgs/$orgId/members/me'
     | '/api/v1/orgs/$orgId/roles/$roleId'
+    | '/api/v1/orgs/$orgId/bank-accounts/'
     | '/api/v1/orgs/$orgId/customers/'
     | '/api/v1/orgs/$orgId/documents/'
     | '/api/v1/orgs/$orgId/invites/'
     | '/api/v1/orgs/$orgId/members/'
     | '/api/v1/orgs/$orgId/notifications/'
     | '/api/v1/orgs/$orgId/roles/'
+    | '/api/v1/orgs/$orgId/bank-accounts/$accountId/imports'
+    | '/api/v1/orgs/$orgId/bank-accounts/$accountId/transactions'
     | '/api/v1/orgs/$orgId/notifications/$id/read'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -624,12 +657,15 @@ export interface FileRouteTypes {
     | '/api/v1/orgs/$orgId/members/$userId'
     | '/api/v1/orgs/$orgId/members/me'
     | '/api/v1/orgs/$orgId/roles/$roleId'
+    | '/api/v1/orgs/$orgId/bank-accounts'
     | '/api/v1/orgs/$orgId/customers'
     | '/api/v1/orgs/$orgId/documents'
     | '/api/v1/orgs/$orgId/invites'
     | '/api/v1/orgs/$orgId/members'
     | '/api/v1/orgs/$orgId/notifications'
     | '/api/v1/orgs/$orgId/roles'
+    | '/api/v1/orgs/$orgId/bank-accounts/$accountId/imports'
+    | '/api/v1/orgs/$orgId/bank-accounts/$accountId/transactions'
     | '/api/v1/orgs/$orgId/notifications/$id/read'
   id:
     | '__root__'
@@ -680,12 +716,15 @@ export interface FileRouteTypes {
     | '/api/v1/orgs/$orgId/members/$userId'
     | '/api/v1/orgs/$orgId/members/me'
     | '/api/v1/orgs/$orgId/roles/$roleId'
+    | '/api/v1/orgs/$orgId/bank-accounts/'
     | '/api/v1/orgs/$orgId/customers/'
     | '/api/v1/orgs/$orgId/documents/'
     | '/api/v1/orgs/$orgId/invites/'
     | '/api/v1/orgs/$orgId/members/'
     | '/api/v1/orgs/$orgId/notifications/'
     | '/api/v1/orgs/$orgId/roles/'
+    | '/api/v1/orgs/$orgId/bank-accounts/$accountId/imports'
+    | '/api/v1/orgs/$orgId/bank-accounts/$accountId/transactions'
     | '/api/v1/orgs/$orgId/notifications/$id/read'
   fileRoutesById: FileRoutesById
 }
@@ -717,12 +756,15 @@ export interface RootRouteChildren {
   ApiV1OrgsOrgIdMembersUserIdRoute: typeof ApiV1OrgsOrgIdMembersUserIdRoute
   ApiV1OrgsOrgIdMembersMeRoute: typeof ApiV1OrgsOrgIdMembersMeRoute
   ApiV1OrgsOrgIdRolesRoleIdRoute: typeof ApiV1OrgsOrgIdRolesRoleIdRoute
+  ApiV1OrgsOrgIdBankAccountsIndexRoute: typeof ApiV1OrgsOrgIdBankAccountsIndexRoute
   ApiV1OrgsOrgIdCustomersIndexRoute: typeof ApiV1OrgsOrgIdCustomersIndexRoute
   ApiV1OrgsOrgIdDocumentsIndexRoute: typeof ApiV1OrgsOrgIdDocumentsIndexRoute
   ApiV1OrgsOrgIdInvitesIndexRoute: typeof ApiV1OrgsOrgIdInvitesIndexRoute
   ApiV1OrgsOrgIdMembersIndexRoute: typeof ApiV1OrgsOrgIdMembersIndexRoute
   ApiV1OrgsOrgIdNotificationsIndexRoute: typeof ApiV1OrgsOrgIdNotificationsIndexRoute
   ApiV1OrgsOrgIdRolesIndexRoute: typeof ApiV1OrgsOrgIdRolesIndexRoute
+  ApiV1OrgsOrgIdBankAccountsAccountIdImportsRoute: typeof ApiV1OrgsOrgIdBankAccountsAccountIdImportsRoute
+  ApiV1OrgsOrgIdBankAccountsAccountIdTransactionsRoute: typeof ApiV1OrgsOrgIdBankAccountsAccountIdTransactionsRoute
   ApiV1OrgsOrgIdNotificationsIdReadRoute: typeof ApiV1OrgsOrgIdNotificationsIdReadRoute
 }
 
@@ -1008,6 +1050,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiV1OrgsOrgIdMeRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/v1/orgs/$orgId/bank-accounts/': {
+      id: '/api/v1/orgs/$orgId/bank-accounts/'
+      path: '/api/v1/orgs/$orgId/bank-accounts'
+      fullPath: '/api/v1/orgs/$orgId/bank-accounts/'
+      preLoaderRoute: typeof ApiV1OrgsOrgIdBankAccountsIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/v1/orgs/$orgId/customers/': {
       id: '/api/v1/orgs/$orgId/customers/'
       path: '/api/v1/orgs/$orgId/customers'
@@ -1097,6 +1146,20 @@ declare module '@tanstack/react-router' {
       path: '/api/v1/orgs/$orgId/roles/$roleId'
       fullPath: '/api/v1/orgs/$orgId/roles/$roleId'
       preLoaderRoute: typeof ApiV1OrgsOrgIdRolesRoleIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/v1/orgs/$orgId/bank-accounts/$accountId/imports': {
+      id: '/api/v1/orgs/$orgId/bank-accounts/$accountId/imports'
+      path: '/api/v1/orgs/$orgId/bank-accounts/$accountId/imports'
+      fullPath: '/api/v1/orgs/$orgId/bank-accounts/$accountId/imports'
+      preLoaderRoute: typeof ApiV1OrgsOrgIdBankAccountsAccountIdImportsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/v1/orgs/$orgId/bank-accounts/$accountId/transactions': {
+      id: '/api/v1/orgs/$orgId/bank-accounts/$accountId/transactions'
+      path: '/api/v1/orgs/$orgId/bank-accounts/$accountId/transactions'
+      fullPath: '/api/v1/orgs/$orgId/bank-accounts/$accountId/transactions'
+      preLoaderRoute: typeof ApiV1OrgsOrgIdBankAccountsAccountIdTransactionsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/api/v1/orgs/$orgId/notifications/$id/read': {
@@ -1226,12 +1289,17 @@ const rootRouteChildren: RootRouteChildren = {
   ApiV1OrgsOrgIdMembersUserIdRoute: ApiV1OrgsOrgIdMembersUserIdRoute,
   ApiV1OrgsOrgIdMembersMeRoute: ApiV1OrgsOrgIdMembersMeRoute,
   ApiV1OrgsOrgIdRolesRoleIdRoute: ApiV1OrgsOrgIdRolesRoleIdRoute,
+  ApiV1OrgsOrgIdBankAccountsIndexRoute: ApiV1OrgsOrgIdBankAccountsIndexRoute,
   ApiV1OrgsOrgIdCustomersIndexRoute: ApiV1OrgsOrgIdCustomersIndexRoute,
   ApiV1OrgsOrgIdDocumentsIndexRoute: ApiV1OrgsOrgIdDocumentsIndexRoute,
   ApiV1OrgsOrgIdInvitesIndexRoute: ApiV1OrgsOrgIdInvitesIndexRoute,
   ApiV1OrgsOrgIdMembersIndexRoute: ApiV1OrgsOrgIdMembersIndexRoute,
   ApiV1OrgsOrgIdNotificationsIndexRoute: ApiV1OrgsOrgIdNotificationsIndexRoute,
   ApiV1OrgsOrgIdRolesIndexRoute: ApiV1OrgsOrgIdRolesIndexRoute,
+  ApiV1OrgsOrgIdBankAccountsAccountIdImportsRoute:
+    ApiV1OrgsOrgIdBankAccountsAccountIdImportsRoute,
+  ApiV1OrgsOrgIdBankAccountsAccountIdTransactionsRoute:
+    ApiV1OrgsOrgIdBankAccountsAccountIdTransactionsRoute,
   ApiV1OrgsOrgIdNotificationsIdReadRoute:
     ApiV1OrgsOrgIdNotificationsIdReadRoute,
 }

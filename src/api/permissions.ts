@@ -26,6 +26,10 @@ export const permissionText: Record<
     label: 'Hantera dokument',
     help: 'Ladda upp kvitton och andra underlag. Alla medlemmar kan se dokumenten.',
   },
+  'bank.manage': {
+    label: 'Hantera bankkonton',
+    help: 'Lägga till bankkonton och importera kontoutdrag. Alla medlemmar kan se transaktionerna.',
+  },
 }
 
 const errorText: Record<string, string> = {
@@ -39,6 +43,9 @@ const errorText: Record<string, string> = {
   bad_request: 'Uppgifterna är ogiltiga. Kontrollera dem och försök igen.',
   too_large: 'Filen är större än 20 MB.',
   unsupported_type: 'Filen måste vara en PDF, JPEG, PNG eller HEIC.',
+  unknown_format:
+    'Filen känns inte igen. Använd en camt.053-fil (XML) eller en CSV-export från Handelsbanken, SEB, Swedbank, Nordea eller Lunar.',
+  bad_row: 'En rad i filen går inte att läsa. Inget har importerats.',
   demo_session: 'Det här går inte i demoläget.',
   mandatory: 'Den här aviseringen går inte att stänga av.',
   too_many: 'Vi har nyss skickat en länk. Vänta en minut och försök igen.',

@@ -105,17 +105,22 @@ test('a cross-site POST with the session cookie is rejected', async ({
 
 test('creates an organisation after logging in and sees it listed', async ({
   page,
-}) => {
+}, testInfo) => {
+  // The fake gives 127.0.0.1 one person, shared by both projects and by re-runs on the same
+  // database, so a fixed name would be listed more than once.
+  const name = `Bolaget ${testInfo.project.name} ${String(Date.now())}`
   await page.goto('/app/login')
   await page.getByRole('button', { name: /annan enhet/ }).click()
   await expect(page).toHaveURL(/\/app$/, { timeout: 15_000 })
   await page.getByRole('link', { name: 'Organisation', exact: true }).click()
-  await page.getByLabel('Namn').fill('Bolaget AB')
+  await page.getByLabel('Namn').fill(name)
   await page.getByRole('button', { name: 'Skapa organisation' }).click()
   await expect(
-    page.getByRole('button', { name: /Bolaget AB.*Ägare/ }).first(),
+    page.getByRole('listitem').filter({ hasText: name }).getByRole('note'),
   ).toBeVisible()
-  await expect(page.getByRole('note')).toBeVisible()
+  await expect(
+    page.getByRole('button', { name: new RegExp(`${name}.*Ägare`) }),
+  ).toBeVisible()
 })
 
 test('deletes the account after a fresh BankID confirmation', async ({
