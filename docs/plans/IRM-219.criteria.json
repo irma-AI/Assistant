@@ -1,6 +1,6 @@
 [
   {"criterion": "DESIGN.md and next-step say what the issue wrote", "passes": true},
-  {"criterion": "Proof run on Hem and Kunder at every DESIGN.md size, 390×844 screenshots in the PR (detector part: audit/critique run, see Progress)", "passes": true},
+  {"criterion": "Proof run on Hem and Kunder at every DESIGN.md size, 390×844 screenshots in the PR (detector run; scored audit, polish and recheck not run, see Progress)", "passes": false},
   {"criterion": "Checks that can't run in the intake environment are named in the PR", "passes": true},
   {"criterion": "make check passes", "passes": true}
 ]
