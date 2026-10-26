@@ -1,4 +1,4 @@
-import { useNavigate } from '@tanstack/react-router'
+import { useNavigate, useRouter } from '@tanstack/react-router'
 import { useCallback, useEffect, useState } from 'react'
 import type { Dispatch, SetStateAction } from 'react'
 import {
@@ -38,16 +38,17 @@ function useDone(
   loggedIn?: () => void,
 ) {
   const navigate = useNavigate()
+  const { history } = useRouter()
   return useCallback(
     (startedOnThisDevice: boolean) => {
       if (purpose === 'login') {
         if (loggedIn) loggedIn()
-        else location.assign(takeNext())
+        else history.push(takeNext())
       } else if (startedOnThisDevice)
         setPhase({ name: 'idle', message: otherTabMessage })
       else void navigate({ to: '/app/radera-konto', search: { raderat: true } })
     },
-    [navigate, purpose, setPhase, loggedIn],
+    [navigate, history, purpose, setPhase, loggedIn],
   )
 }
 

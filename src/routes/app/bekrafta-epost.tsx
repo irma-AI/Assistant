@@ -1,4 +1,4 @@
-import { createFileRoute } from '@tanstack/react-router'
+import { Link, createFileRoute } from '@tanstack/react-router'
 import { useEffect, useState } from 'react'
 import { call } from './org/$orgId/-call'
 
@@ -24,7 +24,7 @@ function ConfirmEmail() {
       )}
       {state && <p role="alert">{state}</p>}
       <p>
-        <a href="/app/installningar">Till inställningar</a>
+        <Link to="/app/installningar">Till inställningar</Link>
       </p>
     </main>
   )
