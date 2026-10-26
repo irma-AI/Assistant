@@ -38,3 +38,20 @@ export const invite = z.object({
 export const invites = z.array(invite)
 export const createdInvite = z.object({ id: z.string(), token: z.string() })
 export const invitePreview = z.object({ organisation: z.string() })
+
+export const roleList = z.array(
+  z.object({
+    id: z.string(),
+    name: z.string(),
+    kind: z.string(),
+    permissions: z.array(z.string()),
+  }),
+)
+export const memberList = z.array(
+  z.object({
+    id: z.string(),
+    name: z.string(),
+    role_id: z.string(),
+    role: z.string(),
+  }),
+)
