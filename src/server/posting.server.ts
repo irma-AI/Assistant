@@ -7,7 +7,7 @@ import type { DB } from './db.gen'
 import { inOrganisation } from './tenant.server'
 import { draft, readVoucher, yearFor } from './vouchers.server'
 
-async function post(trx: Trx, orgId: string, id: string, who: Actor) {
+export async function post(trx: Trx, orgId: string, id: string, who: Actor) {
   const lines = await trx
     .selectFrom('voucher_lines')
     .select(['debit', 'credit'])

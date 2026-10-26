@@ -34,6 +34,10 @@ export const permissionText: Record<
     label: 'Hantera bokföringen',
     help: 'Skapa räkenskapsår, ändra kontoplanen och skapa, bokföra och korrigera verifikationer. Alla medlemmar kan se bokföringen.',
   },
+  'invoices.manage': {
+    label: 'Hantera fakturor',
+    help: 'Skapa, skicka och kreditera fakturor. Alla medlemmar kan se fakturorna.',
+  },
 }
 
 const errorText: Record<string, string> = {
@@ -58,6 +62,19 @@ const errorText: Record<string, string> = {
     'Verifikationen är redan bokförd. Korrigera den med en ny verifikation.',
   not_reversible:
     'Verifikationen går inte att korrigera. Den är inte bokförd eller redan korrigerad.',
+  customer_missing: 'Kunden finns inte längre. Välj en kund innan du skickar.',
+  company_details_missing:
+    'Organisationens företagsuppgifter saknas. Fyll i dem under Uppgifter först.',
+  buyer_vat_number_required:
+    'Omvänd betalningsskyldighet kräver köparens momsregistreringsnummer. Lägg till det på kunden.',
+  buyer_email_required: 'Kunden saknar e-postadress för fakturor.',
+  not_creditable: 'Bara en skickad faktura går att kreditera.',
+  credit_exceeds: 'Kreditfakturorna blir större än den ursprungliga fakturan.',
+  credit_before_invoice:
+    'Kreditfakturan kan inte vara daterad före fakturan den avser.',
+  no_amount: 'Fakturan har inget belopp att fakturera.',
+  invoice_email_failed:
+    'Fakturan är skickad men mejlet gick inte iväg. Ladda ner PDF:en eller försök igen om en stund.',
   document_linked: 'Underlaget hör redan till en verifikation.',
   bad_request: 'Uppgifterna är ogiltiga. Kontrollera dem och försök igen.',
   too_large: 'Filen är större än 20 MB.',

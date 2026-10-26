@@ -26,7 +26,7 @@ export const yearFor = async (trx: Trx, orgId: string, date: string) => {
 const total = (lines: VoucherInput['lines'], side: 'debit' | 'credit') =>
   lines.reduce((sum, l) => sum + l[side], 0)
 
-async function writeLines(
+export async function writeLines(
   trx: Trx,
   orgId: string,
   voucherId: string,
