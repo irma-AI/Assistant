@@ -68,11 +68,17 @@ function Company() {
   const [vat, setVat] = useState<string>()
   const [error, setError] = useState<string | null>(null)
   const [saved, setSaved] = useState(false)
+  const [loadFailed, setLoadFailed] = useState(false)
 
   useEffect(() => {
     void (async () => {
       const response = await fetch(url)
-      const data = response.ok ? company.parse(await response.json()) : null
+      // A failed read must not look like "nothing saved yet": saving that empty form would overwrite the details.
+      if (!response.ok) {
+        setLoadFailed(true)
+        return
+      }
+      const data = company.parse(await response.json())
       setVat(data?.vat_number)
       setForm(
         data
@@ -87,6 +93,12 @@ function Company() {
     })()
   }, [url])
 
+  if (loadFailed)
+    return (
+      <p role="alert">
+        Företagsuppgifterna kunde inte hämtas. Ladda om sidan och försök igen.
+      </p>
+    )
   if (mine === null || form === undefined) return <p>Laddar…</p>
   const canEdit = mine.includes('organisation.manage')
   const set = (patch: Partial<Form>) => {
