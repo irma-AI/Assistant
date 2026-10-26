@@ -169,3 +169,22 @@ export const newEmail = z.object({
   email: z.string().trim().max(254).pipe(z.email()),
 })
 export const emailToken = z.object({ token: z.string().max(100) })
+
+const text = (max: number) => z.string().trim().min(1).max(max).nullable()
+export const receiptFields = z
+  .strictObject({
+    supplier: text(200),
+    amount_ore: z.number().int().positive().max(999_999_999_999_999).nullable(),
+    receipt_date: z.iso.date().nullable(),
+    reference: text(50),
+    giro: text(20),
+  })
+  .partial()
+export const receiptLink = z.object({
+  transactionId: z.uuid(),
+  coversOre: z.number().int().positive().optional(),
+})
+export const receiptVerdict = z.object({
+  verdict: z.enum(['confirmed', 'rejected']),
+})
+export const receiptSettings = z.object({ suggestions: z.boolean() })

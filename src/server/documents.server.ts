@@ -48,6 +48,38 @@ export const listDocuments = (db: Kysely<DB>, userId: string, orgId: string) =>
       .execute()
   })
 
+// The bytes are written last, inside the transaction: if the file can't be written, the row rolls back with it.
+export async function storeDocument(
+  trx: Kysely<DB>,
+  orgId: string,
+  name: string,
+  bytes: Uint8Array,
+  base: Audit,
+) {
+  if (!bytes.length || !name || name.length > 255)
+    throw new HttpError(400, 'bad_request', false)
+  if (bytes.length > maxBytes) throw new HttpError(413, 'too_large', false)
+  const type = sniff(bytes)
+  if (!type) throw new HttpError(415, 'unsupported_type', false)
+  const id = randomUUID()
+  const row = await trx
+    .insertInto('documents')
+    .values({
+      id,
+      organisation_id: orgId,
+      name,
+      content_type: type,
+      size_bytes: bytes.length,
+      sha256: createHash('sha256').update(bytes).digest('hex'),
+      storage_key: `${orgId}/${id}`,
+    })
+    .returning(columns)
+    .executeTakeFirstOrThrow()
+  await audited(trx, 'document_uploaded', base, orgId, { document: id })
+  await storage.put(`${orgId}/${id}`, bytes)
+  return row
+}
+
 export const uploadDocument = (
   db: Kysely<DB>,
   userId: string,
@@ -58,29 +90,7 @@ export const uploadDocument = (
 ) =>
   inOrganisation(db, orgId, async (trx) => {
     await require(trx, userId, orgId, 'documents.manage')
-    if (!bytes.length || !name || name.length > 255)
-      throw new HttpError(400, 'bad_request', false)
-    if (bytes.length > maxBytes) throw new HttpError(413, 'too_large', false)
-    const type = sniff(bytes)
-    if (!type) throw new HttpError(415, 'unsupported_type', false)
-    const id = randomUUID()
-    const row = await trx
-      .insertInto('documents')
-      .values({
-        id,
-        organisation_id: orgId,
-        name,
-        content_type: type,
-        size_bytes: bytes.length,
-        sha256: createHash('sha256').update(bytes).digest('hex'),
-        storage_key: `${orgId}/${id}`,
-      })
-      .returning(columns)
-      .executeTakeFirstOrThrow()
-    await audited(trx, 'document_uploaded', base, orgId, { document: id })
-    // Last, inside the transaction: if the file can't be written, the row rolls back with it.
-    await storage.put(`${orgId}/${id}`, bytes)
-    return row
+    return storeDocument(trx, orgId, name, bytes, base)
   })
 
 export const openDocument = (

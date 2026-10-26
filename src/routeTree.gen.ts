@@ -65,6 +65,10 @@ import { Route as ApiV1OrgsOrgIdMembersIndexRouteImport } from './routes/api/v1/
 import { Route as ApiV1OrgsOrgIdMembersUserIdRouteImport } from './routes/api/v1/orgs/$orgId/members/$userId'
 import { Route as ApiV1OrgsOrgIdMembersMeRouteImport } from './routes/api/v1/orgs/$orgId/members/me'
 import { Route as ApiV1OrgsOrgIdNotificationsIndexRouteImport } from './routes/api/v1/orgs/$orgId/notifications/index'
+import { Route as ApiV1OrgsOrgIdReceiptsIndexRouteImport } from './routes/api/v1/orgs/$orgId/receipts/index'
+import { Route as ApiV1OrgsOrgIdReceiptsReceiptIdRouteImport } from './routes/api/v1/orgs/$orgId/receipts/$receiptId'
+import { Route as ApiV1OrgsOrgIdReceiptsSettingsRouteImport } from './routes/api/v1/orgs/$orgId/receipts/settings'
+import { Route as ApiV1OrgsOrgIdReceiptsUnmatchedRouteImport } from './routes/api/v1/orgs/$orgId/receipts/unmatched'
 import { Route as ApiV1OrgsOrgIdRolesIndexRouteImport } from './routes/api/v1/orgs/$orgId/roles/index'
 import { Route as ApiV1OrgsOrgIdRolesRoleIdRouteImport } from './routes/api/v1/orgs/$orgId/roles/$roleId'
 import { Route as ApiV1OrgsOrgIdBankAccountsAccountIdImportsRouteImport } from './routes/api/v1/orgs/$orgId/bank-accounts/$accountId/imports'
@@ -76,6 +80,7 @@ import { Route as ApiV1OrgsOrgIdBookkeepingFiscalYearsYearIdRouteImport } from '
 import { Route as ApiV1OrgsOrgIdBookkeepingVouchersIndexRouteImport } from './routes/api/v1/orgs/$orgId/bookkeeping/vouchers/index'
 import { Route as ApiV1OrgsOrgIdBookkeepingVouchersVoucherIdRouteImport } from './routes/api/v1/orgs/$orgId/bookkeeping/vouchers/$voucherId'
 import { Route as ApiV1OrgsOrgIdNotificationsIdReadRouteImport } from './routes/api/v1/orgs/$orgId/notifications/$id/read'
+import { Route as ApiV1OrgsOrgIdReceiptsMatchesMatchIdRouteImport } from './routes/api/v1/orgs/$orgId/receipts/matches/$matchId'
 import { Route as ApiV1OrgsOrgIdBookkeepingVouchersVoucherIdDocumentsRouteImport } from './routes/api/v1/orgs/$orgId/bookkeeping/vouchers/$voucherId/documents'
 import { Route as ApiV1OrgsOrgIdBookkeepingVouchersVoucherIdPostRouteImport } from './routes/api/v1/orgs/$orgId/bookkeeping/vouchers/$voucherId/post'
 import { Route as ApiV1OrgsOrgIdBookkeepingVouchersVoucherIdReverseRouteImport } from './routes/api/v1/orgs/$orgId/bookkeeping/vouchers/$voucherId/reverse'
@@ -374,6 +379,30 @@ const ApiV1OrgsOrgIdNotificationsIndexRoute =
     path: '/api/v1/orgs/$orgId/notifications/',
     getParentRoute: () => rootRouteImport,
   } as any)
+const ApiV1OrgsOrgIdReceiptsIndexRoute =
+  ApiV1OrgsOrgIdReceiptsIndexRouteImport.update({
+    id: '/api/v1/orgs/$orgId/receipts/',
+    path: '/api/v1/orgs/$orgId/receipts/',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const ApiV1OrgsOrgIdReceiptsReceiptIdRoute =
+  ApiV1OrgsOrgIdReceiptsReceiptIdRouteImport.update({
+    id: '/api/v1/orgs/$orgId/receipts/$receiptId',
+    path: '/api/v1/orgs/$orgId/receipts/$receiptId',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const ApiV1OrgsOrgIdReceiptsSettingsRoute =
+  ApiV1OrgsOrgIdReceiptsSettingsRouteImport.update({
+    id: '/api/v1/orgs/$orgId/receipts/settings',
+    path: '/api/v1/orgs/$orgId/receipts/settings',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const ApiV1OrgsOrgIdReceiptsUnmatchedRoute =
+  ApiV1OrgsOrgIdReceiptsUnmatchedRouteImport.update({
+    id: '/api/v1/orgs/$orgId/receipts/unmatched',
+    path: '/api/v1/orgs/$orgId/receipts/unmatched',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 const ApiV1OrgsOrgIdRolesIndexRoute =
   ApiV1OrgsOrgIdRolesIndexRouteImport.update({
     id: '/api/v1/orgs/$orgId/roles/',
@@ -438,6 +467,12 @@ const ApiV1OrgsOrgIdNotificationsIdReadRoute =
   ApiV1OrgsOrgIdNotificationsIdReadRouteImport.update({
     id: '/api/v1/orgs/$orgId/notifications/$id/read',
     path: '/api/v1/orgs/$orgId/notifications/$id/read',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const ApiV1OrgsOrgIdReceiptsMatchesMatchIdRoute =
+  ApiV1OrgsOrgIdReceiptsMatchesMatchIdRouteImport.update({
+    id: '/api/v1/orgs/$orgId/receipts/matches/$matchId',
+    path: '/api/v1/orgs/$orgId/receipts/matches/$matchId',
     getParentRoute: () => rootRouteImport,
   } as any)
 const ApiV1OrgsOrgIdBookkeepingVouchersVoucherIdDocumentsRoute =
@@ -510,6 +545,9 @@ export interface FileRoutesByFullPath {
   '/api/v1/orgs/$orgId/invites/$inviteId': typeof ApiV1OrgsOrgIdInvitesInviteIdRoute
   '/api/v1/orgs/$orgId/members/$userId': typeof ApiV1OrgsOrgIdMembersUserIdRoute
   '/api/v1/orgs/$orgId/members/me': typeof ApiV1OrgsOrgIdMembersMeRoute
+  '/api/v1/orgs/$orgId/receipts/$receiptId': typeof ApiV1OrgsOrgIdReceiptsReceiptIdRoute
+  '/api/v1/orgs/$orgId/receipts/settings': typeof ApiV1OrgsOrgIdReceiptsSettingsRoute
+  '/api/v1/orgs/$orgId/receipts/unmatched': typeof ApiV1OrgsOrgIdReceiptsUnmatchedRoute
   '/api/v1/orgs/$orgId/roles/$roleId': typeof ApiV1OrgsOrgIdRolesRoleIdRoute
   '/api/v1/orgs/$orgId/bank-accounts/': typeof ApiV1OrgsOrgIdBankAccountsIndexRoute
   '/api/v1/orgs/$orgId/customers/': typeof ApiV1OrgsOrgIdCustomersIndexRoute
@@ -517,6 +555,7 @@ export interface FileRoutesByFullPath {
   '/api/v1/orgs/$orgId/invites/': typeof ApiV1OrgsOrgIdInvitesIndexRoute
   '/api/v1/orgs/$orgId/members/': typeof ApiV1OrgsOrgIdMembersIndexRoute
   '/api/v1/orgs/$orgId/notifications/': typeof ApiV1OrgsOrgIdNotificationsIndexRoute
+  '/api/v1/orgs/$orgId/receipts/': typeof ApiV1OrgsOrgIdReceiptsIndexRoute
   '/api/v1/orgs/$orgId/roles/': typeof ApiV1OrgsOrgIdRolesIndexRoute
   '/api/v1/orgs/$orgId/bank-accounts/$accountId/imports': typeof ApiV1OrgsOrgIdBankAccountsAccountIdImportsRoute
   '/api/v1/orgs/$orgId/bank-accounts/$accountId/transactions': typeof ApiV1OrgsOrgIdBankAccountsAccountIdTransactionsRoute
@@ -524,6 +563,7 @@ export interface FileRoutesByFullPath {
   '/api/v1/orgs/$orgId/bookkeeping/fiscal-years/$yearId': typeof ApiV1OrgsOrgIdBookkeepingFiscalYearsYearIdRoute
   '/api/v1/orgs/$orgId/bookkeeping/vouchers/$voucherId': typeof ApiV1OrgsOrgIdBookkeepingVouchersVoucherIdRouteWithChildren
   '/api/v1/orgs/$orgId/notifications/$id/read': typeof ApiV1OrgsOrgIdNotificationsIdReadRoute
+  '/api/v1/orgs/$orgId/receipts/matches/$matchId': typeof ApiV1OrgsOrgIdReceiptsMatchesMatchIdRoute
   '/api/v1/orgs/$orgId/bookkeeping/accounts/': typeof ApiV1OrgsOrgIdBookkeepingAccountsIndexRoute
   '/api/v1/orgs/$orgId/bookkeeping/fiscal-years/': typeof ApiV1OrgsOrgIdBookkeepingFiscalYearsIndexRoute
   '/api/v1/orgs/$orgId/bookkeeping/vouchers/': typeof ApiV1OrgsOrgIdBookkeepingVouchersIndexRoute
@@ -581,6 +621,9 @@ export interface FileRoutesByTo {
   '/api/v1/orgs/$orgId/invites/$inviteId': typeof ApiV1OrgsOrgIdInvitesInviteIdRoute
   '/api/v1/orgs/$orgId/members/$userId': typeof ApiV1OrgsOrgIdMembersUserIdRoute
   '/api/v1/orgs/$orgId/members/me': typeof ApiV1OrgsOrgIdMembersMeRoute
+  '/api/v1/orgs/$orgId/receipts/$receiptId': typeof ApiV1OrgsOrgIdReceiptsReceiptIdRoute
+  '/api/v1/orgs/$orgId/receipts/settings': typeof ApiV1OrgsOrgIdReceiptsSettingsRoute
+  '/api/v1/orgs/$orgId/receipts/unmatched': typeof ApiV1OrgsOrgIdReceiptsUnmatchedRoute
   '/api/v1/orgs/$orgId/roles/$roleId': typeof ApiV1OrgsOrgIdRolesRoleIdRoute
   '/api/v1/orgs/$orgId/bank-accounts': typeof ApiV1OrgsOrgIdBankAccountsIndexRoute
   '/api/v1/orgs/$orgId/customers': typeof ApiV1OrgsOrgIdCustomersIndexRoute
@@ -588,6 +631,7 @@ export interface FileRoutesByTo {
   '/api/v1/orgs/$orgId/invites': typeof ApiV1OrgsOrgIdInvitesIndexRoute
   '/api/v1/orgs/$orgId/members': typeof ApiV1OrgsOrgIdMembersIndexRoute
   '/api/v1/orgs/$orgId/notifications': typeof ApiV1OrgsOrgIdNotificationsIndexRoute
+  '/api/v1/orgs/$orgId/receipts': typeof ApiV1OrgsOrgIdReceiptsIndexRoute
   '/api/v1/orgs/$orgId/roles': typeof ApiV1OrgsOrgIdRolesIndexRoute
   '/api/v1/orgs/$orgId/bank-accounts/$accountId/imports': typeof ApiV1OrgsOrgIdBankAccountsAccountIdImportsRoute
   '/api/v1/orgs/$orgId/bank-accounts/$accountId/transactions': typeof ApiV1OrgsOrgIdBankAccountsAccountIdTransactionsRoute
@@ -595,6 +639,7 @@ export interface FileRoutesByTo {
   '/api/v1/orgs/$orgId/bookkeeping/fiscal-years/$yearId': typeof ApiV1OrgsOrgIdBookkeepingFiscalYearsYearIdRoute
   '/api/v1/orgs/$orgId/bookkeeping/vouchers/$voucherId': typeof ApiV1OrgsOrgIdBookkeepingVouchersVoucherIdRouteWithChildren
   '/api/v1/orgs/$orgId/notifications/$id/read': typeof ApiV1OrgsOrgIdNotificationsIdReadRoute
+  '/api/v1/orgs/$orgId/receipts/matches/$matchId': typeof ApiV1OrgsOrgIdReceiptsMatchesMatchIdRoute
   '/api/v1/orgs/$orgId/bookkeeping/accounts': typeof ApiV1OrgsOrgIdBookkeepingAccountsIndexRoute
   '/api/v1/orgs/$orgId/bookkeeping/fiscal-years': typeof ApiV1OrgsOrgIdBookkeepingFiscalYearsIndexRoute
   '/api/v1/orgs/$orgId/bookkeeping/vouchers': typeof ApiV1OrgsOrgIdBookkeepingVouchersIndexRoute
@@ -654,6 +699,9 @@ export interface FileRoutesById {
   '/api/v1/orgs/$orgId/invites/$inviteId': typeof ApiV1OrgsOrgIdInvitesInviteIdRoute
   '/api/v1/orgs/$orgId/members/$userId': typeof ApiV1OrgsOrgIdMembersUserIdRoute
   '/api/v1/orgs/$orgId/members/me': typeof ApiV1OrgsOrgIdMembersMeRoute
+  '/api/v1/orgs/$orgId/receipts/$receiptId': typeof ApiV1OrgsOrgIdReceiptsReceiptIdRoute
+  '/api/v1/orgs/$orgId/receipts/settings': typeof ApiV1OrgsOrgIdReceiptsSettingsRoute
+  '/api/v1/orgs/$orgId/receipts/unmatched': typeof ApiV1OrgsOrgIdReceiptsUnmatchedRoute
   '/api/v1/orgs/$orgId/roles/$roleId': typeof ApiV1OrgsOrgIdRolesRoleIdRoute
   '/api/v1/orgs/$orgId/bank-accounts/': typeof ApiV1OrgsOrgIdBankAccountsIndexRoute
   '/api/v1/orgs/$orgId/customers/': typeof ApiV1OrgsOrgIdCustomersIndexRoute
@@ -661,6 +709,7 @@ export interface FileRoutesById {
   '/api/v1/orgs/$orgId/invites/': typeof ApiV1OrgsOrgIdInvitesIndexRoute
   '/api/v1/orgs/$orgId/members/': typeof ApiV1OrgsOrgIdMembersIndexRoute
   '/api/v1/orgs/$orgId/notifications/': typeof ApiV1OrgsOrgIdNotificationsIndexRoute
+  '/api/v1/orgs/$orgId/receipts/': typeof ApiV1OrgsOrgIdReceiptsIndexRoute
   '/api/v1/orgs/$orgId/roles/': typeof ApiV1OrgsOrgIdRolesIndexRoute
   '/api/v1/orgs/$orgId/bank-accounts/$accountId/imports': typeof ApiV1OrgsOrgIdBankAccountsAccountIdImportsRoute
   '/api/v1/orgs/$orgId/bank-accounts/$accountId/transactions': typeof ApiV1OrgsOrgIdBankAccountsAccountIdTransactionsRoute
@@ -668,6 +717,7 @@ export interface FileRoutesById {
   '/api/v1/orgs/$orgId/bookkeeping/fiscal-years/$yearId': typeof ApiV1OrgsOrgIdBookkeepingFiscalYearsYearIdRoute
   '/api/v1/orgs/$orgId/bookkeeping/vouchers/$voucherId': typeof ApiV1OrgsOrgIdBookkeepingVouchersVoucherIdRouteWithChildren
   '/api/v1/orgs/$orgId/notifications/$id/read': typeof ApiV1OrgsOrgIdNotificationsIdReadRoute
+  '/api/v1/orgs/$orgId/receipts/matches/$matchId': typeof ApiV1OrgsOrgIdReceiptsMatchesMatchIdRoute
   '/api/v1/orgs/$orgId/bookkeeping/accounts/': typeof ApiV1OrgsOrgIdBookkeepingAccountsIndexRoute
   '/api/v1/orgs/$orgId/bookkeeping/fiscal-years/': typeof ApiV1OrgsOrgIdBookkeepingFiscalYearsIndexRoute
   '/api/v1/orgs/$orgId/bookkeeping/vouchers/': typeof ApiV1OrgsOrgIdBookkeepingVouchersIndexRoute
@@ -728,6 +778,9 @@ export interface FileRouteTypes {
     | '/api/v1/orgs/$orgId/invites/$inviteId'
     | '/api/v1/orgs/$orgId/members/$userId'
     | '/api/v1/orgs/$orgId/members/me'
+    | '/api/v1/orgs/$orgId/receipts/$receiptId'
+    | '/api/v1/orgs/$orgId/receipts/settings'
+    | '/api/v1/orgs/$orgId/receipts/unmatched'
     | '/api/v1/orgs/$orgId/roles/$roleId'
     | '/api/v1/orgs/$orgId/bank-accounts/'
     | '/api/v1/orgs/$orgId/customers/'
@@ -735,6 +788,7 @@ export interface FileRouteTypes {
     | '/api/v1/orgs/$orgId/invites/'
     | '/api/v1/orgs/$orgId/members/'
     | '/api/v1/orgs/$orgId/notifications/'
+    | '/api/v1/orgs/$orgId/receipts/'
     | '/api/v1/orgs/$orgId/roles/'
     | '/api/v1/orgs/$orgId/bank-accounts/$accountId/imports'
     | '/api/v1/orgs/$orgId/bank-accounts/$accountId/transactions'
@@ -742,6 +796,7 @@ export interface FileRouteTypes {
     | '/api/v1/orgs/$orgId/bookkeeping/fiscal-years/$yearId'
     | '/api/v1/orgs/$orgId/bookkeeping/vouchers/$voucherId'
     | '/api/v1/orgs/$orgId/notifications/$id/read'
+    | '/api/v1/orgs/$orgId/receipts/matches/$matchId'
     | '/api/v1/orgs/$orgId/bookkeeping/accounts/'
     | '/api/v1/orgs/$orgId/bookkeeping/fiscal-years/'
     | '/api/v1/orgs/$orgId/bookkeeping/vouchers/'
@@ -799,6 +854,9 @@ export interface FileRouteTypes {
     | '/api/v1/orgs/$orgId/invites/$inviteId'
     | '/api/v1/orgs/$orgId/members/$userId'
     | '/api/v1/orgs/$orgId/members/me'
+    | '/api/v1/orgs/$orgId/receipts/$receiptId'
+    | '/api/v1/orgs/$orgId/receipts/settings'
+    | '/api/v1/orgs/$orgId/receipts/unmatched'
     | '/api/v1/orgs/$orgId/roles/$roleId'
     | '/api/v1/orgs/$orgId/bank-accounts'
     | '/api/v1/orgs/$orgId/customers'
@@ -806,6 +864,7 @@ export interface FileRouteTypes {
     | '/api/v1/orgs/$orgId/invites'
     | '/api/v1/orgs/$orgId/members'
     | '/api/v1/orgs/$orgId/notifications'
+    | '/api/v1/orgs/$orgId/receipts'
     | '/api/v1/orgs/$orgId/roles'
     | '/api/v1/orgs/$orgId/bank-accounts/$accountId/imports'
     | '/api/v1/orgs/$orgId/bank-accounts/$accountId/transactions'
@@ -813,6 +872,7 @@ export interface FileRouteTypes {
     | '/api/v1/orgs/$orgId/bookkeeping/fiscal-years/$yearId'
     | '/api/v1/orgs/$orgId/bookkeeping/vouchers/$voucherId'
     | '/api/v1/orgs/$orgId/notifications/$id/read'
+    | '/api/v1/orgs/$orgId/receipts/matches/$matchId'
     | '/api/v1/orgs/$orgId/bookkeeping/accounts'
     | '/api/v1/orgs/$orgId/bookkeeping/fiscal-years'
     | '/api/v1/orgs/$orgId/bookkeeping/vouchers'
@@ -871,6 +931,9 @@ export interface FileRouteTypes {
     | '/api/v1/orgs/$orgId/invites/$inviteId'
     | '/api/v1/orgs/$orgId/members/$userId'
     | '/api/v1/orgs/$orgId/members/me'
+    | '/api/v1/orgs/$orgId/receipts/$receiptId'
+    | '/api/v1/orgs/$orgId/receipts/settings'
+    | '/api/v1/orgs/$orgId/receipts/unmatched'
     | '/api/v1/orgs/$orgId/roles/$roleId'
     | '/api/v1/orgs/$orgId/bank-accounts/'
     | '/api/v1/orgs/$orgId/customers/'
@@ -878,6 +941,7 @@ export interface FileRouteTypes {
     | '/api/v1/orgs/$orgId/invites/'
     | '/api/v1/orgs/$orgId/members/'
     | '/api/v1/orgs/$orgId/notifications/'
+    | '/api/v1/orgs/$orgId/receipts/'
     | '/api/v1/orgs/$orgId/roles/'
     | '/api/v1/orgs/$orgId/bank-accounts/$accountId/imports'
     | '/api/v1/orgs/$orgId/bank-accounts/$accountId/transactions'
@@ -885,6 +949,7 @@ export interface FileRouteTypes {
     | '/api/v1/orgs/$orgId/bookkeeping/fiscal-years/$yearId'
     | '/api/v1/orgs/$orgId/bookkeeping/vouchers/$voucherId'
     | '/api/v1/orgs/$orgId/notifications/$id/read'
+    | '/api/v1/orgs/$orgId/receipts/matches/$matchId'
     | '/api/v1/orgs/$orgId/bookkeeping/accounts/'
     | '/api/v1/orgs/$orgId/bookkeeping/fiscal-years/'
     | '/api/v1/orgs/$orgId/bookkeeping/vouchers/'
@@ -921,6 +986,9 @@ export interface RootRouteChildren {
   ApiV1OrgsOrgIdInvitesInviteIdRoute: typeof ApiV1OrgsOrgIdInvitesInviteIdRoute
   ApiV1OrgsOrgIdMembersUserIdRoute: typeof ApiV1OrgsOrgIdMembersUserIdRoute
   ApiV1OrgsOrgIdMembersMeRoute: typeof ApiV1OrgsOrgIdMembersMeRoute
+  ApiV1OrgsOrgIdReceiptsReceiptIdRoute: typeof ApiV1OrgsOrgIdReceiptsReceiptIdRoute
+  ApiV1OrgsOrgIdReceiptsSettingsRoute: typeof ApiV1OrgsOrgIdReceiptsSettingsRoute
+  ApiV1OrgsOrgIdReceiptsUnmatchedRoute: typeof ApiV1OrgsOrgIdReceiptsUnmatchedRoute
   ApiV1OrgsOrgIdRolesRoleIdRoute: typeof ApiV1OrgsOrgIdRolesRoleIdRoute
   ApiV1OrgsOrgIdBankAccountsIndexRoute: typeof ApiV1OrgsOrgIdBankAccountsIndexRoute
   ApiV1OrgsOrgIdCustomersIndexRoute: typeof ApiV1OrgsOrgIdCustomersIndexRoute
@@ -928,6 +996,7 @@ export interface RootRouteChildren {
   ApiV1OrgsOrgIdInvitesIndexRoute: typeof ApiV1OrgsOrgIdInvitesIndexRoute
   ApiV1OrgsOrgIdMembersIndexRoute: typeof ApiV1OrgsOrgIdMembersIndexRoute
   ApiV1OrgsOrgIdNotificationsIndexRoute: typeof ApiV1OrgsOrgIdNotificationsIndexRoute
+  ApiV1OrgsOrgIdReceiptsIndexRoute: typeof ApiV1OrgsOrgIdReceiptsIndexRoute
   ApiV1OrgsOrgIdRolesIndexRoute: typeof ApiV1OrgsOrgIdRolesIndexRoute
   ApiV1OrgsOrgIdBankAccountsAccountIdImportsRoute: typeof ApiV1OrgsOrgIdBankAccountsAccountIdImportsRoute
   ApiV1OrgsOrgIdBankAccountsAccountIdTransactionsRoute: typeof ApiV1OrgsOrgIdBankAccountsAccountIdTransactionsRoute
@@ -935,6 +1004,7 @@ export interface RootRouteChildren {
   ApiV1OrgsOrgIdBookkeepingFiscalYearsYearIdRoute: typeof ApiV1OrgsOrgIdBookkeepingFiscalYearsYearIdRoute
   ApiV1OrgsOrgIdBookkeepingVouchersVoucherIdRoute: typeof ApiV1OrgsOrgIdBookkeepingVouchersVoucherIdRouteWithChildren
   ApiV1OrgsOrgIdNotificationsIdReadRoute: typeof ApiV1OrgsOrgIdNotificationsIdReadRoute
+  ApiV1OrgsOrgIdReceiptsMatchesMatchIdRoute: typeof ApiV1OrgsOrgIdReceiptsMatchesMatchIdRoute
   ApiV1OrgsOrgIdBookkeepingAccountsIndexRoute: typeof ApiV1OrgsOrgIdBookkeepingAccountsIndexRoute
   ApiV1OrgsOrgIdBookkeepingFiscalYearsIndexRoute: typeof ApiV1OrgsOrgIdBookkeepingFiscalYearsIndexRoute
   ApiV1OrgsOrgIdBookkeepingVouchersIndexRoute: typeof ApiV1OrgsOrgIdBookkeepingVouchersIndexRoute
@@ -1334,6 +1404,34 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiV1OrgsOrgIdNotificationsIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/v1/orgs/$orgId/receipts/': {
+      id: '/api/v1/orgs/$orgId/receipts/'
+      path: '/api/v1/orgs/$orgId/receipts'
+      fullPath: '/api/v1/orgs/$orgId/receipts/'
+      preLoaderRoute: typeof ApiV1OrgsOrgIdReceiptsIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/v1/orgs/$orgId/receipts/$receiptId': {
+      id: '/api/v1/orgs/$orgId/receipts/$receiptId'
+      path: '/api/v1/orgs/$orgId/receipts/$receiptId'
+      fullPath: '/api/v1/orgs/$orgId/receipts/$receiptId'
+      preLoaderRoute: typeof ApiV1OrgsOrgIdReceiptsReceiptIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/v1/orgs/$orgId/receipts/settings': {
+      id: '/api/v1/orgs/$orgId/receipts/settings'
+      path: '/api/v1/orgs/$orgId/receipts/settings'
+      fullPath: '/api/v1/orgs/$orgId/receipts/settings'
+      preLoaderRoute: typeof ApiV1OrgsOrgIdReceiptsSettingsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/v1/orgs/$orgId/receipts/unmatched': {
+      id: '/api/v1/orgs/$orgId/receipts/unmatched'
+      path: '/api/v1/orgs/$orgId/receipts/unmatched'
+      fullPath: '/api/v1/orgs/$orgId/receipts/unmatched'
+      preLoaderRoute: typeof ApiV1OrgsOrgIdReceiptsUnmatchedRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/v1/orgs/$orgId/roles/': {
       id: '/api/v1/orgs/$orgId/roles/'
       path: '/api/v1/orgs/$orgId/roles'
@@ -1409,6 +1507,13 @@ declare module '@tanstack/react-router' {
       path: '/api/v1/orgs/$orgId/notifications/$id/read'
       fullPath: '/api/v1/orgs/$orgId/notifications/$id/read'
       preLoaderRoute: typeof ApiV1OrgsOrgIdNotificationsIdReadRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/v1/orgs/$orgId/receipts/matches/$matchId': {
+      id: '/api/v1/orgs/$orgId/receipts/matches/$matchId'
+      path: '/api/v1/orgs/$orgId/receipts/matches/$matchId'
+      fullPath: '/api/v1/orgs/$orgId/receipts/matches/$matchId'
+      preLoaderRoute: typeof ApiV1OrgsOrgIdReceiptsMatchesMatchIdRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/api/v1/orgs/$orgId/bookkeeping/vouchers/$voucherId/documents': {
@@ -1589,6 +1694,9 @@ const rootRouteChildren: RootRouteChildren = {
   ApiV1OrgsOrgIdInvitesInviteIdRoute: ApiV1OrgsOrgIdInvitesInviteIdRoute,
   ApiV1OrgsOrgIdMembersUserIdRoute: ApiV1OrgsOrgIdMembersUserIdRoute,
   ApiV1OrgsOrgIdMembersMeRoute: ApiV1OrgsOrgIdMembersMeRoute,
+  ApiV1OrgsOrgIdReceiptsReceiptIdRoute: ApiV1OrgsOrgIdReceiptsReceiptIdRoute,
+  ApiV1OrgsOrgIdReceiptsSettingsRoute: ApiV1OrgsOrgIdReceiptsSettingsRoute,
+  ApiV1OrgsOrgIdReceiptsUnmatchedRoute: ApiV1OrgsOrgIdReceiptsUnmatchedRoute,
   ApiV1OrgsOrgIdRolesRoleIdRoute: ApiV1OrgsOrgIdRolesRoleIdRoute,
   ApiV1OrgsOrgIdBankAccountsIndexRoute: ApiV1OrgsOrgIdBankAccountsIndexRoute,
   ApiV1OrgsOrgIdCustomersIndexRoute: ApiV1OrgsOrgIdCustomersIndexRoute,
@@ -1596,6 +1704,7 @@ const rootRouteChildren: RootRouteChildren = {
   ApiV1OrgsOrgIdInvitesIndexRoute: ApiV1OrgsOrgIdInvitesIndexRoute,
   ApiV1OrgsOrgIdMembersIndexRoute: ApiV1OrgsOrgIdMembersIndexRoute,
   ApiV1OrgsOrgIdNotificationsIndexRoute: ApiV1OrgsOrgIdNotificationsIndexRoute,
+  ApiV1OrgsOrgIdReceiptsIndexRoute: ApiV1OrgsOrgIdReceiptsIndexRoute,
   ApiV1OrgsOrgIdRolesIndexRoute: ApiV1OrgsOrgIdRolesIndexRoute,
   ApiV1OrgsOrgIdBankAccountsAccountIdImportsRoute:
     ApiV1OrgsOrgIdBankAccountsAccountIdImportsRoute,
@@ -1609,6 +1718,8 @@ const rootRouteChildren: RootRouteChildren = {
     ApiV1OrgsOrgIdBookkeepingVouchersVoucherIdRouteWithChildren,
   ApiV1OrgsOrgIdNotificationsIdReadRoute:
     ApiV1OrgsOrgIdNotificationsIdReadRoute,
+  ApiV1OrgsOrgIdReceiptsMatchesMatchIdRoute:
+    ApiV1OrgsOrgIdReceiptsMatchesMatchIdRoute,
   ApiV1OrgsOrgIdBookkeepingAccountsIndexRoute:
     ApiV1OrgsOrgIdBookkeepingAccountsIndexRoute,
   ApiV1OrgsOrgIdBookkeepingFiscalYearsIndexRoute:

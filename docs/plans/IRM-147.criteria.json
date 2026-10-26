@@ -1,10 +1,34 @@
 [
-  {"criterion": "Every member can upload a receipt (web or photo) and enter supplier, amount and date by hand; the file goes through document storage", "passes": false},
-  {"criterion": "Match passes give 0.98 (reference), 0.92 (amount plus giro), 0.85 (amount within credit period), 0.70 (amount within 5 kr plus supplier name in bank text); nothing below 0.70 is suggested, each suggestion shows its reason and confidence", "passes": false},
-  {"criterion": "Suggestions are never booked silently: confirm, reject and correct each take one action and need bookkeeping.manage; sums on both sides must not exceed the amounts, so split matches work", "passes": false},
-  {"criterion": "A correction is remembered for the same supplier, and a switch turns suggestions off for the organisation", "passes": false},
-  {"criterion": "A list of unmatched transactions is available", "passes": false},
-  {"criterion": "Account suggestion for a receipt from what the organisation booked for the same supplier before", "passes": false},
-  {"criterion": "Email inbox: one address per organisation with a random code on one IMAP mailbox; mail with an unknown code is dropped; attachments go to document storage as received", "passes": false},
-  {"criterion": "The web has a receipts page: upload, edit fields, suggestions with accept/reject/correct, unmatched transactions, the switch; screenshots at 390 and 1280 px in the PR", "passes": false}
+ {
+  "criterion": "Every member can upload a receipt (web or photo) and enter supplier, amount and date by hand; the file goes through document storage",
+  "passes": true
+ },
+ {
+  "criterion": "Match passes give 0.98 (reference), 0.92 (amount plus giro), 0.85 (amount within credit period), 0.70 (amount within 5 kr plus supplier name in bank text); nothing below 0.70 is suggested, each suggestion shows its reason and confidence",
+  "passes": true
+ },
+ {
+  "criterion": "Suggestions are never booked silently: confirm, reject and correct each take one action and need bookkeeping.manage; sums on both sides must not exceed the amounts, so split matches work",
+  "passes": true
+ },
+ {
+  "criterion": "A correction is remembered for the same supplier, and a switch turns suggestions off for the organisation",
+  "passes": true
+ },
+ {
+  "criterion": "A list of unmatched transactions is available",
+  "passes": true
+ },
+ {
+  "criterion": "Account suggestion for a receipt from what the organisation booked for the same supplier before",
+  "passes": true
+ },
+ {
+  "criterion": "Email inbox: one address per organisation with a random code on one IMAP mailbox; mail with an unknown code is dropped; attachments go to document storage as received",
+  "passes": false
+ },
+ {
+  "criterion": "The web has a receipts page: upload, edit fields, suggestions with accept/reject/correct, unmatched transactions, the switch; screenshots at 390 and 1280 px in the PR",
+  "passes": false
+ }
 ]
