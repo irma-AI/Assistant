@@ -1,5 +1,8 @@
 import { expect, test } from '@playwright/test'
 import type { Page } from '@playwright/test'
+import { createElement } from 'react'
+import { renderToStaticMarkup } from 'react-dom/server'
+import { DatumRow } from '../src/ui/DatumRow'
 
 // Needs the in-process fake BankID, so it never runs against a deployed URL.
 test.skip(!!process.env.PLAYWRIGHT_BASE_URL, 'needs the local fake BankID')
@@ -172,16 +175,15 @@ test('at double text size no tab scrolls sideways and tab labels keep their size
 
 test('a person without an organisation is told so and can create one', async ({
   page,
-}, testInfo) => {
-  await loginTo(page, '/app', testInfo.workerIndex)
-  const create = page.getByRole('link', { name: 'Skapa organisation' })
-  // Shared test user: the earlier tests may already have made organisations.
-  test.skip(
-    !(await create.isVisible()),
-    'this user already has an organisation',
-  )
+}) => {
+  // The fake BankID gives each IP its own person, so an unused IP is a person with no organisation.
+  const ip = `198.18.${String(Math.floor(Math.random() * 256))}.${String(1 + Math.floor(Math.random() * 254))}`
+  await page.context().setExtraHTTPHeaders({ 'x-forwarded-for': ip })
+  await page.goto('/app')
+  await page.getByRole('button', { name: /annan enhet/ }).click()
+  await expect(page).toHaveURL(/\/app$/, { timeout: 15_000 })
   await expect(page.getByText('Du har ingen organisation än')).toBeVisible()
-  await create.click()
+  await page.getByRole('link', { name: 'Skapa organisation' }).click()
   const name = `Nya AB ${String(Date.now())}`
   await page.getByLabel('Namn').fill(name)
   await page.getByRole('button', { name: 'Skapa organisation' }).click()
@@ -215,15 +217,21 @@ test('at double text size Hem has no sideways scroll and Datumblock rows stack',
 }, testInfo) => {
   await page.setViewportSize({ width: 390, height: 844 })
   await loginTo(page, '/app', testInfo.workerIndex)
-  await page.evaluate(() => {
+  // A made-up row in the markup DatumRow really renders; no feature feeds Hem rows yet.
+  const row = renderToStaticMarkup(
+    createElement(DatumRow, {
+      due: '2026-05-12',
+      what: 'Moms',
+      amount: 12500,
+      now: new Date('2026-05-01T10:00:00Z'),
+    }),
+  )
+  await page.evaluate((html) => {
     document.documentElement.style.fontSize = '34px'
-    // Made-up row in the markup DatumRow renders; there is no data to show one yet.
-    document.querySelector('main')?.insertAdjacentHTML(
-      'beforeend',
-      `<ul><li class="datum-row"><time class="datum-tile"><strong>12</strong><span>maj</span></time>
-       <span class="datum-what">Moms</span><span class="datum-amount">12 500 kr om 11 dagar</span></li></ul>`,
-    )
-  })
+    document
+      .querySelector('main')
+      ?.insertAdjacentHTML('beforeend', `<ul>${html}</ul>`)
+  }, row)
   const [what, amount] = await Promise.all(
     ['.datum-what', '.datum-amount'].map((s) => page.locator(s).boundingBox()),
   )

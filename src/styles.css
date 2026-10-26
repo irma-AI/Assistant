@@ -387,17 +387,16 @@ button:active,
   text-align: right;
 }
 
+/* The name that switches organisation is a 48px target. */
+.company a {
+  display: inline-block;
+  min-height: 48px;
+  color: inherit;
+}
+
 /* Money panels sit side by side while there is room, and stack at large text. */
 .money {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(min(14rem, 100%), 1fr));
   column-gap: 0.75rem;
-}
-
-@media (max-width: 20rem) {
-  .datum-amount {
-    flex-basis: 100%;
-    margin-left: 0;
-    text-align: left;
-  }
 }

@@ -68,7 +68,7 @@ function Home() {
       </div>
       <Panel
         title="Att godkänna"
-        empty="Här visas förslag som väntar på ditt godkännande. Inget väntar."
+        empty="Här visas förslag som väntar på ditt godkännande. Inget är kopplat än."
       />
     </main>
   )
