@@ -57,3 +57,17 @@ test('/ is marked noindex only outside production', async ({ request }) => {
   if (production) expect(await response.text()).not.toContain(meta)
   else expect(await response.text()).toContain(meta)
 })
+
+test('an error thrown in the browser reaches /api/v1/client-errors', async ({
+  page,
+}) => {
+  await page.goto('/', { waitUntil: 'networkidle' })
+  const sent = page.waitForRequest('**/api/v1/client-errors')
+  await page.evaluate(() => {
+    setTimeout(() => {
+      throw new Error('boom')
+    })
+  })
+  const body: unknown = (await sent).postDataJSON()
+  expect(body).toMatchObject({ name: 'Error', message: 'boom' })
+})

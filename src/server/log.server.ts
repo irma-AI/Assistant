@@ -16,6 +16,7 @@ export const events = [
   'access_denied',
   'rate_limited',
   'unhandled_error',
+  'client_error',
 ] as const
 export type LogEvent = (typeof events)[number]
 type Level = 'info' | 'warn' | 'error'
