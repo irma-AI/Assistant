@@ -40,6 +40,8 @@ const errorText: Record<string, string> = {
   escalation: 'Du kan bara ge behörigheter som du själv har.',
   forbidden: 'Du har inte behörighet till det här.',
   conflict: 'Det finns redan en roll med det namnet.',
+  org_number_taken:
+    'Organisationsnumret används redan av en annan organisation. Kontakta supporten om det är fel.',
   bad_request: 'Uppgifterna är ogiltiga. Kontrollera dem och försök igen.',
   too_large: 'Filen är större än 20 MB.',
   unsupported_type: 'Filen måste vara en PDF, JPEG, PNG eller HEIC.',

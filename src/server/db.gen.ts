@@ -71,6 +71,28 @@ export interface BankTransactions {
   value_date: Timestamp | null;
 }
 
+export interface CompanyDetails {
+  accounting_method: string;
+  city: string;
+  company_form: string;
+  contact_email: string | null;
+  contact_phone: string | null;
+  f_skatt: boolean;
+  fiscal_year_end: Timestamp;
+  fiscal_year_start: Timestamp;
+  legal_name: string;
+  org_number: string;
+  organisation_id: string;
+  payment_kind: string;
+  payment_number: string;
+  postal_code: string;
+  seat: string;
+  street: string;
+  swish: string | null;
+  updated_at: Generated<Timestamp>;
+  vat_period: string;
+}
+
 export interface Customers {
   address: string;
   contact: string | null;
@@ -209,6 +231,7 @@ export interface DB {
   bank_accounts: BankAccounts;
   bank_imports: BankImports;
   bank_transactions: BankTransactions;
+  company_details: CompanyDetails;
   customers: Customers;
   documents: Documents;
   email_confirmations: EmailConfirmations;

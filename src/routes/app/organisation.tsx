@@ -14,7 +14,8 @@ const OrgLinks = ({ id }: { id: string }) => (
     <a href={`/app/org/${id}/medlemmar`}>Medlemmar</a>{' '}
     <a href={`/app/org/${id}/roller`}>Roller</a>{' '}
     <a href={`/app/org/${id}/kunder`}>Kunder</a>{' '}
-    <a href={`/app/org/${id}/notiser`}>Aviseringar</a>
+    <a href={`/app/org/${id}/notiser`}>Aviseringar</a>{' '}
+    <a href={`/app/org/${id}/uppgifter`}>Företagsuppgifter</a>
   </p>
 )
 
