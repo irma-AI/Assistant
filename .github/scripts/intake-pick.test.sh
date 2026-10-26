@@ -4,9 +4,9 @@ set -euo pipefail
 here=$(dirname "$0")
 fail=0
 
-# ready ID CREATED [BLOCKER_STATE_TYPE]: a Ready issue, blocked by one in that state type if given.
+# ready ID CREATED [BLOCKER_STATE_TYPE] [PRIORITY]: a Ready issue (priority 3 unless given), blocked by one in that state type if given.
 ready() {
-  jq -n --arg id "$1" --arg at "2026-10-23T$2:00.000Z" --arg b "${3:-}" '{identifier:$id, createdAt:$at,
+  jq -n --arg id "$1" --arg at "2026-10-23T$2:00.000Z" --arg b "${3:-}" --argjson p "${4:-3}" '{identifier:$id, priority:$p, createdAt:$at,
     inverseRelations:{pageInfo:{hasNextPage:false}, nodes:(if $b == "" then [] else
       [{type:"blocks", issue:{identifier:"IRM-1", state:{type:$b}}}, {type:"related", issue:{identifier:"IRM-2", state:{type:"started"}}}] end)}}'
 }
@@ -27,6 +27,9 @@ expect() {
 expect "nothing Ready" "$(input '[]' '[]')" "wait: nothing in Ready qualifies"
 expect "one Ready" "$(input '[]' "[$(ready IRM-12 10:00)]")" "fire IRM-12"
 expect "the oldest first" "$(input '[]' "[$(ready IRM-14 11:00), $(ready IRM-13 10:00)]")" "fire IRM-13"
+expect "a newer Urgent issue first" "$(input '[]' "[$(ready IRM-13 10:00 '' 3), $(ready IRM-14 11:00 '' 1)]")" "fire IRM-14"
+expect "the same priority, oldest first" "$(input '[]' "[$(ready IRM-14 11:00 '' 2), $(ready IRM-13 10:00 '' 2)]")" "fire IRM-13"
+expect "No priority after Low" "$(input '[]' "[$(ready IRM-13 10:00 '' 0), $(ready IRM-14 11:00 '' 4)]")" "fire IRM-14"
 expect "one in flight" "$(input '["IRM-11"]' "[$(ready IRM-12 10:00)]")" "wait: IRM-11 in flight"
 expect "a session watching its PR In Review" "$(input '["IRM-11/In Review"]' "[$(ready IRM-12 10:00)]")" "wait: IRM-11 in flight"
 expect "another state the query returned doesn't count" "$(input '["IRM-11/Needs input"]' "[$(ready IRM-12 10:00)]")" "fire IRM-12"
