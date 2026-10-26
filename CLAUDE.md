@@ -7,7 +7,7 @@ Agents build this repository end to end; nobody reviews code by hand. CI on GitH
 - The app is TanStack Start (React) on Node, with pnpm; `make install` sets up the pinned tools and dependencies, and `make dev` serves it. `make check` needs `DATABASE_URL` pointing at a PostgreSQL 16 database it may migrate.
 - Tests attach at three seams: API routes and server code with Vitest against a real PostgreSQL, pure functions on stored sample records, and the browser through Playwright in `e2e/` (WebKit, iPhone profiles).
 - Work starts from one Linear issue in the IRM team. Run it with the `next-step` skill (`.claude/skills/next-step/SKILL.md`), which keeps the issue's plan in `docs/plans/` on the branch.
-- Run `make check` before you open a PR. The git hooks run it too once `make setup` (or the SessionStart hook) has pointed git at `.githooks/`.
+- The pre-push hook runs `make check`, so a push is the proof it passes. `make setup` (or the SessionStart hook) points git at `.githooks/`.
 - Open the PR, then turn on auto-merge. The merge queue retests and merges it.
 - Only taste and user wording, money and new vendors, risk appetite, scope and priority, owner-only context and an issue that reads two ways are the owner's; what official docs, law or established practice answers is research (`shaping` skill). Comment an owner question on the issue, move it to Needs input, then pick up other work.
 
