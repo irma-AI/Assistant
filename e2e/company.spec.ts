@@ -17,7 +17,7 @@ test('an Ägare saves company details and sees the derived VAT number', async ({
   page,
 }, testInfo) => {
   await page.context().setExtraHTTPHeaders({
-    'x-forwarded-for': `198.51.100.${String(240 + testInfo.workerIndex)}`,
+    'x-forwarded-for': `198.51.100.${String(190 + testInfo.workerIndex)}`,
   })
   await page.goto('/app/login')
   await page.getByRole('button', { name: /annan enhet/ }).click()
