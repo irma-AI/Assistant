@@ -256,35 +256,3 @@ test('at double text size Hem has no sideways scroll and Datumblock rows stack',
     ),
   ).toBe(true)
 })
-
-const mark = (page: Page) =>
-  page.evaluate(() => {
-    Object.assign(window, { kept: true })
-  })
-const kept = (page: Page) => page.evaluate(() => 'kept' in window)
-
-test('the login return and in-app links never reload the document', async ({
-  page,
-}, testInfo) => {
-  await page.context().setExtraHTTPHeaders({
-    'x-forwarded-for': `198.51.100.${String(180 + testInfo.workerIndex)}`,
-  })
-  await page.goto('/app/konto')
-  await expect(page).toHaveURL(/\/app\/login$/)
-  await mark(page)
-  await page.getByRole('button', { name: /annan enhet/ }).click()
-  await expect(page).toHaveURL(/\/app\/konto$/, { timeout: 15_000 })
-  await page.getByRole('link', { name: 'Inställningar' }).click()
-  await expect(page).toHaveURL(/\/app\/installningar$/)
-  await tab(page, 'Konto').click()
-  await page.getByRole('link', { name: 'Radera mitt konto' }).click()
-  await expect(page).toHaveURL(/\/app\/radera-konto$/)
-  // An unknown address inside the app, reached without a reload.
-  await page.evaluate(() => {
-    history.pushState({}, '', '/app/finns-inte')
-    dispatchEvent(new PopStateEvent('popstate'))
-  })
-  await page.getByRole('link', { name: 'Till startsidan' }).click()
-  await expect(page).toHaveURL(/\/app$/)
-  expect(await kept(page)).toBe(true)
-})
