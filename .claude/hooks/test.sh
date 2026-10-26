@@ -14,6 +14,15 @@ expect "database types are refused" "$PWD/src/server/db.gen.ts" 2
 expect "a route is allowed" "$PWD/src/routes/index.tsx" 0
 expect "a migration is allowed" "$PWD/migrations/0002_x.sql" 0
 
+pr() {
+  echo "$2" | bash "$here/draft-pr.sh" > /dev/null 2>&1
+  got=$?
+  if [ "$got" = "$3" ]; then echo "ok    $1"; else echo "FAIL  $1: exit $got, want $3"; fail=1; fi
+}
+pr "a draft PR is refused" '{"tool_input": {"title": "x", "draft": true}}' 2
+pr "a ready PR is allowed" '{"tool_input": {"title": "x", "draft": false}}' 0
+pr "a PR without the flag is allowed" '{"tool_input": {"title": "x"}}' 0
+
 tmp=$(mktemp "${TMPDIR:-/tmp}/format.XXXXXX.ts")
 printf 'export const x = { a:1 }\n' > "$tmp"
 call "$tmp" | CLAUDE_PROJECT_DIR=$PWD bash "$here/format.sh"
