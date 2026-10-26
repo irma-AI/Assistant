@@ -11,27 +11,17 @@ export const Route = createFileRoute('/app/organisation')({
 
 const OrgLinks = ({ id }: { id: string }) => (
   <p>
-    <Link to="/app/org/$orgId/medlemmar" params={{ orgId: id }}>
-      Medlemmar
-    </Link>{' '}
-    <Link to="/app/org/$orgId/roller" params={{ orgId: id }}>
-      Roller
-    </Link>{' '}
-    <Link to="/app/org/$orgId/kunder" params={{ orgId: id }}>
-      Kunder
-    </Link>{' '}
+    <a href={`/app/org/${id}/medlemmar`}>Medlemmar</a>{' '}
+    <a href={`/app/org/${id}/roller`}>Roller</a>{' '}
+    <a href={`/app/org/${id}/kunder`}>Kunder</a>{' '}
     <Link to="/app/org/$orgId/fakturor" params={{ orgId: id }}>
       Fakturor
     </Link>{' '}
     <Link to="/app/org/$orgId/kvitton" params={{ orgId: id }}>
       Kvitton
     </Link>{' '}
-    <Link to="/app/org/$orgId/notiser" params={{ orgId: id }}>
-      Aviseringar
-    </Link>{' '}
-    <Link to="/app/org/$orgId/uppgifter" params={{ orgId: id }}>
-      Företagsuppgifter
-    </Link>
+    <a href={`/app/org/${id}/notiser`}>Aviseringar</a>{' '}
+    <a href={`/app/org/${id}/uppgifter`}>Företagsuppgifter</a>
   </p>
 )
 
