@@ -22,6 +22,10 @@ export const permissionText: Record<
     label: 'Hantera kunder',
     help: 'Lägga till, ändra, importera och ta bort kunder. Alla medlemmar kan se kunderna.',
   },
+  'documents.manage': {
+    label: 'Hantera dokument',
+    help: 'Ladda upp kvitton och andra underlag. Alla medlemmar kan se dokumenten.',
+  },
 }
 
 const errorText: Record<string, string> = {
@@ -33,6 +37,8 @@ const errorText: Record<string, string> = {
   forbidden: 'Du har inte behörighet till det här.',
   conflict: 'Det finns redan en roll med det namnet.',
   bad_request: 'Uppgifterna är ogiltiga. Kontrollera dem och försök igen.',
+  too_large: 'Filen är större än 20 MB.',
+  unsupported_type: 'Filen måste vara en PDF, JPEG, PNG eller HEIC.',
   demo_session: 'Det här går inte i demoläget.',
   mandatory: 'Den här aviseringen går inte att stänga av.',
   too_many: 'Vi har nyss skickat en länk. Vänta en minut och försök igen.',

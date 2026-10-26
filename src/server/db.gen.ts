@@ -53,6 +53,18 @@ export interface Customers {
   vat_number: string | null;
 }
 
+export interface Documents {
+  content_type: string;
+  created_at: Generated<Timestamp>;
+  id: Generated<string>;
+  name: string;
+  organisation_id: string;
+  retain_until: Timestamp | null;
+  sha256: string;
+  size_bytes: number;
+  storage_key: string;
+}
+
 export interface EmailConfirmations {
   email: string;
   expires_at: Timestamp;
@@ -161,6 +173,7 @@ export interface Users {
 export interface DB {
   audit_events: AuditEvents;
   customers: Customers;
+  documents: Documents;
   email_confirmations: EmailConfirmations;
   invites: Invites;
   login_attempts: LoginAttempts;

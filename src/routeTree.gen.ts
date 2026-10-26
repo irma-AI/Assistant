@@ -50,6 +50,8 @@ import { Route as ApiV1OrgsOrgIdMeRouteImport } from './routes/api/v1/orgs/$orgI
 import { Route as ApiV1OrgsOrgIdCustomersIndexRouteImport } from './routes/api/v1/orgs/$orgId/customers/index'
 import { Route as ApiV1OrgsOrgIdCustomersCustomerIdRouteImport } from './routes/api/v1/orgs/$orgId/customers/$customerId'
 import { Route as ApiV1OrgsOrgIdCustomersImportRouteImport } from './routes/api/v1/orgs/$orgId/customers/import'
+import { Route as ApiV1OrgsOrgIdDocumentsIndexRouteImport } from './routes/api/v1/orgs/$orgId/documents/index'
+import { Route as ApiV1OrgsOrgIdDocumentsDocumentIdRouteImport } from './routes/api/v1/orgs/$orgId/documents/$documentId'
 import { Route as ApiV1OrgsOrgIdInvitesIndexRouteImport } from './routes/api/v1/orgs/$orgId/invites/index'
 import { Route as ApiV1OrgsOrgIdInvitesInviteIdRouteImport } from './routes/api/v1/orgs/$orgId/invites/$inviteId'
 import { Route as ApiV1OrgsOrgIdMembersIndexRouteImport } from './routes/api/v1/orgs/$orgId/members/index'
@@ -271,6 +273,18 @@ const ApiV1OrgsOrgIdCustomersImportRoute =
     path: '/api/v1/orgs/$orgId/customers/import',
     getParentRoute: () => rootRouteImport,
   } as any)
+const ApiV1OrgsOrgIdDocumentsIndexRoute =
+  ApiV1OrgsOrgIdDocumentsIndexRouteImport.update({
+    id: '/api/v1/orgs/$orgId/documents/',
+    path: '/api/v1/orgs/$orgId/documents/',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const ApiV1OrgsOrgIdDocumentsDocumentIdRoute =
+  ApiV1OrgsOrgIdDocumentsDocumentIdRouteImport.update({
+    id: '/api/v1/orgs/$orgId/documents/$documentId',
+    path: '/api/v1/orgs/$orgId/documents/$documentId',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 const ApiV1OrgsOrgIdInvitesIndexRoute =
   ApiV1OrgsOrgIdInvitesIndexRouteImport.update({
     id: '/api/v1/orgs/$orgId/invites/',
@@ -366,11 +380,13 @@ export interface FileRoutesByFullPath {
   '/api/v1/auth/demo/': typeof ApiV1AuthDemoIndexRoute
   '/api/v1/orgs/$orgId/customers/$customerId': typeof ApiV1OrgsOrgIdCustomersCustomerIdRoute
   '/api/v1/orgs/$orgId/customers/import': typeof ApiV1OrgsOrgIdCustomersImportRoute
+  '/api/v1/orgs/$orgId/documents/$documentId': typeof ApiV1OrgsOrgIdDocumentsDocumentIdRoute
   '/api/v1/orgs/$orgId/invites/$inviteId': typeof ApiV1OrgsOrgIdInvitesInviteIdRoute
   '/api/v1/orgs/$orgId/members/$userId': typeof ApiV1OrgsOrgIdMembersUserIdRoute
   '/api/v1/orgs/$orgId/members/me': typeof ApiV1OrgsOrgIdMembersMeRoute
   '/api/v1/orgs/$orgId/roles/$roleId': typeof ApiV1OrgsOrgIdRolesRoleIdRoute
   '/api/v1/orgs/$orgId/customers/': typeof ApiV1OrgsOrgIdCustomersIndexRoute
+  '/api/v1/orgs/$orgId/documents/': typeof ApiV1OrgsOrgIdDocumentsIndexRoute
   '/api/v1/orgs/$orgId/invites/': typeof ApiV1OrgsOrgIdInvitesIndexRoute
   '/api/v1/orgs/$orgId/members/': typeof ApiV1OrgsOrgIdMembersIndexRoute
   '/api/v1/orgs/$orgId/notifications/': typeof ApiV1OrgsOrgIdNotificationsIndexRoute
@@ -417,11 +433,13 @@ export interface FileRoutesByTo {
   '/api/v1/auth/demo': typeof ApiV1AuthDemoIndexRoute
   '/api/v1/orgs/$orgId/customers/$customerId': typeof ApiV1OrgsOrgIdCustomersCustomerIdRoute
   '/api/v1/orgs/$orgId/customers/import': typeof ApiV1OrgsOrgIdCustomersImportRoute
+  '/api/v1/orgs/$orgId/documents/$documentId': typeof ApiV1OrgsOrgIdDocumentsDocumentIdRoute
   '/api/v1/orgs/$orgId/invites/$inviteId': typeof ApiV1OrgsOrgIdInvitesInviteIdRoute
   '/api/v1/orgs/$orgId/members/$userId': typeof ApiV1OrgsOrgIdMembersUserIdRoute
   '/api/v1/orgs/$orgId/members/me': typeof ApiV1OrgsOrgIdMembersMeRoute
   '/api/v1/orgs/$orgId/roles/$roleId': typeof ApiV1OrgsOrgIdRolesRoleIdRoute
   '/api/v1/orgs/$orgId/customers': typeof ApiV1OrgsOrgIdCustomersIndexRoute
+  '/api/v1/orgs/$orgId/documents': typeof ApiV1OrgsOrgIdDocumentsIndexRoute
   '/api/v1/orgs/$orgId/invites': typeof ApiV1OrgsOrgIdInvitesIndexRoute
   '/api/v1/orgs/$orgId/members': typeof ApiV1OrgsOrgIdMembersIndexRoute
   '/api/v1/orgs/$orgId/notifications': typeof ApiV1OrgsOrgIdNotificationsIndexRoute
@@ -470,11 +488,13 @@ export interface FileRoutesById {
   '/api/v1/auth/demo/': typeof ApiV1AuthDemoIndexRoute
   '/api/v1/orgs/$orgId/customers/$customerId': typeof ApiV1OrgsOrgIdCustomersCustomerIdRoute
   '/api/v1/orgs/$orgId/customers/import': typeof ApiV1OrgsOrgIdCustomersImportRoute
+  '/api/v1/orgs/$orgId/documents/$documentId': typeof ApiV1OrgsOrgIdDocumentsDocumentIdRoute
   '/api/v1/orgs/$orgId/invites/$inviteId': typeof ApiV1OrgsOrgIdInvitesInviteIdRoute
   '/api/v1/orgs/$orgId/members/$userId': typeof ApiV1OrgsOrgIdMembersUserIdRoute
   '/api/v1/orgs/$orgId/members/me': typeof ApiV1OrgsOrgIdMembersMeRoute
   '/api/v1/orgs/$orgId/roles/$roleId': typeof ApiV1OrgsOrgIdRolesRoleIdRoute
   '/api/v1/orgs/$orgId/customers/': typeof ApiV1OrgsOrgIdCustomersIndexRoute
+  '/api/v1/orgs/$orgId/documents/': typeof ApiV1OrgsOrgIdDocumentsIndexRoute
   '/api/v1/orgs/$orgId/invites/': typeof ApiV1OrgsOrgIdInvitesIndexRoute
   '/api/v1/orgs/$orgId/members/': typeof ApiV1OrgsOrgIdMembersIndexRoute
   '/api/v1/orgs/$orgId/notifications/': typeof ApiV1OrgsOrgIdNotificationsIndexRoute
@@ -524,11 +544,13 @@ export interface FileRouteTypes {
     | '/api/v1/auth/demo/'
     | '/api/v1/orgs/$orgId/customers/$customerId'
     | '/api/v1/orgs/$orgId/customers/import'
+    | '/api/v1/orgs/$orgId/documents/$documentId'
     | '/api/v1/orgs/$orgId/invites/$inviteId'
     | '/api/v1/orgs/$orgId/members/$userId'
     | '/api/v1/orgs/$orgId/members/me'
     | '/api/v1/orgs/$orgId/roles/$roleId'
     | '/api/v1/orgs/$orgId/customers/'
+    | '/api/v1/orgs/$orgId/documents/'
     | '/api/v1/orgs/$orgId/invites/'
     | '/api/v1/orgs/$orgId/members/'
     | '/api/v1/orgs/$orgId/notifications/'
@@ -575,11 +597,13 @@ export interface FileRouteTypes {
     | '/api/v1/auth/demo'
     | '/api/v1/orgs/$orgId/customers/$customerId'
     | '/api/v1/orgs/$orgId/customers/import'
+    | '/api/v1/orgs/$orgId/documents/$documentId'
     | '/api/v1/orgs/$orgId/invites/$inviteId'
     | '/api/v1/orgs/$orgId/members/$userId'
     | '/api/v1/orgs/$orgId/members/me'
     | '/api/v1/orgs/$orgId/roles/$roleId'
     | '/api/v1/orgs/$orgId/customers'
+    | '/api/v1/orgs/$orgId/documents'
     | '/api/v1/orgs/$orgId/invites'
     | '/api/v1/orgs/$orgId/members'
     | '/api/v1/orgs/$orgId/notifications'
@@ -627,11 +651,13 @@ export interface FileRouteTypes {
     | '/api/v1/auth/demo/'
     | '/api/v1/orgs/$orgId/customers/$customerId'
     | '/api/v1/orgs/$orgId/customers/import'
+    | '/api/v1/orgs/$orgId/documents/$documentId'
     | '/api/v1/orgs/$orgId/invites/$inviteId'
     | '/api/v1/orgs/$orgId/members/$userId'
     | '/api/v1/orgs/$orgId/members/me'
     | '/api/v1/orgs/$orgId/roles/$roleId'
     | '/api/v1/orgs/$orgId/customers/'
+    | '/api/v1/orgs/$orgId/documents/'
     | '/api/v1/orgs/$orgId/invites/'
     | '/api/v1/orgs/$orgId/members/'
     | '/api/v1/orgs/$orgId/notifications/'
@@ -662,11 +688,13 @@ export interface RootRouteChildren {
   ApiV1AuthDemoIndexRoute: typeof ApiV1AuthDemoIndexRoute
   ApiV1OrgsOrgIdCustomersCustomerIdRoute: typeof ApiV1OrgsOrgIdCustomersCustomerIdRoute
   ApiV1OrgsOrgIdCustomersImportRoute: typeof ApiV1OrgsOrgIdCustomersImportRoute
+  ApiV1OrgsOrgIdDocumentsDocumentIdRoute: typeof ApiV1OrgsOrgIdDocumentsDocumentIdRoute
   ApiV1OrgsOrgIdInvitesInviteIdRoute: typeof ApiV1OrgsOrgIdInvitesInviteIdRoute
   ApiV1OrgsOrgIdMembersUserIdRoute: typeof ApiV1OrgsOrgIdMembersUserIdRoute
   ApiV1OrgsOrgIdMembersMeRoute: typeof ApiV1OrgsOrgIdMembersMeRoute
   ApiV1OrgsOrgIdRolesRoleIdRoute: typeof ApiV1OrgsOrgIdRolesRoleIdRoute
   ApiV1OrgsOrgIdCustomersIndexRoute: typeof ApiV1OrgsOrgIdCustomersIndexRoute
+  ApiV1OrgsOrgIdDocumentsIndexRoute: typeof ApiV1OrgsOrgIdDocumentsIndexRoute
   ApiV1OrgsOrgIdInvitesIndexRoute: typeof ApiV1OrgsOrgIdInvitesIndexRoute
   ApiV1OrgsOrgIdMembersIndexRoute: typeof ApiV1OrgsOrgIdMembersIndexRoute
   ApiV1OrgsOrgIdNotificationsIndexRoute: typeof ApiV1OrgsOrgIdNotificationsIndexRoute
@@ -963,6 +991,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiV1OrgsOrgIdCustomersImportRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/v1/orgs/$orgId/documents/': {
+      id: '/api/v1/orgs/$orgId/documents/'
+      path: '/api/v1/orgs/$orgId/documents'
+      fullPath: '/api/v1/orgs/$orgId/documents/'
+      preLoaderRoute: typeof ApiV1OrgsOrgIdDocumentsIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/v1/orgs/$orgId/documents/$documentId': {
+      id: '/api/v1/orgs/$orgId/documents/$documentId'
+      path: '/api/v1/orgs/$orgId/documents/$documentId'
+      fullPath: '/api/v1/orgs/$orgId/documents/$documentId'
+      preLoaderRoute: typeof ApiV1OrgsOrgIdDocumentsDocumentIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/v1/orgs/$orgId/invites/': {
       id: '/api/v1/orgs/$orgId/invites/'
       path: '/api/v1/orgs/$orgId/invites'
@@ -1136,11 +1178,14 @@ const rootRouteChildren: RootRouteChildren = {
   ApiV1OrgsOrgIdCustomersCustomerIdRoute:
     ApiV1OrgsOrgIdCustomersCustomerIdRoute,
   ApiV1OrgsOrgIdCustomersImportRoute: ApiV1OrgsOrgIdCustomersImportRoute,
+  ApiV1OrgsOrgIdDocumentsDocumentIdRoute:
+    ApiV1OrgsOrgIdDocumentsDocumentIdRoute,
   ApiV1OrgsOrgIdInvitesInviteIdRoute: ApiV1OrgsOrgIdInvitesInviteIdRoute,
   ApiV1OrgsOrgIdMembersUserIdRoute: ApiV1OrgsOrgIdMembersUserIdRoute,
   ApiV1OrgsOrgIdMembersMeRoute: ApiV1OrgsOrgIdMembersMeRoute,
   ApiV1OrgsOrgIdRolesRoleIdRoute: ApiV1OrgsOrgIdRolesRoleIdRoute,
   ApiV1OrgsOrgIdCustomersIndexRoute: ApiV1OrgsOrgIdCustomersIndexRoute,
+  ApiV1OrgsOrgIdDocumentsIndexRoute: ApiV1OrgsOrgIdDocumentsIndexRoute,
   ApiV1OrgsOrgIdInvitesIndexRoute: ApiV1OrgsOrgIdInvitesIndexRoute,
   ApiV1OrgsOrgIdMembersIndexRoute: ApiV1OrgsOrgIdMembersIndexRoute,
   ApiV1OrgsOrgIdNotificationsIndexRoute: ApiV1OrgsOrgIdNotificationsIndexRoute,

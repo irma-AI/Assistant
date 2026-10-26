@@ -9,6 +9,7 @@ export const permissions = [
   'members.manage',
   'roles.manage',
   'customers.manage',
+  'documents.manage',
 ] as const
 export type Permission = (typeof permissions)[number]
 const isPermission = (p: string): p is Permission =>

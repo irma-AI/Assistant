@@ -40,6 +40,7 @@ export type AuditEvent = {
     | 'customer_updated'
     | 'customer_deleted'
     | 'customers_imported'
+    | 'document_uploaded'
     | 'authorization_refused'
     | 'account_deleted'
     | 'data_exported'
