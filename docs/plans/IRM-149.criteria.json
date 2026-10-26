@@ -1,7 +1,22 @@
 [
- {"criterion": "Vitest (real database): an incoming transaction with the invoice's OCR and amount produces a suggested match, and nothing is booked until a user confirms it. Confirming posts the settlement under the invoice method, and revenue and VAT under the cash method.", "passes": false},
- {"criterion": "Vitest: the matching passes give their confidence values. Below 0.70 there's no suggestion, only \"needs a person\".", "passes": false},
- {"criterion": "Vitest: a partial payment leaves the remaining amount open; an overpayment is flagged; a credit note reduces the open amount.", "passes": false},
- {"criterion": "Vitest: the paid, partly paid, overpaid, due tomorrow and overdue (first day, then weekly) events each create one IRM-156 event for members with invoices.manage only.", "passes": false},
- {"criterion": "Playwright (WebKit, iPhone profiles): a suggested payment shows on the invoice and is confirmed with one tap.", "passes": false}
+ {
+  "criterion": "Vitest (real database): an incoming transaction with the invoice's OCR and amount produces a suggested match, and nothing is booked until a user confirms it. Confirming posts the settlement under the invoice method, and revenue and VAT under the cash method.",
+  "passes": true
+ },
+ {
+  "criterion": "Vitest: the matching passes give their confidence values. Below 0.70 there's no suggestion, only \"needs a person\".",
+  "passes": true
+ },
+ {
+  "criterion": "Vitest: a partial payment leaves the remaining amount open; an overpayment is flagged; a credit note reduces the open amount.",
+  "passes": true
+ },
+ {
+  "criterion": "Vitest: the paid, partly paid, overpaid, due tomorrow and overdue (first day, then weekly) events each create one IRM-156 event for members with invoices.manage only.",
+  "passes": true
+ },
+ {
+  "criterion": "Playwright (WebKit, iPhone profiles): a suggested payment shows on the invoice and is confirmed with one tap.",
+  "passes": true
+ }
 ]
