@@ -57,9 +57,6 @@ function Customers() {
 
   return (
     <main>
-      <p>
-        <a href="/app">Tillbaka</a>
-      </p>
       <h1>Kunder</h1>
       {error && editing === null && <p role="alert">{error}</p>}
       <ul>

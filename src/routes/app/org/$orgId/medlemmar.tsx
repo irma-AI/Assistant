@@ -28,9 +28,6 @@ function Members() {
 
   return (
     <main>
-      <p>
-        <a href="/app">Tillbaka</a>
-      </p>
       <h1>Medlemmar</h1>
       {error && <p role="alert">{error}</p>}
       <ul>

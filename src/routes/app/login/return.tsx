@@ -1,5 +1,6 @@
 import { createFileRoute, useNavigate } from '@tanstack/react-router'
 import { useEffect, useState } from 'react'
+import { takeNext } from '#/ui/storage'
 import { expiredMessage, failedMessage, poll } from './-bankid'
 
 export const Route = createFileRoute('/app/login/return')({
@@ -30,11 +31,14 @@ function Return() {
             return
           }
           clearInterval(timer)
-          if (next.status === 'complete')
-            void (purpose === 'delete'
-              ? navigate({ to: '/app/radera-konto', search: { raderat: true } })
-              : navigate({ to: '/app' }))
-          else
+          if (next.status === 'complete') {
+            if (purpose === 'delete')
+              void navigate({
+                to: '/app/radera-konto',
+                search: { raderat: true },
+              })
+            else location.assign(takeNext())
+          } else
             setMessage(next.status === 'failed' ? next.message : expiredMessage)
         },
         () => undefined,

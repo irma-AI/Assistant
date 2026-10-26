@@ -14,10 +14,12 @@ test('a user confirms an email address in settings, then reads a notice and mark
   await page.goto('/app/login')
   await page.getByRole('button', { name: /annan enhet/ }).click()
   await expect(page).toHaveURL(/\/app$/, { timeout: 15_000 })
+  await page.getByRole('link', { name: 'Organisation', exact: true }).click()
   await page.getByLabel('Namn').fill('Aviserings AB')
   await page.getByRole('button', { name: 'Skapa organisation' }).click()
 
   const address = `ana-${testInfo.project.name}-${String(Date.now())}@example.test`
+  await page.getByRole('link', { name: 'Konto', exact: true }).click()
   await page.getByRole('link', { name: 'Inställningar' }).click()
   await page.getByLabel('E-postadress').fill(address)
   await page.getByRole('button', { name: 'Skicka bekräftelselänk' }).click()
@@ -31,7 +33,7 @@ test('a user confirms an email address in settings, then reads a notice and mark
   await expect(page.getByText('(bekräftad)')).toBeVisible()
 
   // No feature creates events yet, so the test records one as a feature would.
-  await page.goto('/app')
+  await page.goto('/app/organisation')
   const href = await page
     .getByRole('link', { name: 'Aviseringar' })
     .getAttribute('href')

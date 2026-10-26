@@ -50,9 +50,6 @@ function Settings() {
 
   return (
     <main>
-      <p>
-        <a href="/app">Tillbaka</a>
-      </p>
       <h1>Inställningar</h1>
       <h2>E-post för aviseringar</h2>
       <p>
