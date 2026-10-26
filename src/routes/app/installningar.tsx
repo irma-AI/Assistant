@@ -1,33 +1,29 @@
-import { createFileRoute } from '@tanstack/react-router'
-import { useCallback, useEffect, useState } from 'react'
+import { createFileRoute, useRouter } from '@tanstack/react-router'
+import { useState } from 'react'
 import type { SyntheticEvent } from 'react'
 import type { z } from 'zod'
 import { emailAddress, noticePreferences } from '#/api/schemas'
-import { call, useList } from './org/$orgId/-call'
+import { call, fetchJson, fetchList } from './org/$orgId/-call'
+import { isOld } from '#/ui/loaded'
 
 export const Route = createFileRoute('/app/installningar')({
+  shouldReload: ({ location }) => isOld(location.pathname),
+  loader: async () => {
+    const [address, prefs] = await Promise.all([
+      fetchJson('/api/v1/me/email', emailAddress),
+      fetchList('/api/v1/me/notifications', noticePreferences),
+    ])
+    return { address, prefs }
+  },
   component: Settings,
 })
 
 function Settings() {
-  const [address, setAddress] = useState<z.output<typeof emailAddress>>()
-  const [prefs, loadPrefs] = useList(
-    '/api/v1/me/notifications',
-    noticePreferences,
-  )
+  const { address, prefs } = Route.useLoaderData()
+  const router = useRouter()
   const [email, setEmail] = useState('')
   const [message, setMessage] = useState<string | null>(null)
   const [error, setError] = useState<string | null>(null)
-
-  const loadAddress = useCallback(async () => {
-    const response = await fetch('/api/v1/me/email')
-    if (response.ok) setAddress(emailAddress.parse(await response.json()))
-  }, [])
-  useEffect(() => {
-    void loadAddress()
-  }, [loadAddress])
-
-  if (address === undefined || prefs === undefined) return <p>Laddar…</p>
 
   async function save(event: SyntheticEvent) {
     event.preventDefault()
@@ -38,14 +34,14 @@ function Settings() {
         ? null
         : `Vi har skickat en länk till ${email}. Öppna den för att bekräfta adressen.`,
     )
-    await loadAddress()
+    await router.invalidate()
   }
 
   async function toggle(type: string, on: boolean) {
     setError(
       await call(`/api/v1/me/notifications/${type}`, 'PUT', { email: on }),
     )
-    await loadPrefs()
+    await router.invalidate()
   }
 
   return (

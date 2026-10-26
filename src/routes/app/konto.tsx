@@ -1,9 +1,14 @@
-import { Link, createFileRoute } from '@tanstack/react-router'
+import { Link, createFileRoute, useRouter } from '@tanstack/react-router'
 import { useState } from 'react'
 import { sessions } from '#/api/schemas'
-import { call, useList } from './org/$orgId/-call'
+import { call, fetchList } from './org/$orgId/-call'
+import { isOld } from '#/ui/loaded'
 
-export const Route = createFileRoute('/app/konto')({ component: Account })
+export const Route = createFileRoute('/app/konto')({
+  shouldReload: ({ location }) => isOld(location.pathname),
+  loader: () => fetchList('/api/v1/me/sessions', sessions),
+  component: Account,
+})
 
 const kinds: Record<string, string> = {
   web: 'Webben',
@@ -17,12 +22,12 @@ const when = (iso: string) =>
   })
 
 function Devices() {
-  const [rows, load] = useList('/api/v1/me/sessions', sessions)
+  const rows = Route.useLoaderData()
+  const router = useRouter()
   const [error, setError] = useState<string | null>(null)
-  if (rows === undefined) return <p>Laddar…</p>
   async function end(url: string) {
     setError(await call(url, 'DELETE'))
-    await load()
+    await router.invalidate()
   }
   return (
     <section className="panel" aria-labelledby="devices">

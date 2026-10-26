@@ -1,11 +1,26 @@
-import { createFileRoute } from '@tanstack/react-router'
-import { useCallback, useEffect, useState } from 'react'
+import { createFileRoute, useRouter } from '@tanstack/react-router'
+import { useState } from 'react'
 import type { z } from 'zod'
 import { kr } from '#/api/money'
 import { paymentOverview } from '#/api/schemas'
-import { call, usePermissions } from './-call'
+import { call, fetchPermissions } from './-call'
+import { isOld } from '#/ui/loaded'
 
 export const Route = createFileRoute('/app/org/$orgId/fakturor')({
+  shouldReload: ({ location }) => isOld(location.pathname),
+  loader: async ({ params }) => {
+    const [mine, response] = await Promise.all([
+      fetchPermissions(params.orgId),
+      fetch(`/api/v1/orgs/${params.orgId}/payments`),
+    ])
+    const parsed = paymentOverview.safeParse(
+      response.ok ? await response.json() : null,
+    )
+    const data: Overview = parsed.success
+      ? parsed.data
+      : { invoices: [], unmatched: [] }
+    return { mine, data }
+  },
   component: Invoices,
 })
 
@@ -70,26 +85,14 @@ function InvoiceItem(props: {
 function Invoices() {
   const { orgId } = Route.useParams()
   const base = `/api/v1/orgs/${orgId}/payments`
-  const mine = usePermissions(orgId)
-  const [data, setData] = useState<Overview>()
+  const { mine, data } = Route.useLoaderData()
+  const router = useRouter()
   const [error, setError] = useState<string | null>(null)
-  const load = useCallback(async () => {
-    const response = await fetch(base)
-    const parsed = paymentOverview.safeParse(
-      response.ok ? await response.json() : null,
-    )
-    setData(parsed.success ? parsed.data : { invoices: [], unmatched: [] })
-  }, [base])
-  useEffect(() => {
-    void load()
-  }, [load])
-
-  if (mine === null || !data) return <p>Laddar…</p>
   const canManage = mine.includes('invoices.manage')
   async function decide(id: string, verdict: 'confirmed' | 'rejected') {
     const failed = await call(`${base}/${id}`, 'PUT', { verdict })
     setError(failed)
-    if (!failed) await load()
+    if (!failed) await router.invalidate()
   }
 
   return (
