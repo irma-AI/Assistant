@@ -5,12 +5,12 @@ import * as documents from './documents.server'
 import { handle, json } from './orgs.api.server'
 
 // Reads the body but gives up at the cap, so a chunked upload without Content-Length is never buffered whole.
-async function readCapped(request: Request) {
+export async function readCapped(request: Request, max: number) {
   const chunks: Uint8Array[] = []
   let size = 0
   for await (const chunk of request.body ?? []) {
     size += chunk.length
-    if (size > documents.maxBytes) throw new HttpError(413, 'too_large', false)
+    if (size > max) throw new HttpError(413, 'too_large', false)
     chunks.push(chunk)
   }
   return Buffer.concat(chunks)
@@ -34,7 +34,7 @@ export const documentsApi = {
         if (Number(request.headers.get('content-length')) > documents.maxBytes)
           throw new HttpError(413, 'too_large', false)
         const name = new URL(request.url).searchParams.get('name') ?? ''
-        const bytes = await readCapped(request)
+        const bytes = await readCapped(request, documents.maxBytes)
         return json(
           await documents.uploadDocument(
             c.db,

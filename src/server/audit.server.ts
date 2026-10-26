@@ -41,6 +41,8 @@ export type AuditEvent = {
     | 'customer_deleted'
     | 'customers_imported'
     | 'document_uploaded'
+    | 'bank_account_created'
+    | 'bank_statement_imported'
     | 'authorization_refused'
     | 'account_deleted'
     | 'data_exported'

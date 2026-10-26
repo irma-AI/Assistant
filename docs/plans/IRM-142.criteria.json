@@ -1,0 +1,8 @@
+[
+  {"criterion": "Vitest against the real database: a made-up camt.053 file and a made-up file for each of the five CSV formats import into the transaction store with amounts in öre, dates, counterparty, reference and the source batch", "passes": true},
+  {"criterion": "Importing the same file twice adds nothing and the batch lists what was skipped; a CSV without bank IDs de-duplicates on the hash", "passes": true},
+  {"criterion": "A file in no known format is refused with a plain Swedish message", "passes": true},
+  {"criterion": "Windows-1252, a BOM, a Unicode minus and a space thousand separator each parse correctly", "passes": true},
+  {"criterion": "Only a member with bank.manage can import; every member can list transactions", "passes": true},
+  {"criterion": "The test files hold no real person's or company's data (guards/synthetic-data.sh)", "passes": true}
+]
