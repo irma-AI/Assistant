@@ -34,8 +34,8 @@ No type label, or two: ask (section 4).
 **UI steps.**
 1. No DESIGN.md or PRODUCT.md at the repository root: ask (section 4), because the look is the owner's call.
 2. Follow `.claude/skills/impeccable/SKILL.md` inside the world DESIGN.md sets. Skip its new-work flow and its interviews; a design choice the brief doesn't settle is a question (section 4). DESIGN.md and impeccable's craft floor (`.claude/skills/impeccable/reference/craft-floor.md`) set how complete the design must be; ponytail governs the code's structure only.
-3. Before the PR, run `impeccable audit` on the changed surface. Fix each P0 and P1 finding with the command it recommends, then run `impeccable polish`. A recommended command that changes the look or the words (`bolder`, `quieter`, `colorize`, `animate`, `delight`, `overdrive`, `clarify`, `distill`, `onboard`) is a question (section 4).
-4. Take before and after screenshots with Playwright at 390 and 1280 px wide, of made-up data only, because the repository is public, and put them in the PR.
+3. Sign in to the running app as the demo account (`docs/demo-account.md`); view each screen the change touches (shell or shared style: all) at DESIGN.md's sizes. Run `impeccable audit` and `critique` on what you see, not the source; skip critique's closing question. Fix each P0 and P1 with the command it recommends, then `impeccable polish` and recheck. A command that changes look or words (`bolder`, `quieter`, `colorize`, `animate`, `delight`, `overdrive`, `clarify`, `distill`, `onboard`) is a question (section 4).
+4. Put 390×844 before and after screenshots in the PR and list screens and sizes seen in **Progress**. Name a check that couldn't run, with the reason, in the PR; its criterion stays `passes: false`.
 
 **Whatever the label:**
 - A change to `CLAUDE.md`, a skill, a rule file or `docs/agents/` follows `.claude/skills/writing-for-agents/SKILL.md`.

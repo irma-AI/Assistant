@@ -71,6 +71,16 @@ The iOS and Android apps run this web code in a WebView, and they share **one de
 **Layout and navigation**
 - Content and tap targets stay clear of the status bar, notch, home indicator and Android navigation bar: pad with `env(safe-area-inset-*)`, and check on Android 15+, where the app targets SDK 36 and is always edge to edge (HIG Layout, Guides and safe areas; Android Edge-to-edge).
 - Lay out by available width: compact under 600 px, medium 600–839 px, expanded 840 px and up. Every width and both orientations offer the same functions, and rotating keeps state (Material Window size classes; HIG Layout, Size classes; Android quality Orientation_Transitions).
+- Check every screen at these sizes, all in dark, and 390×844 also in light and at 200 % text:
+
+  | Size | Why |
+  | -- | -- |
+  | 320×568 | WCAG 2.2 reflow (1.4.10): no sideways scroll at 320 px |
+  | 390×844 | The most common iPhone in Sweden; the look is judged here |
+  | 768×1024 | Medium width class, and the most common tablet in Sweden |
+  | 1280×800 | Expanded width class at the narrowest common desktop |
+
+  Swedish shares from Statcounter, September 2026, read 2026-10-26.
 - Top-level sections sit in a bottom bar of three to five destinations, each with an icon and a label, always visible, in fixed positions. With fewer than three, use no bar (Material Navigation bar; HIG Tab bars).
 - Every screen below the top level has an on-screen back control in its top bar. Android's back button and back gesture do the same thing: close the topmost dialog or sheet first, then go up one screen. Never show "tryck igen för att avsluta" (HIG Gestures; Android quality Back_Button_Nav, Back_Gesture_Nav; Predictive back).
 - Leaving the app and coming back restores exactly where the person was, including typed input. Leaving a form with unsaved input by any route asks first or keeps a draft (Android quality State_Preservation; HIG Modality).
