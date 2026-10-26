@@ -12,7 +12,7 @@ export function clientIp(request: Request) {
 }
 
 // Keeps the network, drops the host: IPv4 /24, IPv6 up to /48 (an address with `::` early keeps fewer groups).
-function truncate(ip: string | undefined) {
+export function truncate(ip: string | undefined) {
   if (ip && isIPv4(ip)) return `${ip.split('.').slice(0, 3).join('.')}.0`
   if (ip && isIPv6(ip))
     return `${ip.split(':').slice(0, 3).filter(Boolean).join(':')}::`
@@ -23,19 +23,28 @@ export type AuditEvent = {
   event:
     | 'login_success'
     | 'login_failure'
+    | 'login_started'
     | 'logout'
     | 'organisation_created'
     | 'member_added'
     | 'member_role_changed'
     | 'member_removed'
     | 'member_left'
+    | 'invite_created'
+    | 'invite_accepted'
+    | 'invite_revoked'
     | 'role_created'
     | 'role_updated'
     | 'role_deleted'
+    | 'customer_created'
+    | 'customer_updated'
+    | 'customer_deleted'
+    | 'customers_imported'
     | 'authorization_refused'
     | 'account_deleted'
     | 'data_exported'
     | 'demo_created'
+    | 'mcp_tool_called'
   userId?: string
   sessionKind?: string
   ip?: string

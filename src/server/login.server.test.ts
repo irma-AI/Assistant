@@ -244,3 +244,37 @@ test('a login prints no identity number, name, token or full IP to the logs', as
   })
   expect(output).not.toMatch(/\b(?:19|20)?\d{6}[-+]?\d{4}\b/)
 })
+
+test('start answers 429 after 20 starts from one /24, without placing an order, and logs no raw IP', async () => {
+  const warn = vi.spyOn(console, 'warn').mockImplementation(() => {
+    // collected below
+  })
+  const from = (host: number) =>
+    post(
+      { 'x-forwarded-for': `198.51.100.${String(host)}` },
+      { sameDevice: false },
+    )
+  for (let i = 1; i <= 20; i++)
+    expect((await start(from(i), db)).status).toBe(200)
+  const before = await attempts()
+  const refused = await start(from(99), db)
+  expect(refused.status).toBe(429)
+  expect(await attempts()).toBe(before)
+  const lines = warn.mock.calls.map((c) => String(c[0]))
+  warn.mockRestore()
+  const line = lines.find((l) => l.includes('rate_limited')) ?? ''
+  expect(JSON.parse(line)).toMatchObject({ event: 'rate_limited', status: 429 })
+  expect(line).not.toContain('198.51.100')
+  // the count is in the database, so another network is unaffected and a fresh instance still refuses
+  expect(
+    (
+      await start(
+        post({ 'x-forwarded-for': '203.0.113.9' }, { sameDevice: false }),
+        db,
+      )
+    ).status,
+  ).toBe(200)
+  vi.resetModules()
+  const fresh = await import('./login.server')
+  expect((await fresh.start(from(7), db)).status).toBe(429)
+})

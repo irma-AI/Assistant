@@ -1,0 +1,6 @@
+[{"criterion":"no session trailer described in guardrails","passes":true},
+{"criterion":"2.8, assumptions, young deps, 2.14, 2.16 fixed","passes":true},
+{"criterion":"records.md cookie row web-only plus bearer row","passes":true},
+{"criterion":"breach.md says issue holds no personal data","passes":true},
+{"criterion":"log-retention.sh shortcut comment","passes":true},
+{"criterion":"make check passes","passes":true}]

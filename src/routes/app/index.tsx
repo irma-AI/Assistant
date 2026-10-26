@@ -3,10 +3,19 @@ import { useCallback, useEffect, useState } from 'react'
 import type { SyntheticEvent } from 'react'
 import { organisations } from '#/api/schemas'
 import type { z } from 'zod'
+import { Invites } from './-Invites'
 
 export const Route = createFileRoute('/app/')({ component: App })
 
 type Orgs = z.infer<typeof organisations>
+
+const OrgLinks = ({ id }: { id: string }) => (
+  <p>
+    <a href={`/app/org/${id}/medlemmar`}>Medlemmar</a>{' '}
+    <a href={`/app/org/${id}/roller`}>Roller</a>{' '}
+    <a href={`/app/org/${id}/kunder`}>Kunder</a>
+  </p>
+)
 
 function App() {
   // undefined while loading, null when not logged in
@@ -60,6 +69,8 @@ function App() {
                   Organisationen har bara en Ägare. Vi rekommenderar två.
                 </p>
               )}
+              <OrgLinks id={o.id} />
+              <Invites orgId={o.id} />
             </li>
           ))}
         </ul>

@@ -41,6 +41,8 @@ The clock starts when the owner becomes aware of the breach (a processor's custo
 
 One private Linear issue per breach in team IRM, labelled `breach`. The log lives outside the public repository on purpose (owner decision 2026-10-24), so no breach detail goes in git, a PR or a public issue. A PR that fixes one refers to it only as "a breach issue", never by content.
 
+The issue holds no names, personnummer, contact details or tokens: it refers to people and records by count and category only.
+
 Each entry holds (Art. 33(5) and 33(3)):
 
 - when it happened, when it was discovered, who found it;

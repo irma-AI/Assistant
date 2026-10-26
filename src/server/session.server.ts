@@ -10,8 +10,11 @@ import { getDb } from './db.server'
 type Kind = 'web' | 'app' | 'demo'
 
 export const cookieName = '__Host-session'
-export const webSeconds = 12 * 60 * 60
-const appSeconds = 90 * 24 * 60 * 60
+// NIST SP 800-63B AAL2, on every client (IRM-130): 24 hours overall, 1 hour without a request.
+export const webSeconds = 24 * 60 * 60
+const idleSeconds = 60 * 60
+// last_used_at is written at most this often per session.
+const touchSeconds = 60
 
 const hash = (token: string) => createHash('sha256').update(token).digest()
 
@@ -21,14 +24,13 @@ export async function createSession(
   kind: Kind,
 ) {
   const token = randomBytes(32).toString('base64url')
-  const seconds = kind === 'app' ? appSeconds : webSeconds
   await db
     .insertInto('sessions')
     .values({
       token_hash: hash(token),
       user_id: userId,
       kind,
-      expires_at: sql<Date>`now() + ${seconds} * interval '1 second'`,
+      expires_at: sql<Date>`now() + ${webSeconds} * interval '1 second'`,
     })
     .execute()
   return token
@@ -51,25 +53,38 @@ function tokenOf(request: Request) {
   return cookieValue(request, cookieName)
 }
 
-// Returns the session's user and kind and, for an app session, moves its expiry forward in the same statement.
+// Returns the session's user and kind while it is within both limits; last_used_at moves at most once a minute.
 export async function authenticateSession(
   db: Kysely<DB> | undefined,
   request: Request,
 ) {
   const token = tokenOf(request)
   if (!token) return undefined
-  const row = await (db ?? getDb())
-    .updateTable('sessions')
-    .set({
-      last_used_at: sql<Date>`now()`,
-      expires_at: sql<Date>`case when kind = 'app' then now() + ${appSeconds} * interval '1 second' else expires_at end`,
-    })
+  const conn = db ?? getDb()
+  const row = await conn
+    .selectFrom('sessions')
+    .select(['user_id', 'kind'])
     .where('token_hash', '=', hash(token))
     .where('revoked_at', 'is', null)
     .where('expires_at', '>', sql<Date>`now()`)
-    .returning(['user_id', 'kind'])
+    .where(
+      'last_used_at',
+      '>',
+      sql<Date>`now() - ${idleSeconds} * interval '1 second'`,
+    )
     .executeTakeFirst()
-  return row && { userId: row.user_id, kind: row.kind }
+  if (!row) return undefined
+  await conn
+    .updateTable('sessions')
+    .set({ last_used_at: sql<Date>`now()` })
+    .where('token_hash', '=', hash(token))
+    .where(
+      'last_used_at',
+      '<',
+      sql<Date>`now() - ${touchSeconds} * interval '1 second'`,
+    )
+    .execute()
+  return { userId: row.user_id, kind: row.kind }
 }
 
 export async function authenticate(

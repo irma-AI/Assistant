@@ -2,10 +2,17 @@ import type { Kysely } from 'kysely'
 import { z } from 'zod'
 import type { Audit } from './access.server'
 import { HttpError, refuseDemo } from './access.server'
-import { newOrganisation, newRole, roleChange, roleEdit } from '#/api/schemas'
+import {
+  newInvite,
+  newOrganisation,
+  newRole,
+  roleChange,
+  roleEdit,
+} from '#/api/schemas'
 import { clientIp, recordAudit } from './audit.server'
 import type { DB } from './db.gen'
 import { getDb } from './db.server'
+import * as invites from './invites.server'
 import * as members from './members.server'
 import * as orgs from './orgs.server'
 import { authenticateSession } from './session.server'
@@ -17,7 +24,8 @@ type Ctx = {
   base: Audit
 }
 
-const json = (body: unknown, status = 200) => Response.json(body, { status })
+export const json = (body: unknown, status = 200) =>
+  Response.json(body, { status, headers: { 'cache-control': 'no-store' } })
 const done = async (action: Promise<void>) => {
   await action
   return new Response(null, { status: 204 })
@@ -25,7 +33,7 @@ const done = async (action: Promise<void>) => {
 
 // Every handler goes through here: session first, ids must be UUIDs (anything else is a 404),
 // and a refused authorisation is audited once the transaction has rolled back.
-async function handle(
+export async function handle(
   request: Request,
   ids: string[],
   run: (c: Ctx) => Promise<Response>,
@@ -45,13 +53,20 @@ async function handle(
       await recordAudit(db, {
         ...base,
         event: 'authorization_refused',
-        detail: { path: new URL(request.url).pathname, method: request.method },
+        detail: {
+          // An invite token in the address must never reach the audit log.
+          path: new URL(request.url).pathname.replace(
+            /\/invites\/[^/]+/,
+            '/invites/:token',
+          ),
+          method: request.method,
+        },
       })
     return json({ error: e.message }, e.status)
   }
 }
 
-async function parse<T extends z.ZodType>(request: Request, schema: T) {
+export async function parse<T extends z.ZodType>(request: Request, schema: T) {
   const parsed = schema.safeParse(await request.json().catch(() => null))
   if (!parsed.success) throw new HttpError(400, 'bad_request', false)
   return parsed.data
@@ -187,4 +202,58 @@ export const orgsApi = {
         done(members.leaveOrganisation(c.db, c.userId, orgId, c.base)),
       db,
     ),
+  invites: (request: Request, orgId: string, db?: Kysely<DB>) =>
+    handle(
+      request,
+      [orgId],
+      async (c) => json(await invites.listInvites(c.db, c.userId, orgId)),
+      db,
+    ),
+  createInvite: (request: Request, orgId: string, db?: Kysely<DB>) =>
+    handle(
+      request,
+      [orgId],
+      async (c) => {
+        refuseDemo(c.kind)
+        const { roleId } = await parse(request, newInvite)
+        return json(
+          await invites.createInvite(c.db, c.userId, orgId, roleId, c.base),
+          201,
+        )
+      },
+      db,
+    ),
+  revokeInvite: (
+    request: Request,
+    orgId: string,
+    inviteId: string,
+    db?: Kysely<DB>,
+  ) =>
+    handle(
+      request,
+      [orgId, inviteId],
+      async (c) =>
+        done(invites.revokeInvite(c.db, c.userId, orgId, inviteId, c.base)),
+      db,
+    ),
+  acceptInvite: (request: Request, token: string, db?: Kysely<DB>) =>
+    handle(
+      request,
+      [],
+      async (c) => {
+        refuseDemo(c.kind)
+        return json(await invites.acceptInvite(c.db, c.userId, token, c.base))
+      },
+      db,
+    ),
+}
+
+// Public: the invite screen reads this before login. The token's 256 bits are the only credential.
+export async function invitePreview(token: string, db: Kysely<DB> = getDb()) {
+  try {
+    return json(await invites.previewInvite(db, token))
+  } catch (e) {
+    if (!(e instanceof HttpError)) throw e
+    return json({ error: e.message }, e.status)
+  }
 }

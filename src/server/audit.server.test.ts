@@ -58,19 +58,21 @@ async function loginFrom(ip: string) {
   return session
 }
 
-test('login success, login failure and logout each write one row, with a truncated IP and no secrets', async () => {
+test('login success, login failure and logout each write one row (a start writes one too), with a truncated IP and no secrets', async () => {
   const session = await loginFrom('203.0.113.7')
   await logout(post('203.0.113.7', { cookie: session ?? '' }), db)
   await loginFrom(fakeCancelIp)
 
   const rows = await events()
   expect(rows.map((r) => r.event)).toEqual([
+    'login_started',
     'login_success',
     'logout',
+    'login_started',
     'login_failure',
   ])
-  expect(rows[0]?.ip).toBe('203.0.113.0')
-  expect(rows[0]?.user_id).toBeTruthy()
+  expect(rows[1]?.ip).toBe('203.0.113.0')
+  expect(rows[1]?.user_id).toBeTruthy()
   expect(JSON.stringify(rows)).not.toMatch(/\d{12}|__Host|token/)
 })
 

@@ -77,33 +77,55 @@ test.each([
   expect(await response.json()).toEqual({ error: 'unauthorized' })
 })
 
-test('a web session lasts 12 hours and does not slide', async () => {
+test.each(['web', 'app'] as const)(
+  'a %s session ends 24 hours after login even while in use',
+  async (kind) => {
+    const token = await createSession(db, userId, kind)
+    expect(await expiryOf()).toBeGreaterThan(23.9 * hours)
+    expect(await expiryOf()).toBeLessThanOrEqual(24 * hours)
+    await requireSession(bearer(token), db)
+    expect(await expiryOf()).toBeLessThanOrEqual(24 * hours)
+    await sql`update sessions set created_at = now() - interval '25 hours', expires_at = now() - interval '1 hour', last_used_at = now()`.execute(
+      db,
+    )
+    expect((await requireSession(bearer(token), db)).status).toBe(401)
+  },
+)
+
+test.each(['web', 'app'] as const)(
+  'a %s session is refused after 1 hour without a request',
+  async (kind) => {
+    const token = await createSession(db, userId, kind)
+    await sql`update sessions set last_used_at = now() - interval '59 minutes'`.execute(
+      db,
+    )
+    expect((await requireSession(bearer(token), db)).status).toBe(200)
+    await sql`update sessions set last_used_at = now() - interval '61 minutes'`.execute(
+      db,
+    )
+    expect((await requireSession(bearer(token), db)).status).toBe(401)
+  },
+)
+
+test('last_used_at is written at most once a minute per session', async () => {
   const token = await createSession(db, userId, 'web')
-  expect(await expiryOf()).toBeGreaterThan(11.9 * hours)
-  expect(await expiryOf()).toBeLessThanOrEqual(12 * hours)
+  const lastUsed = async () => {
+    const { rows } = await sql<{
+      at: Date
+    }>`select last_used_at as at from sessions where token_hash = sha256(${token}::bytea)`.execute(
+      db,
+    )
+    return rows[0]?.at.getTime()
+  }
+  const first = await lastUsed()
   await requireSession(bearer(token), db)
-  expect(await expiryOf()).toBeLessThanOrEqual(12 * hours)
-  await sql`update sessions set created_at = now() - interval '13 hours', expires_at = now() - interval '1 hour'`.execute(
+  expect(await lastUsed()).toBe(first)
+  await sql`update sessions set last_used_at = now() - interval '2 minutes' where token_hash = sha256(${token}::bytea)`.execute(
     db,
   )
-  expect((await requireSession(bearer(token), db)).status).toBe(401)
-})
-
-test('an app session used within 90 days stays valid and its expiry moves forward', async () => {
-  const token = await createSession(db, userId, 'app')
-  await sql`update sessions set expires_at = now() + interval '1 day' where kind = 'app'`.execute(
-    db,
-  )
-  expect((await requireSession(bearer(token), db)).status).toBe(200)
-  expect(await expiryOf()).toBeGreaterThan(89.9 * 24 * hours)
-})
-
-test('an app session unused for 90 days returns 401', async () => {
-  const token = await createSession(db, userId, 'app')
-  await sql`update sessions set expires_at = now() - interval '1 second' where kind = 'app'`.execute(
-    db,
-  )
-  expect((await requireSession(bearer(token), db)).status).toBe(401)
+  const old = await lastUsed()
+  await requireSession(bearer(token), db)
+  expect((await lastUsed()) ?? 0).toBeGreaterThan(old ?? 0)
 })
 
 test('after logout the same token returns 401, and the cookie is cleared', async () => {

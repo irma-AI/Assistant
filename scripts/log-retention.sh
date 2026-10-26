@@ -3,6 +3,7 @@
 # the Dokploy container (which has the Docker socket). Keep this file and the schedule's script the same.
 # IRM-115: keep at most 14 days of container logs for the Assistant (app, database) and Traefik.
 # json-file has no age limit, so lines older than the cutoff are cut out of each log in place.
+# shortcut: rewrites json-file logs in place, which Docker advises against; replace with per-container max-size/max-file when Dokploy exposes logging options.
 DRY=${DRY:-0}
 ids=$(docker ps -aq --filter name=assistant- --filter name=dokploy-traefik)
 [ -n "$ids" ] || { echo "no containers"; exit 0; }

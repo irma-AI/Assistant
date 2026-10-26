@@ -65,6 +65,8 @@ export default defineConfig({
           PII_HASH_KEY: 'e2e-only-pii-hash-key',
           PUBLIC_URL: 'https://127.0.0.1:3100',
           BANKID_FAKE_PORT: '3101',
+          // Every spec starts from the same few fake IPs, and re-runs share the database.
+          BANKID_START_LIMIT: '100000',
           ...selfSignedCert(),
         },
         reuseExistingServer: false,
