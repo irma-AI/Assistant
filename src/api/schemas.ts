@@ -203,6 +203,7 @@ export const receiptMatch = z.object({
     counterparty: z.string().nullable(),
   }),
 })
+const account = z.object({ number: z.string(), name: z.string() }).nullable()
 export const receiptList = z.array(
   z.object({
     id: z.string(),
@@ -216,9 +217,8 @@ export const receiptList = z.array(
     source: z.string(),
     mail_context: z.string().nullable(),
     matches: z.array(receiptMatch),
-    suggested_account: z
-      .object({ number: z.string(), name: z.string() })
-      .nullable(),
+    suggested_account: account,
+    suggested_vat_account: account,
   }),
 )
 export const unmatchedList = z.array(

@@ -4,6 +4,7 @@ import type { Audit } from './access.server'
 import { access, audited, HttpError } from './access.server'
 import type { DB } from './db.gen'
 import { storeDocument } from './documents.server'
+import { bookedBefore } from './receipts.account.server'
 import { suggest } from './receipts.suggest.server'
 import { inOrganisation } from './tenant.server'
 
@@ -60,6 +61,12 @@ export async function addReceipt(
 
 // The amount of a receipt a confirmed match rests on is not edited.
 async function amountMayChange(trx: Trx, id: string) {
+  await trx
+    .selectFrom('receipts')
+    .select('id')
+    .where('id', '=', id)
+    .forUpdate()
+    .execute()
   const m = await trx
     .selectFrom('receipt_matches')
     .select('id')
@@ -91,36 +98,6 @@ export const updateReceipt = (
     await audited(trx, 'receipt_updated', base, orgId, { receipt: id })
     await suggest(trx, orgId)
   })
-
-const suggestedAccount = async (trx: Trx, orgId: string, supplier: string) => {
-  const row = await trx
-    .selectFrom('voucher_lines as l')
-    .innerJoin('vouchers as v', 'v.id', 'l.voucher_id')
-    .innerJoin('voucher_documents as vd', 'vd.voucher_id', 'v.id')
-    .innerJoin('receipts as r', (j) =>
-      j
-        .onRef('r.document_id', '=', 'vd.document_id')
-        .onRef('r.organisation_id', '=', 'vd.organisation_id'),
-    )
-    .innerJoin('accounts as a', (j) =>
-      j
-        .onRef('a.number', '=', 'l.account')
-        .onRef('a.organisation_id', '=', 'l.organisation_id'),
-    )
-    .select(['a.number', 'a.name', sql<string>`count(*)`.as('n')])
-    .where('v.organisation_id', '=', orgId)
-    .where('v.status', '=', 'posted')
-    .where('l.debit', '>', '0')
-    .where(sql<boolean>`l.account >= '4'`)
-    .where(
-      sql<boolean>`lower(trim(r.supplier)) = ${supplier.toLowerCase().trim()}`,
-    )
-    .groupBy(['a.number', 'a.name'])
-    .orderBy('n', 'desc')
-    .limit(1)
-    .executeTakeFirst()
-  return row ? { number: row.number, name: row.name } : null
-}
 
 export const listReceipts = (db: Kysely<DB>, userId: string, orgId: string) =>
   inOrganisation(db, orgId, async (trx) => {
@@ -164,31 +141,31 @@ export const listReceipts = (db: Kysely<DB>, userId: string, orgId: string) =>
       .where('m.organisation_id', '=', orgId)
       .where('m.status', '!=', 'rejected')
       .execute()
-    return Promise.all(
-      receipts.map(async (r) => ({
-        ...r,
-        amount_ore: r.amount_ore === null ? null : Number(r.amount_ore),
-        matches: matches
-          .filter((m) => m.receipt_id === r.id)
-          .map((m) => ({
-            id: m.id,
-            status: m.status,
-            pass: m.pass,
-            confidence: m.confidence === null ? null : Number(m.confidence),
-            reason: m.reason,
-            covers_ore: Number(m.covers_ore),
-            transaction: {
-              id: m.transaction_id,
-              amount_ore: Number(m.transaction_amount_ore),
-              booking_date: m.booking_date,
-              counterparty: m.counterparty,
-            },
-          })),
-        suggested_account: r.supplier
-          ? await suggestedAccount(trx, orgId, r.supplier)
-          : null,
-      })),
-    )
+    const booked = await bookedBefore(trx, orgId)
+    return receipts.map((r) => ({
+      ...r,
+      amount_ore: r.amount_ore === null ? null : Number(r.amount_ore),
+      matches: matches
+        .filter((m) => m.receipt_id === r.id)
+        .map((m) => ({
+          id: m.id,
+          status: m.status,
+          pass: m.pass,
+          confidence: m.confidence === null ? null : Number(m.confidence),
+          reason: m.reason,
+          covers_ore: Number(m.covers_ore),
+          transaction: {
+            id: m.transaction_id,
+            amount_ore: Number(m.transaction_amount_ore),
+            booking_date: m.booking_date,
+            counterparty: m.counterparty,
+          },
+        })),
+      ...(booked.get((r.supplier ?? '').toLowerCase().trim()) ?? {
+        suggested_account: null,
+        suggested_vat_account: null,
+      }),
+    }))
   })
 
 // Payments no receipt covers yet, newest first.

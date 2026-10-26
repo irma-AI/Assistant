@@ -110,6 +110,14 @@ export const link = (
       .executeTakeFirst()
     if (!r || !t || Number(t.amount_ore) >= 0)
       throw new HttpError(404, 'not_found')
+    const same = await trx
+      .selectFrom('receipt_matches')
+      .select('id')
+      .where('receipt_id', '=', receiptId)
+      .where('bank_transaction_id', '=', transactionId)
+      .where('status', '=', 'confirmed')
+      .executeTakeFirst()
+    if (same) throw new HttpError(409, 'already_decided')
     const left = await room(trx, receiptId, transactionId)
     const amount = coversOre ?? left
     if (amount < 1 || amount > left) throw new HttpError(409, 'sum_exceeds')
@@ -176,4 +184,10 @@ export const setSuggestions = (
       on: String(on),
     })
     if (on) await suggest(trx, orgId)
+    else
+      await trx
+        .deleteFrom('receipt_matches')
+        .where('organisation_id', '=', orgId)
+        .where('status', '=', 'suggested')
+        .execute()
   })

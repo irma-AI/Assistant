@@ -1,12 +1,14 @@
 import { mkdtemp } from 'node:fs/promises'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
+import { sql } from 'kysely'
 import { beforeAll, expect, test } from 'vitest'
 import { z } from 'zod'
 import { db, newOrg, person, req, useDatabase } from './orgs.fixture'
 import { receiptsApi } from './receipts.api.server'
 import { bankWith, fill, list, unmatched, upload } from './receipts.fixture'
 import { ingestMessage } from './receipts.mail.server'
+import { inOrganisation } from './tenant.server'
 
 // Counterexamples from the skeptic pass on IRM-147, each failing before its fix.
 useDatabase()
@@ -134,4 +136,57 @@ test('an oversize or unreadable attachment does not stop the rest of the mail', 
     ].join('\r\n'),
   )
   expect(await ingestMessage(db, raw)).toEqual({ stored: 1, dropped: false })
+})
+
+test('turning suggestions off drops the open ones, and a pair already confirmed is not linked twice', async () => {
+  const owner = await person()
+  const org = (await newOrg(owner)).id
+  const [tx] = await bankWith(org, [
+    { amount: -10000, date: '2026-03-05', text: 'Okänd' },
+  ])
+  const r = await upload(owner, org)
+  await fill(owner, org, r.id, {
+    amount_ore: 10000,
+    receipt_date: '2026-03-01',
+  })
+  expect((await list(owner, org))[0]?.matches).toHaveLength(1)
+  await receiptsApi.setSettings(
+    req(owner, 'PUT', { suggestions: false }),
+    org,
+    db,
+  )
+  expect((await list(owner, org))[0]?.matches).toEqual([])
+  expect((await link(owner, org, r.id, tx ?? '')).status).toBe(201)
+  expect((await link(owner, org, r.id, tx ?? '')).status).toBe(409)
+})
+
+test('the app role finds an organisation by its inbox code but sees no other organisation rows', async () => {
+  const owner = await person()
+  const org = (await newOrg(owner)).id
+  const other = (await newOrg(await person())).id
+  process.env.RECEIPT_MAIL_ADDRESS = 'kvitto@example.test'
+  await receiptsApi.settings(req(owner, 'GET'), org, db)
+  const r = await upload(owner, org)
+  await inOrganisation(db, org, async (t) => {
+    await sql`set local role assistant_app`.execute(t)
+    const own = await sql<{
+      n: string
+    }>`select count(*) as n from receipts`.execute(t)
+    expect(own.rows[0]?.n).toBe('1')
+    const code = await sql<{
+      inbox_code: string
+    }>`select inbox_code from receipt_settings`.execute(t)
+    expect(code.rows).toHaveLength(1)
+    const found = await sql<{ id: string | null }>`
+      select organisation_for_inbox(${code.rows[0]?.inbox_code ?? ''}) as id`.execute(
+      t,
+    )
+    expect(found.rows[0]?.id).toBe(org)
+  })
+  await inOrganisation(db, other, async (t) => {
+    await sql`set local role assistant_app`.execute(t)
+    expect(
+      (await sql`select 1 from receipts where id = ${r.id}`.execute(t)).rows,
+    ).toEqual([])
+  })
 })

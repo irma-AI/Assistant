@@ -161,7 +161,8 @@ test('the suggested account is what the supplier was booked to before', async ()
           owner,
           'POST',
           draft('2026-03-10', [
-            { account: '5460', debit: 5000, credit: 0 },
+            { account: '5460', debit: 4000, credit: 0 },
+            { account: '2641', debit: 1000, credit: 0 },
             { account: '1930', debit: 0, credit: 5000 },
           ]),
         ),
@@ -187,9 +188,9 @@ test('the suggested account is what the supplier was booked to before', async ()
   const second = await upload(owner, org)
   await fill(owner, org, second.id, { supplier: ' exempelkafé ab ' })
   const rows = await list(owner, org)
-  expect(rows.find((r) => r.id === second.id)?.suggested_account).toMatchObject(
-    { number: '5460' },
-  )
+  const got = rows.find((r) => r.id === second.id)
+  expect(got?.suggested_account).toMatchObject({ number: '5460' })
+  expect(got?.suggested_vat_account).toMatchObject({ number: '2641' })
 })
 
 test('another organisation sees nothing', async () => {

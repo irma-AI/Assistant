@@ -185,7 +185,10 @@ function Matches(p: Props) {
       {r.suggested_account && (
         <p className="muted">
           Förra gången bokfördes {r.supplier} på {r.suggested_account.number}{' '}
-          {r.suggested_account.name}. Inget bokförs förrän du bokför.
+          {r.suggested_account.name}
+          {r.suggested_vat_account &&
+            ` och ingående moms på ${r.suggested_vat_account.number} ${r.suggested_vat_account.name}`}
+          . Inget bokförs förrän du bokför.
         </p>
       )}
       {p.canManage && r.amount_ore !== null && (

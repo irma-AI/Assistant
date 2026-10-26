@@ -70,7 +70,11 @@ declare
 begin
   foreach t in array array['receipts', 'receipt_matches', 'supplier_aliases', 'receipt_settings'] loop
     execute format('alter table %I enable row level security', t);
-    execute format('alter table %I force row level security', t);
+    -- receipt_settings is not forced: organisation_for_inbox (SECURITY DEFINER) must read it before any organisation is set.
+    -- The app role is still bound by the policy.
+    if t <> 'receipt_settings' then
+      execute format('alter table %I force row level security', t);
+    end if;
     execute format('create policy tenant on %I using (organisation_id = current_organisation_id()) with check (organisation_id = current_organisation_id())', t);
   end loop;
 end $$;

@@ -4,7 +4,9 @@ import { simpleParser } from 'mailparser'
 import { z } from 'zod'
 import type { Kysely } from 'kysely'
 import { sql } from 'kysely'
+import { HttpError } from './access.server'
 import type { DB } from './db.gen'
+import { log } from './log.server'
 import { maxBytes, sniff } from './documents.server'
 import { addReceipt } from './receipts.server'
 import { inOrganisation } from './tenant.server'
@@ -61,7 +63,11 @@ async function storeAttachment(
       context,
     )
     return true
-  }).catch(() => false)
+  }).catch((e: unknown) => {
+    // A refused file (type, size) is skipped; anything else, such as a database outage, must reach the job.
+    if (e instanceof HttpError) return false
+    throw e
+  })
 }
 
 // One received message: every attachment becomes a receipt in the organisation its address names.
@@ -110,8 +116,19 @@ export async function fetchReceiptMail(db: Kysely<DB>) {
           { uid: true },
         )
         if (!msg || !msg.source) continue
-        // A message that cannot be handled is marked read anyway, or it would block the mail behind it.
-        await ingestMessage(db, msg.source).catch(() => undefined)
+        // A failure leaves the message unread, so the next run retries it, and the mail behind it still goes through.
+        const failed = await ingestMessage(db, msg.source).then(
+          () => false,
+          () => true,
+        )
+        if (failed) {
+          log('error', 'job', {
+            job: 'receipt-mail',
+            outcome: 'failed',
+            msg: 'A receipt mail could not be stored: it stays unread and is tried again',
+          })
+          continue
+        }
         await client.messageFlagsAdd(String(uid), ['\\Seen'], { uid: true })
       }
     } finally {

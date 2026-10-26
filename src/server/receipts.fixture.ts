@@ -34,6 +34,7 @@ export const receiptRow = z.object({
   id: z.string(),
   matches: z.array(match),
   suggested_account: z.object({ number: z.string() }).nullable(),
+  suggested_vat_account: z.object({ number: z.string() }).nullable(),
 })
 export const list = async (p: Person, org: string) =>
   z
