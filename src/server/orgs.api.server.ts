@@ -9,7 +9,9 @@ import {
   roleChange,
   roleEdit,
 } from '#/api/schemas'
+import { companyInput } from '#/api/company'
 import { clientIp, recordAudit } from './audit.server'
+import * as company from './company.server'
 import type { DB } from './db.gen'
 import { getDb } from './db.server'
 import * as invites from './invites.server'
@@ -148,6 +150,25 @@ export const orgsApi = {
       request,
       [orgId, roleId],
       async (c) => done(orgs.deleteRole(c.db, c.userId, orgId, roleId, c.base)),
+      db,
+    ),
+  company: (request: Request, orgId: string, db?: Kysely<DB>) =>
+    handle(
+      request,
+      [orgId],
+      async (c) => json(await company.getCompany(c.db, c.userId, orgId)),
+      db,
+    ),
+  saveCompany: (request: Request, orgId: string, db?: Kysely<DB>) =>
+    handle(
+      request,
+      [orgId],
+      async (c) => {
+        const input = await parse(request, companyInput)
+        return json(
+          await company.saveCompany(c.db, c.userId, orgId, input, c.base),
+        )
+      },
       db,
     ),
   members: (request: Request, orgId: string, db?: Kysely<DB>) =>

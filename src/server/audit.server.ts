@@ -36,6 +36,7 @@ export type AuditEvent = {
     | 'role_created'
     | 'role_updated'
     | 'role_deleted'
+    | 'company_updated'
     | 'authorization_refused'
     | 'account_deleted'
     | 'data_exported'

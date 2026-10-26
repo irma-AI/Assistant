@@ -28,6 +28,10 @@ const errorText: Record<string, string> = {
   escalation: 'Du kan bara ge behörigheter som du själv har.',
   forbidden: 'Du har inte behörighet till det här.',
   conflict: 'Det finns redan en roll med det namnet.',
+  org_number_taken:
+    'Organisationsnumret används redan av en annan organisation. Kontakta supporten om det är fel.',
+  bad_request:
+    'Kontrollera uppgifterna. Organisationsnumret måste vara giltigt och räkenskapsåret högst 18 månader.',
   demo_session: 'Det här går inte i demoläget.',
 }
 

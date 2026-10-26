@@ -1,8 +1,8 @@
 [
-  {"criterion": "Org number must be 10 digits with a valid Luhn check digit; the VAT number is derived as SE + digits + 01", "passes": false},
-  {"criterion": "Only a member holding organisation.manage can save company details; any member can read them", "passes": false},
-  {"criterion": "A second organisation cannot claim a taken org number (409 org_number_taken), and a deleted organisation frees it", "passes": false},
-  {"criterion": "Fiscal year is 12 months, or shorter, or up to 18 months; end after start", "passes": false},
-  {"criterion": "Every change is audited with user and changed field names, never values", "passes": false},
-  {"criterion": "A settings page at /app/org/$orgId/uppgifter shows and saves the details", "passes": false}
+  {"criterion": "Org number must be 10 digits with a valid Luhn check digit; the VAT number is derived as SE + digits + 01", "passes": true},
+  {"criterion": "Only a member holding organisation.manage can save company details; any member can read them", "passes": true},
+  {"criterion": "A second organisation cannot claim a taken org number (409 org_number_taken), and a deleted organisation frees it", "passes": true},
+  {"criterion": "Fiscal year is 12 months, or shorter, or up to 18 months; end after start", "passes": true},
+  {"criterion": "Every change is audited with user and changed field names, never values", "passes": true},
+  {"criterion": "A settings page at /app/org/$orgId/uppgifter shows and saves the details", "passes": true}
 ]
