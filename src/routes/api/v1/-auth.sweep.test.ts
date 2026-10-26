@@ -17,6 +17,8 @@ const publicHandlers: Record<string, string> = {
     'the link in an email carries a signed proof, and the reader has no session',
   'notifications/unsubscribe POST':
     "a mail provider's one-click unsubscribe sends the same signed link",
+  'client-errors POST':
+    'browser and app errors arrive before, or without, a login',
   'logout POST': 'logging out twice is not an error',
 }
 

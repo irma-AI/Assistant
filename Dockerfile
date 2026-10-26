@@ -8,6 +8,8 @@ RUN npm install -g --no-audit --no-fund "pnpm@$(sed -n 's/^pnpm = "\(.*\)"/\1/p'
 FROM base AS build
 RUN pnpm install --frozen-lockfile
 COPY . .
+ARG APP_VERSION=dev
+ENV VITE_APP_VERSION=$APP_VERSION
 RUN pnpm build
 
 # The migration runner needs kysely and pg at run time; the server bundle carries its own.
