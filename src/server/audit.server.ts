@@ -47,6 +47,7 @@ export type AuditEvent = {
     | 'receipt_updated'
     | 'receipt_match_decided'
     | 'receipt_suggestions_changed'
+    | 'invoice_payment_decided'
     | 'bank_account_created'
     | 'bank_statement_imported'
     | 'authorization_refused'

@@ -4,6 +4,7 @@ import type { Audit } from './access.server'
 import { access, audited, HttpError, require } from './access.server'
 import { dedupKeys, parseStatement } from './bank.parse.server'
 import type { DB } from './db.gen'
+import { suggestPayments } from './payments.suggest.server'
 import { suggest } from './receipts.suggest.server'
 import { inOrganisation } from './tenant.server'
 
@@ -118,6 +119,7 @@ export const importStatement = (
       ])
       .executeTakeFirstOrThrow()
     await suggest(trx, orgId)
+    await suggestPayments(trx, orgId)
     await audited(trx, 'bank_statement_imported', base, orgId, {
       account: accountId,
       import: batch.id,

@@ -204,6 +204,21 @@ export interface InvoiceLines {
   vat_code: string;
 }
 
+export interface InvoicePayments {
+  bank_transaction_id: string;
+  confidence: Numeric;
+  covers_ore: Int8;
+  created_at: Generated<Timestamp>;
+  decided_at: Timestamp | null;
+  id: Generated<string>;
+  invoice_id: string;
+  organisation_id: string;
+  pass: number;
+  reason: string;
+  status: string;
+  voucher_id: string | null;
+}
+
 export interface Invoices {
   buyer: Json | null;
   created_at: Generated<Timestamp>;
@@ -232,6 +247,13 @@ export interface Invoices {
   total_net: Int8 | null;
   total_vat: Int8 | null;
   voucher_id: string | null;
+}
+
+export interface InvoiceWatch {
+  created_at: Generated<Timestamp>;
+  invoice_id: string;
+  key: string;
+  organisation_id: string;
 }
 
 export interface LoginAttempts {
@@ -418,6 +440,8 @@ export interface DB {
   invites: Invites;
   invoice_counters: InvoiceCounters;
   invoice_lines: InvoiceLines;
+  invoice_payments: InvoicePayments;
+  invoice_watch: InvoiceWatch;
   invoices: Invoices;
   login_attempts: LoginAttempts;
   memberships: Memberships;

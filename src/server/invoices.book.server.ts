@@ -3,14 +3,14 @@ import type { Sent } from './invoices.read.server'
 import { post } from './posting.server'
 import { writeLines, yearFor } from './vouchers.server'
 
-const sales = {
+export const sales = {
   '25': '3001',
   '12': '3002',
   '6': '3003',
   '0': '3004',
   rc: '3231',
 }
-const outputVat = { '25': '2611', '12': '2621', '6': '2631' }
+export const outputVat = { '25': '2611', '12': '2621', '6': '2631' }
 const isCode = <T extends object>(m: T, k: string): k is keyof T & string =>
   k in m
 

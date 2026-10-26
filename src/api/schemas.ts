@@ -234,3 +234,38 @@ export const receiptSettingsView = z.object({
   suggestions: z.boolean(),
   inbox: z.string().nullable(),
 })
+
+export const paymentOverview = z.object({
+  invoices: z.array(
+    z.object({
+      id: z.string(),
+      number: z.number(),
+      customer: z.string(),
+      due_date: z.string(),
+      total: z.number(),
+      open_ore: z.number(),
+      payments: z.array(
+        z.object({
+          id: z.string(),
+          status: z.enum(['suggested', 'confirmed']),
+          covers_ore: z.number(),
+          confidence: z.number(),
+          reason: z.string(),
+          extra_ore: z.number(),
+          transaction: z.object({
+            booking_date: z.string(),
+            counterparty: z.string().nullable(),
+          }),
+        }),
+      ),
+    }),
+  ),
+  unmatched: z.array(
+    z.object({
+      id: z.string(),
+      amount_ore: z.number(),
+      booking_date: z.string(),
+      counterparty: z.string().nullable(),
+    }),
+  ),
+})
