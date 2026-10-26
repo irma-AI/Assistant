@@ -1,0 +1,1 @@
+[{"criterion":"A Playwright test signs in, creates an organisation and reaches both screens by tapping, without typing an address.","passes":true},{"criterion":"make check passes.","passes":true}]
