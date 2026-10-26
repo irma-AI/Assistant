@@ -48,7 +48,10 @@ outcome not-started
 previous=$(api "application.one?applicationId=$APPLICATION_ID" | jq -er .dockerImage)
 echo "previous image: $previous"
 echo "previous=$previous" >> "${GITHUB_OUTPUT:-/dev/null}"
-if pin "$IMAGE:$TAG@$DIGEST" && serves "$TAG" && curl -sf "$APP_URL/" | grep -q '<h1>Assistant</h1>'; then
+# The home page must render to its end. What it says is the smoke test's job (e2e/smoke.spec.ts), so a design
+# change edits one place.
+renders() { curl -sf "$APP_URL/" | grep -q '</html>'; }
+if pin "$IMAGE:$TAG@$DIGEST" && serves "$TAG" && renders; then
   echo "serving $TAG"
   outcome deployed
   exit 0

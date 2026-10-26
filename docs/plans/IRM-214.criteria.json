@@ -1,0 +1,6 @@
+[
+  {"criterion": "A deploy whose / renders a different heading is accepted; one whose / fails to render rolls back", "passes": true},
+  {"criterion": "A deploy failure creates an Urgent deploy-failure issue in Ready; a second failure while it is open adds a comment and creates nothing", "passes": true},
+  {"criterion": "docs/guardrails.md 2.13 no longer calls the heading part of the deploy contract", "passes": true},
+  {"criterion": "Production serves main after the merge", "passes": false}
+]
