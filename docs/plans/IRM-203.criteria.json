@@ -1,0 +1,1 @@
+[{"criterion":"Items 4 and 5 paginated, comments removed","passes":true},{"criterion":"Items 1 to 3 handled","passes":false},{"criterion":"make check and guards/shortcuts.test.sh pass","passes":false}]

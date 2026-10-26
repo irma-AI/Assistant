@@ -22,15 +22,17 @@ jobs:
       - name: Archive closed issues
         run: |
           gql() { curl -sSf https://api.linear.app/graphql -H "Authorization: $LINEAR_API_TOKEN" -H 'Content-Type: application/json' -d @-; }
-          # shortcut: one page of 100 per merge, enough while merges outnumber closed issues.
-          answer=$(jq -n --arg k "$LINEAR_TEAM" '{query:"query($k:String!){issues(first:100,filter:{team:{key:{eq:$k}},state:{type:{in:[\"completed\",\"canceled\",\"duplicate\"]}}}){nodes{id identifier}}}",variables:{k:$k}}' | gql)
-          ids=$(jq -er '.data.issues.nodes | map("\(.id) \(.identifier)") | join("\n")' <<<"$answer")
-          [ -n "$ids" ] || { echo "nothing to archive"; exit 0; }
-          while read -r id identifier; do
-            jq -n --arg id "$id" '{query:"mutation($id:String!){issueArchive(id:$id){success}}",variables:{id:$id}}' \
-              | gql | jq -e '.data.issueArchive.success' > /dev/null
-            echo "archived $identifier"
-          done <<<"$ids"
+          # Archived issues leave the query, so asking again until it is empty pages through any number of them.
+          while :; do
+            answer=$(jq -n --arg k "$LINEAR_TEAM" '{query:"query($k:String!){issues(first:100,filter:{team:{key:{eq:$k}},state:{type:{in:[\"completed\",\"canceled\",\"duplicate\"]}}}){nodes{id identifier}}}",variables:{k:$k}}' | gql)
+            ids=$(jq -er '.data.issues.nodes | map("\(.id) \(.identifier)") | join("\n")' <<<"$answer")
+            [ -n "$ids" ] || { echo "nothing more to archive"; exit 0; }
+            while read -r id identifier; do
+              jq -n --arg id "$id" '{query:"mutation($id:String!){issueArchive(id:$id){success}}",variables:{id:$id}}' \
+                | gql | jq -e '.data.issueArchive.success' > /dev/null
+              echo "archived $identifier"
+            done <<<"$ids"
+          done
 
   remind:
     if: github.event_name == 'schedule'
@@ -45,9 +47,14 @@ jobs:
         run: |
           gql() { curl -sSf https://api.linear.app/graphql -H "Authorization: $LINEAR_API_TOKEN" -H 'Content-Type: application/json' -d @-; }
           # A Linear reminder notifies the API key's owner; a comment from the same key would notify no one.
-          # shortcut: one page of 50, paginate if that many questions ever wait at once.
-          answer=$(jq -n --arg k "$LINEAR_TEAM" '{query:"query($k:String!){issues(first:50,filter:{team:{key:{eq:$k}},state:{name:{eq:\"Needs input\"}},updatedAt:{lt:\"-P3D\"}}){nodes{id identifier}}}",variables:{k:$k}}' | gql)
-          ids=$(jq -er '.data.issues.nodes | map("\(.id) \(.identifier)") | join("\n")' <<<"$answer")
+          # A reminder leaves the issue in Needs input, so page with a cursor instead of asking again.
+          ids="" after=null
+          while :; do
+            answer=$(jq -n --arg k "$LINEAR_TEAM" --argjson a "$after" '{query:"query($k:String!,$a:String){issues(first:50,after:$a,filter:{team:{key:{eq:$k}},state:{name:{eq:\"Needs input\"}},updatedAt:{lt:\"-P3D\"}}){nodes{id identifier} pageInfo{hasNextPage endCursor}}}",variables:{k:$k,a:$a}}' | gql)
+            ids+=$(jq -er '.data.issues.nodes | map("\(.id) \(.identifier)\n") | join("")' <<<"$answer")
+            [ "$(jq -er '.data.issues.pageInfo.hasNextPage' <<<"$answer")" = true ] || break
+            after=$(jq -c '.data.issues.pageInfo.endCursor' <<<"$answer")
+          done
           [ -n "$ids" ] || { echo "no question has waited 3 days"; exit 0; }
           at=$(date -u -d '+5 minutes' +%Y-%m-%dT%H:%M:%SZ)
           while read -r id identifier; do
