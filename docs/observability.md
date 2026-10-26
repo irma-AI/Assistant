@@ -12,7 +12,7 @@ Traefik's access log stays off: the app's own summary line covers traffic withou
 
 An alert is actionable, owned, specific and low noise. Anything that fails one of these is a dashboard query or a digest line.
 
-Every rule states five fields, held as the rule's labels in vmalert:
+Every rule states five fields, held as the rule's labels in vmalert, except Message, which is its annotation:
 
 | Field | Meaning |
 |---|---|
@@ -55,7 +55,7 @@ Examples:
       request_id in docs/agents/logs.md, reproduce, fix by PR.
 
 - alert: LoginFailingForAll
-  expr: '{service="app", event="login"} outcome:failed | stats count() as failed | filter failed:>10'
+  expr: '{service="app", event="login"} | stats count() if (outcome:failed) as failed, count() if (outcome:ok) as ok | filter failed:>10 ok:0'
   for: 10m
   labels:
     owner: agent
@@ -64,7 +64,7 @@ Examples:
     severity: critical
   annotations:
     message: >-
-      More than 10 failed logins in 10 minutes and no success. Check
+      More than 10 failed logins in 10 minutes and not one success. Check
       bankid.* step lines for the outside call result; fix by PR, or tell the
       owner if BankID itself is down.
 
