@@ -226,6 +226,8 @@ test('at double text size Hem has no sideways scroll and Datumblock rows stack',
       now: new Date('2026-05-01T10:00:00Z'),
     }),
   )
+  // Hem renders after the organisations load.
+  await page.locator('main').waitFor()
   await page.evaluate((html) => {
     document.documentElement.style.fontSize = '34px'
     document
