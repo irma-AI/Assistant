@@ -37,6 +37,22 @@ export interface AuditEvents {
   user_id: string | null;
 }
 
+export interface Customers {
+  address: string;
+  contact: string | null;
+  created_at: Generated<Timestamp>;
+  email: string | null;
+  id: Generated<string>;
+  kind: string;
+  language: Generated<string>;
+  name: string;
+  org_number: string | null;
+  organisation_id: string;
+  payment_terms_days: number | null;
+  updated_at: Generated<Timestamp>;
+  vat_number: string | null;
+}
+
 export interface Invites {
   created_at: Generated<Timestamp>;
   created_by: string;
@@ -103,6 +119,7 @@ export interface Users {
 
 export interface DB {
   audit_events: AuditEvents;
+  customers: Customers;
   invites: Invites;
   login_attempts: LoginAttempts;
   memberships: Memberships;
