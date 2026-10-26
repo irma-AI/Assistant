@@ -128,8 +128,9 @@ const batch = z.object({
 })
 const txs = async (p: Person, org: string, account: string) =>
   z
-    .array(z.record(z.string(), z.unknown()))
+    .object({ items: z.array(z.record(z.string(), z.unknown())) })
     .parse(await (await bankApi.transactions(rq(p), org, account, db)).json())
+    .items
 
 async function setup() {
   const owner = await person()

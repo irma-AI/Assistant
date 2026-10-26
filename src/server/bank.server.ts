@@ -7,6 +7,8 @@ import type { DB } from './db.gen'
 import { inOrganisation } from './tenant.server'
 
 export const maxBytes = 10 * 1024 * 1024
+const pageSize = 1000
+const cursorPattern = /^(\d{4}-\d{2}-\d{2})\|([\d: .+-]+)\|([0-9a-f-]{36})$/
 
 // Every member may read; bank.manage is needed to add an account or import a file.
 export const listAccounts = (db: Kysely<DB>, userId: string, orgId: string) =>
@@ -143,11 +145,15 @@ export const listTransactions = (
   userId: string,
   orgId: string,
   accountId: string,
+  cursor?: string,
 ) =>
   inOrganisation(db, orgId, async (trx) => {
     await access(trx, userId, orgId)
     await accountIn(trx, orgId, accountId)
-    const rows = await trx
+    // The cursor is the last row's `booking_date|created_at|id`; created_at stays text to keep its microseconds.
+    const after = cursor ? cursorPattern.exec(cursor) : null
+    if (cursor && !after) throw new HttpError(400, 'bad_request', false)
+    let q = trx
       .selectFrom('bank_transactions')
       .select([
         'id',
@@ -159,12 +165,31 @@ export const listTransactions = (
         'counterparty',
         'reference',
         'source',
+        sql<string>`created_at::text`.as('created_at'),
       ])
       .where('bank_account_id', '=', accountId)
+    if (after)
+      q = q.where(
+        sql<boolean>`(booking_date, created_at, id) < (${after[1]}::date, ${after[2]}::timestamptz, ${after[3]}::uuid)`,
+      )
+    const rows = await q
       .orderBy('booking_date', 'desc')
       .orderBy('created_at', 'desc')
-      .limit(1000)
+      .orderBy('id', 'desc')
+      .limit(pageSize + 1)
       .execute()
+    const more = rows.length > pageSize
+    const last = rows[pageSize - 1]
     // bigint reaches Node as a string; an öre amount stays far inside Number's exact range.
-    return rows.map((r) => ({ ...r, amount_ore: Number(r.amount_ore) }))
+    const items = rows.slice(0, pageSize).map((r) => ({
+      ...r,
+      amount_ore: Number(r.amount_ore),
+    }))
+    return {
+      items,
+      next:
+        more && last
+          ? `${last.booking_date}|${last.created_at}|${last.id}`
+          : null,
+    }
   })
