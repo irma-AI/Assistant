@@ -1,0 +1,6 @@
+[
+  {"criterion": "Playwright: / has the heading Redo, a Logga in link to /app/login and the three legal links", "passes": true},
+  {"criterion": "Playwright at 390px with the root font size doubled: no horizontal page scroll on / and the three legal pages", "passes": true},
+  {"criterion": "The existing e2e/legal.spec.ts passes", "passes": true},
+  {"criterion": "impeccable audit on / and one legal page has no P0 or P1 finding", "passes": true}
+]

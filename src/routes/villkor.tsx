@@ -2,7 +2,7 @@ import { createFileRoute } from '@tanstack/react-router'
 import { Legal, controller } from './-legal'
 
 export const Route = createFileRoute('/villkor')({
-  head: () => ({ meta: [{ title: 'Villkor – Assistant' }] }),
+  head: () => ({ meta: [{ title: 'Villkor – Redo' }] }),
   component: Terms,
 })
 

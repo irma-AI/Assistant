@@ -3,7 +3,7 @@ import { Legal, controller } from './-legal'
 
 export const Route = createFileRoute('/personuppgiftsbitradesavtal')({
   head: () => ({
-    meta: [{ title: 'Personuppgiftsbiträdesavtal – Assistant' }],
+    meta: [{ title: 'Personuppgiftsbiträdesavtal – Redo' }],
   }),
   component: Dpa,
 })
