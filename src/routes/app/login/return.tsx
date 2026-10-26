@@ -55,12 +55,15 @@ function Return() {
       {message ? (
         <>
           <p role="alert">{message}</p>
-          <p>
-            <a href="/app/login">Försök igen</a>
-          </p>
+          <a className="btn" href="/app/login">
+            Försök igen
+          </a>
         </>
       ) : (
-        <p role="status">{hint || 'Slutför inloggningen…'}</p>
+        <p role="status">
+          <progress aria-hidden="true" />{' '}
+          {hint || 'Slutför inloggningen med BankID…'}
+        </p>
       )}
     </main>
   )

@@ -1,0 +1,7 @@
+[
+  {"criterion": "e2e/login.spec.ts passes unchanged", "passes": false},
+  {"criterion": "At 390px the primary BankID choice is the Cable light pill, at 1280px the other-device choice", "passes": false},
+  {"criterion": "In dark and light the QR code sits on white with a quiet zone", "passes": false},
+  {"criterion": "At 390px with doubled root font size the four screens do not scroll sideways", "passes": false},
+  {"criterion": "impeccable audit on the four screens has no P0 or P1 finding", "passes": false}
+]

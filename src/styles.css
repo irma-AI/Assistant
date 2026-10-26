@@ -314,9 +314,23 @@ button:active,
   stroke-linejoin: round;
 }
 
+.notice {
+  padding: 0.75rem 1rem;
+  border: 1px solid var(--accent-text);
+  border-radius: 14px;
+  color: var(--accent-text);
+  font-weight: 600;
+}
+
+.actions {
+  display: grid;
+  gap: 0.75rem;
+}
+
+/* The tile stays white in both themes, with a quiet zone, so the code scans. */
 .qr {
   display: block;
-  padding: 0;
+  padding: 1rem;
   border: 0;
   border-radius: 0;
   background: white;
