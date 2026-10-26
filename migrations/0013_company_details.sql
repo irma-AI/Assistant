@@ -26,3 +26,11 @@ create table company_details (
   updated_at timestamptz not null default now(),
   check (fiscal_year_end > fiscal_year_start)
 );
+
+alter table company_details enable row level security;
+alter table company_details force row level security;
+create policy tenant on company_details
+  using (organisation_id = current_organisation_id())
+  with check (organisation_id = current_organisation_id());
+
+grant select, insert, update on company_details to assistant_app;

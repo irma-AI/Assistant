@@ -32,9 +32,10 @@ const day = z.iso.date()
 // BFL 3 kap. 1–3 §: a fiscal year is 12 months, a first or changed one may be shorter or up to 18 months.
 export function fiscalYearOk(start: string, end: string) {
   const s = new Date(start)
-  const limit = new Date(
-    Date.UTC(s.getUTCFullYear(), s.getUTCMonth() + 18, s.getUTCDate()),
-  )
+  const [y, m] = [s.getUTCFullYear(), s.getUTCMonth() + 18]
+  // Clamp the day, so a start on the 31st lands on the target month's last day instead of spilling over.
+  const last = new Date(Date.UTC(y, m + 1, 0)).getUTCDate()
+  const limit = new Date(Date.UTC(y, m, Math.min(s.getUTCDate(), last)))
   return end > start && new Date(end) < limit
 }
 

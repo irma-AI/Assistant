@@ -6,6 +6,7 @@ import type { companyInput } from '#/api/company'
 import type { Audit } from './access.server'
 import { access, audited, HttpError, lockOrg, require } from './access.server'
 import type { DB } from './db.gen'
+import { inOrganisation } from './tenant.server'
 
 type Input = z.output<typeof companyInput>
 
@@ -48,15 +49,12 @@ const withVat = <T extends { org_number: string }>(row: T) => ({
 })
 
 // Any member may read; null until the details are first saved.
-export async function getCompany(
-  db: Kysely<DB>,
-  userId: string,
-  orgId: string,
-) {
-  await access(db, userId, orgId)
-  const row = await read(db, orgId).executeTakeFirst()
-  return row ? withVat(row) : null
-}
+export const getCompany = (db: Kysely<DB>, userId: string, orgId: string) =>
+  inOrganisation(db, orgId, async (trx) => {
+    await access(trx, userId, orgId)
+    const row = await read(trx, orgId).executeTakeFirst()
+    return row ? withVat(row) : null
+  })
 
 // What changes is audited as field names only, never values. A fiscal year or accounting method change
 // is flagged for the processing history (BFNAR 2013:2 point 9.16), which IRM-151 will hold.
@@ -68,7 +66,7 @@ export async function saveCompany(
   base: Audit,
 ) {
   try {
-    return await db.transaction().execute(async (trx) => {
+    return await inOrganisation(db, orgId, async (trx) => {
       await lockOrg(trx, orgId)
       await require(trx, userId, orgId, 'organisation.manage')
       const before = await read(trx, orgId).forUpdate().executeTakeFirst()

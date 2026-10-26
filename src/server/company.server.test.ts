@@ -1,9 +1,11 @@
+import { sql } from 'kysely'
 import { expect, test } from 'vitest'
 import { z } from 'zod'
-import { company, luhn } from '#/api/company'
+import { company, fiscalYearOk, luhn } from '#/api/company'
 import { orgsApi } from './orgs.api.server'
 import { addMember, db, newOrg, person, req, useDatabase } from './orgs.fixture'
 import type { Person } from './orgs.fixture'
+import { inOrganisation } from './tenant.server'
 
 useDatabase()
 
@@ -121,4 +123,28 @@ test('a change is audited by field name, not value', async () => {
     history: 'true',
   })
   expect(JSON.stringify(rows)).not.toContain('cash')
+})
+
+test('an 18-month limit from the 31st ends on the last day of the target month', () => {
+  expect(fiscalYearOk('2026-08-31', '2028-02-28')).toBe(true)
+  expect(fiscalYearOk('2026-08-31', '2028-03-02')).toBe(false)
+  expect(fiscalYearOk('2026-01-01', '2027-06-30')).toBe(true)
+  expect(fiscalYearOk('2026-01-01', '2027-07-01')).toBe(false)
+})
+
+test('the app role sees only the company details of its own organisation', async () => {
+  const owner = await person()
+  const first = await newOrg(owner)
+  const second = await newOrg(owner)
+  await save(owner, first.id, mine())
+  const asApp = (org: string) =>
+    inOrganisation(db, org, async (trx) => {
+      await sql`set local role assistant_app`.execute(trx)
+      return trx
+        .selectFrom('company_details')
+        .select('organisation_id')
+        .execute()
+    })
+  expect(await asApp(first.id)).toEqual([{ organisation_id: first.id }])
+  expect(await asApp(second.id)).toEqual([])
 })
