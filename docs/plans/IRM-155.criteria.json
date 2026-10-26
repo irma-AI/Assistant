@@ -1,0 +1,7 @@
+[
+  {"criterion": "Upload stores the original bytes on the volume with a SHA-256 in the database, and download streams identical bytes", "passes": false},
+  {"criterion": "Only PDF, JPEG, PNG and HEIC up to 20 MB are accepted, checked by content not extension", "passes": false},
+  {"criterion": "Documents are scoped to the organisation: another organisation or non-member cannot list or read them, and the file is only served through /api/v1", "passes": false},
+  {"criterion": "A linked document (retain_until set) rejects any update and any delete before its retention date; content columns are immutable always", "passes": false},
+  {"criterion": "Storage sits behind one interface (put, get)", "passes": false}
+]
