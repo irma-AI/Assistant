@@ -37,6 +37,40 @@ export interface AuditEvents {
   user_id: string | null;
 }
 
+export interface BankAccounts {
+  created_at: Generated<Timestamp>;
+  id: Generated<string>;
+  organisation_id: string;
+  title: string;
+}
+
+export interface BankImports {
+  added: Generated<number>;
+  bank_account_id: string;
+  created_at: Generated<Timestamp>;
+  file_name: string;
+  format: string;
+  id: Generated<string>;
+  organisation_id: string;
+  skipped: Generated<number>;
+}
+
+export interface BankTransactions {
+  amount_ore: Int8;
+  bank_account_id: string;
+  bank_id: string | null;
+  bank_import_id: string;
+  booking_date: Timestamp;
+  counterparty: string | null;
+  created_at: Generated<Timestamp>;
+  dedup_key: string;
+  id: Generated<string>;
+  organisation_id: string;
+  reference: string | null;
+  source: string;
+  value_date: Timestamp | null;
+}
+
 export interface Customers {
   address: string;
   contact: string | null;
@@ -172,6 +206,9 @@ export interface Users {
 
 export interface DB {
   audit_events: AuditEvents;
+  bank_accounts: BankAccounts;
+  bank_imports: BankImports;
+  bank_transactions: BankTransactions;
   customers: Customers;
   documents: Documents;
   email_confirmations: EmailConfirmations;

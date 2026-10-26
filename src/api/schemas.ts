@@ -10,6 +10,7 @@ export const permission = z.enum([
   'roles.manage',
   'customers.manage',
   'documents.manage',
+  'bank.manage',
 ])
 
 export const newOrganisation = z.object({
@@ -20,6 +21,9 @@ export const newRole = z.object({
   permissions: z.array(permission),
 })
 export const roleEdit = newRole.partial()
+export const newBankAccount = z.object({
+  title: z.string().trim().min(1).max(100),
+})
 export const newInvite = z.object({ roleId: z.uuid() })
 export const roleChange = z.object({ roleId: z.uuid() })
 
