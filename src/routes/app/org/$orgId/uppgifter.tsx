@@ -103,6 +103,7 @@ function Company() {
   const canEdit = mine.includes('organisation.manage')
   const set = (patch: Partial<Form>) => {
     setForm({ ...form, ...patch })
+    setSaved(false)
   }
 
   async function save(event: SyntheticEvent) {
