@@ -22,7 +22,7 @@ Source of every row: [records.md](records.md) sections 1 and 2. What is built is
 
 **Roles.** We are controller for the login rows and processor for the financial records, on the customer's instructions under a data processing agreement (Art. 28, IRM-101). BankID's bank is a separate controller for its own processing. Recipients and processors: HostUp (server in Sweden), BankID's bank, the backup vendor (IRM-98, not chosen). No transfer outside the EU or EEA is planned.
 
-**Retention.** Web sessions 12 hours, app sessions 90 days, ended sessions 30 days, audit events 12 months *(proposed)*, logs 14 days *(proposed)*, financial records at least seven years under the Bookkeeping Act, then as the customer instructs.
+**Retention.** Web and app sessions 24 hours (1 hour without a request), ended sessions 30 days, audit events 12 months *(proposed)*, logs 14 days *(proposed)*, financial records at least seven years under the Bookkeeping Act, then as the customer instructs.
 
 **Purposes and legal bases.** Contract (Art. 6(1)(b)) for accounts and login; legitimate interest (Art. 6(1)(f)) for abuse prevention and logs; the customer's own basis for the financial records. For the personal identity number, dataskyddslagen 3 kap. 10 § allows processing without consent "när det är klart motiverat med hänsyn till ändamålet med behandlingen, vikten av en säker identifiering eller något annat beaktansvärt skäl" (source 8). We rely on *the importance of secure identification*. Whether that holds for every use is open question 3.
 

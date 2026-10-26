@@ -1,6 +1,7 @@
 import { createHmac } from 'node:crypto'
 import { request } from 'node:https'
 import { request as httpRequest } from 'node:http'
+import { rootCa } from './bankid-ca.server'
 import { createFakeBankId } from './bankid-fake.server'
 
 const modes = ['fake', 'test', 'production'] as const
@@ -16,8 +17,16 @@ export function bankidMode() {
   return found
 }
 
-// Called once at startup: production must carry no fake setting, and the mode is always logged.
+// Called once at startup: test and production must set the mode and the public address themselves (a default
+// there would fail open), production must carry no fake setting, and the mode is always logged.
 export function checkBankidConfig() {
+  if (['test', 'production'].includes(process.env.APP_ENV ?? '')) {
+    const missing = ['BANKID_MODE', 'PUBLIC_URL'].filter((k) => !process.env[k])
+    if (missing.length > 0)
+      throw new Error(
+        `${missing.join(' and ')} must be set when APP_ENV is ${process.env.APP_ENV ?? ''}`,
+      )
+  }
   const mode = bankidMode()
   const fake = Object.keys(process.env).filter((k) =>
     k.startsWith('BANKID_FAKE'),
@@ -87,22 +96,19 @@ function baseFor(mode: 'fake' | 'test' | 'production') {
 }
 
 // Mutual TLS with our certificate; only BankID's root CA is trusted, not the server's own certificate.
-function tlsOptions() {
+export function tlsOptions(mode: 'test' | 'production') {
   const p12 = process.env.BANKID_P12_BASE64
   const passphrase = process.env.BANKID_P12_PASSPHRASE
-  const ca = process.env.BANKID_ROOT_CA_PEM
-  if (!p12 || !passphrase || !ca)
-    throw new Error(
-      'BANKID_P12_BASE64, BANKID_P12_PASSPHRASE and BANKID_ROOT_CA_PEM are required',
-    )
-  return { pfx: Buffer.from(p12, 'base64'), passphrase, ca }
+  if (!p12 || !passphrase)
+    throw new Error('BANKID_P12_BASE64 and BANKID_P12_PASSPHRASE are required')
+  return { pfx: Buffer.from(p12, 'base64'), passphrase, ca: rootCa[mode] }
 }
 
 async function call(path: string, body: object): Promise<unknown> {
   const mode = bankidMode()
   const url = new URL(`/rp/v6.0/${path}`, await baseFor(mode))
   const send = mode === 'fake' ? httpRequest : request
-  const options = mode === 'fake' ? {} : tlsOptions()
+  const options = mode === 'fake' ? {} : tlsOptions(mode)
   return new Promise((resolve, reject) => {
     const req = send(
       url,

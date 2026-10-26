@@ -3,7 +3,7 @@ import { sql } from 'kysely'
 import type { Kysely } from 'kysely'
 import { z } from 'zod'
 import { collect, pendingMessage } from './auth/bankid.server'
-import { clientIp, recordAudit } from './audit.server'
+import { clientIp, recordAudit, truncate } from './audit.server'
 import type { DB } from './db.gen'
 import { getDb } from './db.server'
 import {
@@ -23,7 +23,7 @@ import {
   qrStep,
   remainingSql,
 } from './login.order.server'
-import { hashPnr } from './pii.server'
+import { hashNetwork, hashPnr } from './pii.server'
 import {
   cookieName,
   cookieValue,
@@ -42,10 +42,38 @@ const noAccount = 'Det finns inget konto för det här BankID:t.'
 const soleOwner =
   'Du är enda Ägare i en organisation. Ge rollen Ägare till någon annan först, sedan kan du radera kontot.'
 
+const maxStarts = () => Number(process.env.BANKID_START_LIMIT ?? 20)
+const startWindowMs = 15 * 60 * 1000
+
+// Each start places a BankID order, so the audit rows of recent starts from the caller's network are the count;
+// a restart or a second instance keeps it (same approach as the demo login).
+async function tooManyStarts(db: Kysely<DB>, ip: string) {
+  const { n } = await db
+    .selectFrom('audit_events')
+    .select((eb) => eb.fn.countAll<string>().as('n'))
+    .where('event', '=', 'login_started')
+    .where('ip', '=', truncate(ip))
+    .where('at', '>', new Date(Date.now() - startWindowMs))
+    .executeTakeFirstOrThrow()
+  return Number(n) >= maxStarts()
+}
+
 export async function start(request: Request, db: Kysely<DB> = getDb()) {
   const body = startBody.safeParse(await request.json().catch(() => null))
   const ip = clientIp(request)
   if (!body.success || !ip) return respond({ error: 'bad_request' }, [], 400)
+  if (await tooManyStarts(db, ip)) {
+    console.warn(
+      JSON.stringify({
+        event: 'rate_limited',
+        status: 429,
+        route: 'bankid_start',
+        key: hashNetwork(truncate(ip)),
+      }),
+    )
+    return respond({ error: 'too_many_attempts' }, [], 429)
+  }
+  await recordAudit(db, { event: 'login_started', sessionKind: 'web', ip })
   const previous = z.uuid().safeParse(cookieValue(request, loginCookie))
   if (previous.success) await drop(db, previous.data)
 

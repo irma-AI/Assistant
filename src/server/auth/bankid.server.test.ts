@@ -1,4 +1,6 @@
+import { X509Certificate, createHash } from 'node:crypto'
 import { afterEach, expect, test, vi } from 'vitest'
+import { rootCa } from './bankid-ca.server'
 import { fakeCancelIp } from './bankid-fake.server'
 import {
   auth,
@@ -10,6 +12,7 @@ import {
   messageFor,
   pendingMessage,
   qrData,
+  tlsOptions,
 } from './bankid.server'
 
 afterEach(() => {
@@ -99,7 +102,8 @@ test('user messages are the RFA texts', () => {
   expect(messageFor('somethingNew')).toBe('Något gick fel. Försök igen.')
 })
 
-test('BANKID_MODE unset runs in fake and warns at startup', () => {
+test('BANKID_MODE unset runs in fake and warns at startup (local dev)', () => {
+  vi.stubEnv('APP_ENV', undefined)
   vi.stubEnv('BANKID_MODE', undefined)
   const warn = vi.spyOn(console, 'warn').mockImplementation(() => {
     // silence the expected warning
@@ -116,4 +120,49 @@ test('production refuses to start with a fake setting', () => {
   expect(() => {
     checkBankidConfig()
   }).toThrow(/fake setting/)
+})
+
+test.each([
+  ['APP_ENV test', 'test'],
+  ['APP_ENV production', 'production'],
+])('%s refuses to start without BANKID_MODE or PUBLIC_URL', (_l, env) => {
+  vi.stubEnv('APP_ENV', env)
+  vi.stubEnv('BANKID_MODE', 'fake')
+  vi.stubEnv('PUBLIC_URL', undefined)
+  expect(() => {
+    checkBankidConfig()
+  }).toThrow(/PUBLIC_URL/)
+  vi.stubEnv('PUBLIC_URL', 'https://app.example')
+  vi.stubEnv('BANKID_MODE', undefined)
+  expect(() => {
+    checkBankidConfig()
+  }).toThrow(/BANKID_MODE/)
+  vi.stubEnv('BANKID_MODE', 'fake')
+  const warn = vi.spyOn(console, 'warn').mockImplementation(() => {
+    // silence the expected warning
+  })
+  expect(() => {
+    checkBankidConfig()
+  }).not.toThrow()
+  warn.mockRestore()
+})
+
+// Published at https://cdn.bankid.com/pki/bankid/ (linked from developers.bankid.com).
+test("the committed root CAs are BankID's, by pinned SHA-256 fingerprint", () => {
+  const sha = (pem: string) =>
+    createHash('sha256').update(new X509Certificate(pem).raw).digest('hex')
+  expect(sha(rootCa.test)).toBe(
+    'c6faeaf8ccadcfd0738dc99140ca788c1a19a93f843c5a9ec1369872d50e45f2',
+  )
+  expect(sha(rootCa.production)).toBe(
+    'ca32588e385b961d58e26010c6f8c839f7ca071e497de6b7841640a61506fd31',
+  )
+})
+
+test('TLS trusts the committed root CA, not BANKID_ROOT_CA_PEM', () => {
+  vi.stubEnv('BANKID_P12_BASE64', 'AA==')
+  vi.stubEnv('BANKID_P12_PASSPHRASE', 'x')
+  vi.stubEnv('BANKID_ROOT_CA_PEM', 'ignored')
+  expect(tlsOptions('test').ca).toBe(rootCa.test)
+  expect(tlsOptions('production').ca).toBe(rootCa.production)
 })
