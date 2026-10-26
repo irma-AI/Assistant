@@ -1,0 +1,30 @@
+[
+ {
+  "criterion": "Vitest against Postgres: a business and a consumer customer can be added, listed, edited and deleted by a member with customers.manage",
+  "passes": false
+ },
+ {
+  "criterion": "Vitest: every member can list customers, but a member without customers.manage is refused (403) on add, edit, import and delete; a non-member gets 404",
+  "passes": false
+ },
+ {
+  "criterion": "Vitest: a customer of another organisation is never listed, edited or deleted, and RLS hides it from a transaction without the organisation",
+  "passes": false
+ },
+ {
+  "criterion": "Vitest: a new customer defaults to 30 days payment terms and Swedish; a consumer cannot hold an organisation number, VAT number or contact; no personnummer column exists",
+  "passes": false
+ },
+ {
+  "criterion": "Vitest: every customer change and import is audited without the customer's name",
+  "passes": false
+ },
+ {
+  "criterion": "Vitest: a CSV import previews rows with a column mapping, reports invalid rows, and saves nothing unless every row is valid",
+  "passes": false
+ },
+ {
+  "criterion": "Playwright: an Ägare adds a business customer, imports a CSV and sees the customers listed",
+  "passes": false
+ }
+]
