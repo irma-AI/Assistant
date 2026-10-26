@@ -21,6 +21,7 @@ import { Route as AppInstallningarRouteImport } from './routes/app/installningar
 import { Route as AppKontoRouteImport } from './routes/app/konto'
 import { Route as AppOrganisationRouteImport } from './routes/app/organisation'
 import { Route as AppRaderaKontoRouteImport } from './routes/app/radera-konto'
+import { Route as ApiV1ClientErrorsRouteImport } from './routes/api/v1/client-errors'
 import { Route as ApiV1LogoutRouteImport } from './routes/api/v1/logout'
 import { Route as ApiV1McpRouteImport } from './routes/api/v1/mcp'
 import { Route as ApiV1MeRouteImport } from './routes/api/v1/me'
@@ -146,6 +147,11 @@ const AppRaderaKontoRoute = AppRaderaKontoRouteImport.update({
   id: '/radera-konto',
   path: '/radera-konto',
   getParentRoute: () => AppRouteRoute,
+} as any)
+const ApiV1ClientErrorsRoute = ApiV1ClientErrorsRouteImport.update({
+  id: '/api/v1/client-errors',
+  path: '/api/v1/client-errors',
+  getParentRoute: () => rootRouteImport,
 } as any)
 const ApiV1LogoutRoute = ApiV1LogoutRouteImport.update({
   id: '/api/v1/logout',
@@ -513,6 +519,7 @@ export interface FileRoutesByFullPath {
   '/app/organisation': typeof AppOrganisationRoute
   '/app/radera-konto': typeof AppRaderaKontoRoute
   '/app/': typeof AppIndexRoute
+  '/api/v1/client-errors': typeof ApiV1ClientErrorsRoute
   '/api/v1/logout': typeof ApiV1LogoutRoute
   '/api/v1/mcp': typeof ApiV1McpRoute
   '/api/v1/me': typeof ApiV1MeRouteWithChildren
@@ -590,6 +597,7 @@ export interface FileRoutesByTo {
   '/app/organisation': typeof AppOrganisationRoute
   '/app/radera-konto': typeof AppRaderaKontoRoute
   '/app': typeof AppIndexRoute
+  '/api/v1/client-errors': typeof ApiV1ClientErrorsRoute
   '/api/v1/logout': typeof ApiV1LogoutRoute
   '/api/v1/mcp': typeof ApiV1McpRoute
   '/api/v1/me': typeof ApiV1MeRouteWithChildren
@@ -669,6 +677,7 @@ export interface FileRoutesById {
   '/app/organisation': typeof AppOrganisationRoute
   '/app/radera-konto': typeof AppRaderaKontoRoute
   '/app/': typeof AppIndexRoute
+  '/api/v1/client-errors': typeof ApiV1ClientErrorsRoute
   '/api/v1/logout': typeof ApiV1LogoutRoute
   '/api/v1/mcp': typeof ApiV1McpRoute
   '/api/v1/me': typeof ApiV1MeRouteWithChildren
@@ -749,6 +758,7 @@ export interface FileRouteTypes {
     | '/app/organisation'
     | '/app/radera-konto'
     | '/app/'
+    | '/api/v1/client-errors'
     | '/api/v1/logout'
     | '/api/v1/mcp'
     | '/api/v1/me'
@@ -826,6 +836,7 @@ export interface FileRouteTypes {
     | '/app/organisation'
     | '/app/radera-konto'
     | '/app'
+    | '/api/v1/client-errors'
     | '/api/v1/logout'
     | '/api/v1/mcp'
     | '/api/v1/me'
@@ -904,6 +915,7 @@ export interface FileRouteTypes {
     | '/app/organisation'
     | '/app/radera-konto'
     | '/app/'
+    | '/api/v1/client-errors'
     | '/api/v1/logout'
     | '/api/v1/mcp'
     | '/api/v1/me'
@@ -977,6 +989,7 @@ export interface RootRouteChildren {
   PersonuppgiftsbitradesavtalRoute: typeof PersonuppgiftsbitradesavtalRoute
   VersionRoute: typeof VersionRoute
   VillkorRoute: typeof VillkorRoute
+  ApiV1ClientErrorsRoute: typeof ApiV1ClientErrorsRoute
   ApiV1LogoutRoute: typeof ApiV1LogoutRoute
   ApiV1McpRoute: typeof ApiV1McpRoute
   ApiV1MeRoute: typeof ApiV1MeRouteWithChildren
@@ -1107,6 +1120,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/app/radera-konto'
       preLoaderRoute: typeof AppRaderaKontoRouteImport
       parentRoute: typeof AppRouteRoute
+    }
+    '/api/v1/client-errors': {
+      id: '/api/v1/client-errors'
+      path: '/api/v1/client-errors'
+      fullPath: '/api/v1/client-errors'
+      preLoaderRoute: typeof ApiV1ClientErrorsRouteImport
+      parentRoute: typeof rootRouteImport
     }
     '/api/v1/logout': {
       id: '/api/v1/logout'
@@ -1692,6 +1712,7 @@ const rootRouteChildren: RootRouteChildren = {
   PersonuppgiftsbitradesavtalRoute: PersonuppgiftsbitradesavtalRoute,
   VersionRoute: VersionRoute,
   VillkorRoute: VillkorRoute,
+  ApiV1ClientErrorsRoute: ApiV1ClientErrorsRoute,
   ApiV1LogoutRoute: ApiV1LogoutRoute,
   ApiV1McpRoute: ApiV1McpRoute,
   ApiV1MeRoute: ApiV1MeRouteWithChildren,

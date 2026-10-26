@@ -1,0 +1,14 @@
+[
+  {
+    "criterion": "Vitest: a valid report writes one line with service client and the five fields; an extra field gives 400; over the rate limit gives 429",
+    "passes": true
+  },
+  {
+    "criterion": "The IRM-100 style test finds no personal data in the line",
+    "passes": true
+  },
+  {
+    "criterion": "Playwright: a thrown error in the browser reaches the endpoint",
+    "passes": true
+  }
+]

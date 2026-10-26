@@ -1,4 +1,5 @@
 import { z } from 'zod'
+import { clientErrors } from './clientErrors.api.server'
 import { checkBankidConfig } from './auth/bankid.server'
 import { cancelLogin } from './login.server'
 import { inRequest, job, logShutdown } from './log.server'
@@ -45,6 +46,19 @@ export async function logEveryEvent(loginCookie: string) {
   }))
   await inRequest(new Request(url), '/x', () =>
     Promise.reject(new Error('db down')),
+  )
+  await clientErrors(
+    new Request(url, {
+      method: 'POST',
+      headers: { 'x-forwarded-for': '203.0.113.7' },
+      body: JSON.stringify({
+        name: 'Error',
+        message: 'boom',
+        stack: 'Error: boom',
+        route: '/x',
+        version: 'dev',
+      }),
+    }),
   )
   checkBankidConfig()
   logShutdown()

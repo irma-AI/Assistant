@@ -16,7 +16,7 @@ Shaping turns an issue into decisions the owner makes with the facts already in 
    - scope and priority;
    - business context only the owner has, such as hosting plans or account details.
 2. **Research** everything else first with `.claude/skills/research/SKILL.md`: what is correct, legal, documented or standard, or how established products do it. Sources are primary: official docs, statutes, authorities, vendors' own docs. Record each with the date you read it, in `docs/plans/<ID>.research.md` or an issue comment.
-3. **Ask** only the decision the research leaves open, with its sources. A recommendation names its source, or says "judgement, no source found". Legal calls go to the CEO marked as legal; never decide them.
+3. **Ask** only the decision the research leaves open, with its sources. A recommendation names its source, or says "judgement, no source found". Mark legal calls for legal review; never decide them.
 4. **Open each question with the problem** in one plain sentence, using no internal terms.
 
 Then run the rounds in the format of `.claude/skills/grilling/SKILL.md`.
@@ -45,7 +45,7 @@ Run it when the owner asks, and at the revisit triggers: before the first store 
 
 1. **Find decisions** in Linear Decisions and Rejected sections, PR "First principles", `docs/plans/`, `docs/guardrails.md` §7 accepted risks and owner Q&A. The cues, derived from MADR and Y-statements: an options list, a question with its answer, "instead of", "rejected", "accepted risk", "defer".
 2. **Map before researching.** Merge duplicates into one tree ledger per area, taking the latest state from Linear and `origin/main` over older chat. Each node has: id, parent, question, drivers, options, chosen, rationale, basis (`sourced`, `judgement`, `owner` or `unknown`), status, reversibility, built, evidence (url, quote, date read), verdict, recommended change, revisit trigger, children.
-3. **Research depth-first per branch until exhausted**, one subagent per branch. A node's sub-questions become children, finished before backtracking. One-way, built or judgement nodes get a primary-source check; two-way owner-context nodes get a short check that their context still holds. Verdicts: `holds`, `questionable`, `wrong`, `owner-call` (the five kinds only), `stale`. Legal calls are marked for the CEO.
+3. **Research depth-first per branch until exhausted**, one subagent per branch. A node's sub-questions become children, finished before backtracking. One-way, built or judgement nodes get a primary-source check; two-way owner-context nodes get a short check that their context still holds. Verdicts: `holds`, `questionable`, `wrong`, `owner-call` (the five kinds only), `stale`. Legal calls are marked for legal review.
 4. **Verify before reporting.** Re-check every `wrong` and every high-stakes `questionable` against the code or the source yourself.
 5. **Return findings as text.** The harness refuses report files from subagents, so you save the reports; the ledger JSON can be written.
 6. **Report** counts by verdict; `wrong` first, then `questionable`, each with a source and a concrete change; the owner-call questions; the legal list. File fixes as issues only after the owner agrees.
