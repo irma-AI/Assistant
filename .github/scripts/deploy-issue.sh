@@ -6,7 +6,7 @@
 # Env: LINEAR_API_TOKEN, IMAGE, TAG, RUN
 set -euo pipefail
 gql() { curl -sSf https://api.linear.app/graphql -H "Authorization: $LINEAR_API_TOKEN" -H 'Content-Type: application/json' -d @-; }
-q='{teams(filter:{key:{eq:"IRM"}}){nodes{id labels(filter:{name:{eq:"deploy-failure"}}){nodes{id}} states(filter:{name:{eq:"Ready"}}){nodes{id}} issues(first:1,filter:{labels:{name:{eq:"deploy-failure"}},state:{type:{nin:["completed","canceled"]}}}){nodes{id}}}}}'
+q='{teams(filter:{key:{eq:"IRM"}}){nodes{id labels(filter:{name:{eq:"deploy-failure"}}){nodes{id}} states(filter:{name:{eq:"Ready"}}){nodes{id}} issues(first:1,filter:{labels:{name:{eq:"deploy-failure"}},state:{type:{nin:["completed","canceled","duplicate"]}}}){nodes{id}}}}}'
 team=$(jq -n --arg q "$q" '{query:$q}' | gql | jq -ec '.data.teams.nodes[0] | select(.states.nodes[0].id)')
 body="Deploying $IMAGE:$TAG $1. Run: $RUN"
 open=$(jq -r '.issues.nodes[0].id // empty' <<<"$team")
