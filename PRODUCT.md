@@ -8,7 +8,7 @@ Redo is Swedish bookkeeping, app-first: iOS, Android and the web. Login is Swedi
 
 web
 
-One design for every platform, made for the phone first and scaled up to fit the web. The iOS and Android apps run the same web code in a WebView (Capacitor).
+`web` is impeccable's value for the design language: the iOS and Android apps run this same web code in a WebView (Capacitor), so one web design serves all three. The product is app-first: the iPhone and Android apps are the main way people use Redo, and the browser comes second. The design is made for the phone first and scaled up to fit wider screens.
 
 ## Users
 
