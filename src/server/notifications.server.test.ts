@@ -257,9 +257,8 @@ test('every optional email carries an unsubscribe link that turns that email off
   expect(optional?.text).toContain(link)
   expect(mine.find((m) => !m.unsubscribe)?.text).not.toContain('unsubscribe')
 
-  expect(
-    (await unsubscribe(new Request(link.replace(/sig=./, 'sig=0')), db)).status,
-  ).toBe(400)
+  const bad = link.replace(/sig=(.)/, (_, c) => (c === '0' ? 'sig=1' : 'sig=0'))
+  expect((await unsubscribe(new Request(bad), db)).status).toBe(400)
   expect((await unsubscribe(new Request(link), db)).status).toBe(200)
   const prefs = z
     .array(z.object({ type: z.string(), email: z.boolean() }))

@@ -1,0 +1,4 @@
+[
+  {"criterion": "The tampered link always differs from the real one, so the test returns 400 regardless of the signature.", "passes": true},
+  {"criterion": "make check passes.", "passes": true}
+]
