@@ -59,7 +59,7 @@ GENERATED = src/server/db.gen.ts src/routeTree.gen.ts
 # Rebuilds every generated file: the database types from the migrated schema, and the route tree,
 # which only the production build writes with TanStack Start's types.
 generate: migrate
-	pnpm exec kysely-codegen --dialect postgres --url "$$DATABASE_URL" --out-file src/server/db.gen.ts --exclude-pattern 'kysely_migration*'
+	pnpm exec kysely-codegen --dialect postgres --url "$$DATABASE_URL" --out-file src/server/db.gen.ts --include-pattern 'public.*' --exclude-pattern 'public.kysely_migration*'
 	pnpm build
 
 generate-check: generate

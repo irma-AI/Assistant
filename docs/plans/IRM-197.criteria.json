@@ -1,0 +1,1 @@
+[{"criterion":"With a pgboss schema present, make generate-check passes and db.gen.ts is unchanged","passes":true},{"criterion":"On a freshly migrated database, make generate still produces the committed db.gen.ts","passes":true},{"criterion":"make check passes","passes":true}]
