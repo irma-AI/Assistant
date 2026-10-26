@@ -37,6 +37,15 @@ const post = (ip: string, headers: Record<string, string> = {}, body = {}) =>
     body: JSON.stringify(body),
   })
 
+// Random UUIDs can hold 12 digits in a row, so they are cut out before looking for secrets.
+const leaks = (rows: unknown, fullIp: string) =>
+  new RegExp(`__Host|token|${fullIp.replaceAll('.', '\\.')}\\b`).test(
+    JSON.stringify(rows).replace(
+      /[0-9a-f]{8}(-[0-9a-f]{4}){3}-[0-9a-f]{12}/g,
+      '',
+    ),
+  )
+
 // Starts a login and polls it to the end; returns the session cookie if one was issued.
 async function loginFrom(ip: string) {
   const started = await start(post(ip, {}, { sameDevice: false }), db)
@@ -73,7 +82,17 @@ test('login success, login failure and logout each write one row (a start writes
   ])
   expect(rows[1]?.ip).toBe('203.0.113.0')
   expect(rows[1]?.user_id).toBeTruthy()
-  expect(JSON.stringify(rows)).not.toMatch(/\d{12}|__Host|token/)
+  expect(leaks(rows, '203.0.113.7')).toBe(false)
+})
+
+test('the secret check ignores a UUID of 12 digits but still sees a cookie, token or full IP', () => {
+  const uuid = 'cde29ede-dd96-4521-92d5-658272221482'
+  expect(leaks([{ user_id: uuid, ip: '203.0.113.0' }], '203.0.113.7')).toBe(
+    false,
+  )
+  expect(leaks([{ detail: '__Host-session=x' }], '203.0.113.7')).toBe(true)
+  expect(leaks([{ detail: 'a token' }], '203.0.113.7')).toBe(true)
+  expect(leaks([{ ip: '203.0.113.7' }], '203.0.113.7')).toBe(true)
 })
 
 test('IPv6 addresses are cut to the network', async () => {
