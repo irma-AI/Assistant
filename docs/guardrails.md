@@ -25,7 +25,7 @@ This learns from the scaffolding around that code: instructions for the agents (
 
 - TypeScript in strict mode on Node LTS, with pnpm; mise pins both ([2.12](#212-ci-as-the-authority)).
 - [TanStack Start](https://tanstack.com/start) (React) for pages and server code, and a versioned REST API at `/api/v1`, built into a Node server by Nitro. `/app` is client-rendered (`ssr: false`); the landing page is server-rendered. Start stays because it gives one image, file-routed endpoints and that server-rendered landing page.
-- [TanStack DB](https://tanstack.com/db) in the browser, with live updates over server-sent events ([2.29](#229-one-write-path-with-live-updates)).
+- [TanStack DB](https://tanstack.com/db) in the browser, with live updates over server-sent events (*not built yet*, [2.29](#229-one-write-path-with-live-updates)).
 - PostgreSQL, with Kysely for typed queries, plain `.sql` migrations and types generated from the schema ([2.7](#27-invariants-in-the-database-tested-against-the-real-database), [2.9](#29-generated-artifacts)).
 - Vitest and Playwright for tests ([2.8](#28-declared-test-seams-swept)), and the AI model vendors' official TypeScript SDKs.
 - An existing self-hosted [Dokploy](https://dokploy.com/), deployed from images in GitHub's container registry ([2.13](#213-done-means-seen-working)).
@@ -98,7 +98,7 @@ Size limits here count characters or words, and are enforced.
 
 **What it is.** Agents, git hooks, CI jobs and scheduled jobs call named task-runner targets, never the underlying command. The exceptions are setup and platform calls the workflows make themselves (`pnpm install`, mise, `gh attestation verify`), and the browser tests in ci's `e2e` job and the production smoke test, which run through `pnpm` because Playwright's image has no make; `make e2e` runs the same script.
 
-- Core targets: `check` (everything CI runs), `fix`, `generate`, `generate-check`, and `dev`, which boots the app so agents and the verification job ([2.13](#213-done-means-seen-working)) can exercise it. It migrates and runs `kysely seed run` first (a no-op until the first table of people) ([2.8](#28-declared-test-seams-swept)).
+- Core targets: `check` (everything CI runs), `fix`, `generate`, `generate-check`, and `dev`, which boots the app so agents and the verification job ([2.13](#213-done-means-seen-working)) can exercise it. It migrates and runs `kysely seed run` first (the fake users and demo data in `seeds/`) ([2.8](#28-declared-test-seams-swept)).
 - Hook targets such as `check-staged` (pre-commit) and `check-push` (pre-push).
 
 **Why.**
@@ -185,7 +185,7 @@ Size limits here count characters or words, and are enforced.
 - No per-file opt-outs from strict mode. The TypeScript and ESLint configuration are protected paths ([2.12](#212-ci-as-the-authority)).
 - A suppression comment (`// @ts-expect-error` or `// eslint-disable`) must name its rule and give a reason, and one that no longer silences anything fails.
 - No type assertions on inferred values (`consistent-type-assertions` set to `never`), following TanStack's own rule: "Types are FULLY INFERRED. Never cast, never annotate inferred values."
-- The type check runs as `tsc --noEmit` before the build, because TypeScript still runs code that fails the type check.
+- `make check-app` runs `tsc --noEmit` after the production build (inside `generate-check`), because TypeScript still runs code that fails the type check.
 
 **Why.**
 
@@ -193,7 +193,7 @@ Size limits here count characters or words, and are enforced.
 - Its opt-outs then grew from 5 files to 11, 20 and 39 with no decision recorded. A new repository starts at zero, so a ban is simpler than a count.
 - GitHub cites a 2025 study on type-constrained decoding that found about 94% of compile errors in model-written code are type errors, so the type checker is the agent's cheapest reviewer.
 
-**Tools.** [typescript-eslint](https://typescript-eslint.io/)'s `strict-type-checked` on ESLint 10, with `ban-ts-comment` requiring a description, eslint-comments' `require-description`, `reportUnusedDisableDirectives: "error"`, TanStack's router and query plugins, and an `only-throw-error` allow list for TanStack's `redirect()` and `notFound()`. TypeScript stays on 6.0 until typescript-eslint and dependency-cruiser support 7, and ESLint ignores `routeTree.gen.ts`, whose generated header disables both checkers.
+**Tools.** [typescript-eslint](https://typescript-eslint.io/)'s `strict-type-checked` on ESLint 10, with `ban-ts-comment` requiring a description, eslint-comments' `require-description`, `reportUnusedDisableDirectives: "error"`, TanStack's router plugin. TypeScript stays on 6.0 until typescript-eslint and dependency-cruiser support 7, and ESLint ignores `routeTree.gen.ts`, whose generated header disables both checkers.
 
 ### 2.7 Invariants in the database, tested against the real database
 
@@ -250,8 +250,8 @@ Size limits here count characters or words, and are enforced.
 
 **What it is.** A dependency-cruiser config says which layers may import from which, and a guard in `policy` enforces it.
 
-- Server-only code lives in `*.server.ts` files, such as `db.server.ts`, and only `src/server/`, `src/routes/api/` and `scripts/` may import them.
-- Every UI (landing page, `/app`, `src/features/`, `src/components/`, `src/platform/`) reaches the server only through `/api/v1`, whose handlers sit in `src/routes/api/v1/` and call `src/server/`. Server functions are banned.
+- Server-only code lives in `*.server.ts` files, such as `db.server.ts`, and only `src/server/`, `src/routes/api/`, `scripts/` and `src/start.ts` may import them.
+- Every UI (landing page, `/app`, `src/ui/`, `src/platform/`) reaches the server only through `/api/v1`, whose handlers sit in `src/routes/api/v1/` and call `src/server/`. Server functions are banned.
 - `src/server/` never imports UI code, `src/api/` (the contract and typed client) imports no other app code, and only `src/platform/` imports `@capacitor/*`.
 - TanStack's import protection fails the build when a `*.server.*` file reaches the browser bundle, so the boundary is checked twice before the AI review sees it.
 
@@ -313,7 +313,7 @@ Size limits here count characters or words, and are enforced.
 - On `pull_request`, GitHub runs the PR's own copy of the workflow, so a PR could rewrite `ci` to pass, and GitHub Free has no required workflows to stop it. `policy` runs from the default branch and blocks workflow edits the issue didn't ask for.
 - Blocking whole paths is simpler than judging which workflow edits are harmless, and it catches the realistic failure: an agent loosening CI or a guard to turn a red build green.
 - Large projects do the same. twentyhq/twenty guards `.github/`, `.claude/`, `CLAUDE.md` and `.mcp.json` with a required `pull_request_target` check (PR #28497, merged 2026-10-21), and n8n does it for its review and contributor checks. projen, faker, flutter and lean4 use the common merge-queue fix of skipping the job on `merge_group`.
-- Like twenty, this accepts two limits: the label isn't tied to who set it, so a routine could set it, and a PR could add its own workflow with a passing job named `policy`, since the source pins only to GitHub Actions as a whole. The audit on every merge is the only defence against either. It reports minutes after a change lands, with no daily job to depend on, but only afterwards ([section 7](#7-open-risks)).
+- Like twenty, this accepts two limits: the label isn't tied to who set it, so a routine could set it, and a PR could add its own workflow with a passing job named `policy`, since the source pins only to GitHub Actions as a whole. The audit on every merge is the only defence against either. The protected-path audit reports minutes after a change lands, with no daily job behind it, but only afterwards ([section 7](#7-open-risks)).
 - A private repository on GitHub Free gets no rulesets, merge queue or auto-merge, which would leave CI a report nobody reads.
 - In the old repository the live branch rules drifted from the committed file unnoticed, and deploys ran without waiting for CI: the default branch was red on 11 of 213 pushes, and each still deployed.
 
@@ -420,7 +420,7 @@ Size limits here count characters or words, and are enforced.
 **What it is.** The agent opens each PR and turns on auto-merge. The merge queue merges once the required checks pass, and a workflow deploys.
 
 - Right after opening the PR, the agent turns on auto-merge through the GitHub tools of Claude's GitHub connection (for example `enable_pr_auto_merge`). It never merges directly.
-- The session then watches the PR until it merges or closes. In a routine, its "Auto-fix pull requests" setting subscribes the run to the PR's CI and review comments; a background command polling the PR and its check runs over REST, 30 minutes at a time, covers a missed event. After two hours with the PR open and green, the session asks the owner and ends, because a queue drop leaves the PR's own checks green. A failed check, or a notice that the queue removed the PR, gets fixed and pushed with auto-merge on again, up to three rounds. *Not checked* in a routine run.
+- The session then watches the PR until it is in the merge queue. In a routine, its "Auto-fix pull requests" setting subscribes the run to the PR's CI and review comments; elsewhere it uses `subscribe_pr_activity`. Once queued it ends, and if the queue drops the PR, `queue-drop.yml` returns the issue to Ready for the next run. A failed check gets fixed and pushed with auto-merge on again, up to three rounds. *Not checked* in a routine run.
 - The merge queue retests the PR and merges it. The rulesets ([2.12](#212-ci-as-the-authority)) keep the required checks in force whoever turned auto-merge on.
 - A deploy workflow ([2.13](#213-done-means-seen-working)) runs on pushes to the default branch, and merges by the queue's own bot start it.
 
@@ -438,9 +438,9 @@ Size limits here count characters or words, and are enforced.
 **What it is.** Work enters only through Linear. A Dokploy schedule starts a GitHub Actions workflow every 2 minutes, which reads Linear and starts the Intake routine through its API trigger when there is work.
 
 - The owner files issues and moves them to Ready by asking Claude in a cloud session on the repository. Claude interviews the owner with [`grilling`](#3-skills) and files the issues with [`to-tickets`](#3-skills), each with a type label and acceptance criteria.
-- Every 2 minutes (the Dokploy schedule "Assistant: start intake every 2 minutes", which calls GitHub's workflow-dispatch API with a fine-grained token limited to Actions on this repository) and on demand, the workflow counts the cloud's issues In Progress or In Review. For each of the three slots (`MAX_PARALLEL`) left free, it fires the routine with the next oldest Ready issue that nothing unfinished blocks. It doesn't claim the issue: the session does, by moving it to In Progress and commenting `Started by Intake.`, and a second session that finds that comment less than 10 minutes old stops. A fire whose session dies, for example on the usage limit, leaves the issue in Ready, so the next run retries it. A Ready issue with an open PR is an answered question, and its session continues on that PR. The routine follows `docs/agents/intake.md` and then [`next-step`](#3-skills). Nothing checks who created or readied the issue ([section 7](#7-open-risks)). The first fire, IRM-75 on 2026-10-23, went from the fire call to a merged PR in about five minutes.
+- Every 2 minutes (the Dokploy schedule "Assistant: start intake every 2 minutes", which calls GitHub's workflow-dispatch API with a fine-grained token limited to Actions on this repository) and on demand, the workflow counts the cloud's issues In Progress or In Review. For each of the three slots (`MAX_PARALLEL`) left free, it fires the routine with the next Ready issue, by priority and then age, that nothing unfinished blocks. It doesn't claim the issue: the session does, by moving it to In Progress and commenting `Started by Intake.`, and a second session that finds that comment less than 10 minutes old stops. A fire whose session dies, for example on the usage limit, leaves the issue in Ready, so the next run retries it. A Ready issue with an open PR is an answered question, and its session continues on that PR. The routine follows `docs/agents/intake.md` and then [`next-step`](#3-skills). Nothing checks who created or readied the issue ([section 7](#7-open-risks)). The first fire, IRM-75 on 2026-10-23, went from the fire call to a merged PR in about five minutes.
 - GitHub's own schedule isn't used: it ran 6 times in about 21 hours against about 130 slots, as GitHub's docs allow ("some queued jobs may be dropped"). On 2026-10-24 the routine hit the usage limit at 19:28. The fired issues had already been moved to In Progress, so intake waited on them all night, past the limit's reset at 00:10. Retrying from Ready every 2 minutes replaces that (IRM-135). *Not checked:* the Dokploy schedule's first night.
-- A second worker can run beside the cloud: one local session on a /loop (`docs/agents/routines.md`), taking the oldest Ready issue like the cloud does. It claims the issue the same way and adds the `local` label, and the workflow counts only issues without `local` against the cloud's three slots. *Not checked* with two workers.
+- A second worker can run beside the cloud: one local session on a /loop (`docs/agents/routines.md`), taking the oldest Ready issue (the cloud goes by priority first). It claims the issue the same way and adds the `local` label, and the workflow counts only issues without `local` against the cloud's three slots. *Not checked* with two workers.
 - Without a claim at fire time, a fired issue stays Ready and outside the in-flight count until its session's first write, usually within a minute. A run in that window can fire it again; a merge no longer starts a run (IRM-191), so a merge waits for the next tick, at most 2 minutes, before its unblocked issue starts. A session that takes more than 2 minutes to claim can still get a twin from the next tick. Revisit if a duplicate fire happens again without a merge. Two sessions that both read Ready before either writes both claim it. The 10-minute comment guard only stops a session that starts after the first claim exists. That race is left unhandled: it costs one duplicate session, not a broken repository, and the cost of the alternative (a claim at fire time) was a night of held slots. *Not checked.*
 - A session that claimed its issue and stops before pushing moves it back to Ready itself. One that dies after claiming leaves it In Progress, holding a slot until the owner moves it back. *Not checked.*
 - `next-step` tells the agent to drop zero-width characters and HTML comments from the issue text before reading it. Nothing strips them in code, because routines read Linear through the connector, where a script can't step in.
@@ -546,10 +546,10 @@ Size limits here count characters or words, and are enforced.
 
 **What it is.** The UI has no save buttons and no reloads: edits save as the user types and changes made elsewhere appear by themselves, while PostgreSQL stays the only judge of what is stored.
 
-- Every write is an `/api/v1` endpoint running Kysely in a transaction, so the constraints and triggers of [2.7](#27-invariants-in-the-database-tested-against-the-real-database) decide. It returns the transaction ID (`pg_current_xact_id()`).
-- In the browser, [TanStack DB](https://tanstack.com/db) collections apply a write at once and call that endpoint through `src/api/`, debounced for autosave. A write the database refuses rolls back in the UI with an error.
-- A trigger sends `pg_notify` with the tenant, table and row of each change. Each Node instance holds one LISTEN connection and streams the events as server-sent events from a server route, with a 25-second keep-alive; Dokploy's Traefik doesn't cut idle streams, and the keep-alive is for other proxies and for clients to notice a dead connection. The client refetches the affected collection, and everything after a reconnect.
-- The two-context Playwright test in [2.8](#28-declared-test-seams-swept) proves both directions. A stream through Dokploy's Traefik stayed open for 5 minutes over HTTPS, and LISTEN reconnected by itself about 11 seconds after a database restart. *Not built yet:* this waits for the first feature that writes data.
+- Every write is an `/api/v1` endpoint running Kysely in a transaction, so the constraints and triggers of [2.7](#27-invariants-in-the-database-tested-against-the-real-database) decide. It returns the transaction ID (`pg_current_xact_id()`) (*not built yet*: no endpoint returns it).
+- *Not built yet:* in the browser, [TanStack DB](https://tanstack.com/db) collections apply a write at once and call that endpoint through `src/api/`, debounced for autosave. A write the database refuses rolls back in the UI with an error.
+- *Not built yet:* a trigger sends `pg_notify` with the tenant, table and row of each change. Each Node instance holds one LISTEN connection and streams the events as server-sent events from a server route, with a 25-second keep-alive; Dokploy's Traefik doesn't cut idle streams, and the keep-alive is for other proxies and for clients to notice a dead connection. The client refetches the affected collection, and everything after a reconnect.
+- The two-context Playwright test in [2.8](#28-declared-test-seams-swept) proves both directions. A stream through Dokploy's Traefik stayed open for 5 minutes over HTTPS, and LISTEN reconnected by itself about 11 seconds after a database restart. *Not built yet:* no endpoint returns a transaction ID, and there is no NOTIFY trigger, SSE route, TanStack DB collection or two-context test; writes today are plain `/api/v1` endpoints.
 
 **Why.**
 
@@ -560,7 +560,7 @@ Size limits here count characters or words, and are enforced.
 
 ### 2.30 Personal data needs a row in the records
 
-**What it is.** `docs/privacy/records.md` is the Art. 30 record of processing, the cookie inventory, the DPIA decision and the supplier register. A change that adds analytics, a third-party script, a cookie or local-storage key, a new category of personal data, a new log of personal data or a new vendor adds its row to the records first, in the same PR. The AI review ([2.11](#211-ai-review-and-task-fit-judge-run-by-ci-on-the-subscription)) checks a PR that adds one against the records, and the file is a protected path ([2.12](#212-ci-as-the-authority)), so a change to it needs `ci-change`.
+**What it is.** `docs/privacy/records.md` is the Art. 30 record of processing, the cookie inventory, the DPIA decision and the supplier register. A change that adds analytics, a third-party script, a cookie or local-storage key, a new category of personal data, a new log of personal data or a new vendor adds its row to the records first, in the same PR. The AI review ([2.11](#211-ai-review-and-task-fit-judge-run-by-ci-on-the-subscription)) has no lens for it yet, and the file is a protected path ([2.12](#212-ci-as-the-authority)), so a change to it needs `ci-change`.
 
 **Why.**
 
@@ -606,17 +606,18 @@ A skill is a Markdown file of instructions that Claude Code loads when it is cal
 | `grilling` | [mattpocock/skills](https://github.com/mattpocock/skills) | [2.20](#220-intake-from-linear) | Interviews the owner at intake until the issue is clear |
 | `to-tickets` | [mattpocock/skills](https://github.com/mattpocock/skills) | [2.20](#220-intake-from-linear) | Files the issues, each with a type label and acceptance criteria in the shape [2.24](#224-restartable-execution-plans) copies |
 | `skeptic-pass` | The old repository | [2.11](#211-ai-review-and-task-fit-judge-run-by-ci-on-the-subscription) | Correctness, regression and security lenses, each looking for a concrete counterexample |
-| `code-review` | [mattpocock/skills](https://github.com/mattpocock/skills) | [2.11](#211-ai-review-and-task-fit-judge-run-by-ci-on-the-subscription) | Its spec axis is the basis of the task-fit judge |
+| `code-review` | [mattpocock/skills](https://github.com/mattpocock/skills) | [2.11](#211-ai-review-and-task-fit-judge-run-by-ci-on-the-subscription) | Standards and spec axes; `policy` compares the diff with the issue inline and does not load this skill |
 | `ponytail-review` | [DietrichGebert/ponytail](https://github.com/DietrichGebert/ponytail) | [2.11](#211-ai-review-and-task-fit-judge-run-by-ci-on-the-subscription) | A lens that asks whether every line is needed, against the review's habit of adding code |
 | `agentic-actions-auditor` | [trailofbits/skills](https://github.com/trailofbits/skills) | [2.11](#211-ai-review-and-task-fit-judge-run-by-ci-on-the-subscription) | A lens for PRs that change workflows, `pull_request_target` above all |
 | `pr` | [mattpocock/skills](https://github.com/mattpocock/skills) | [2.17](#217-pr-description-contract) | Writes the PR description sections |
 | `diagnosing-bugs` | [mattpocock/skills](https://github.com/mattpocock/skills) | [2.13](#213-done-means-seen-working) | Builds a feedback loop before any fix, for bugs and failed deploys |
+| `shaping` | Local | [2.22](#222-asking-the-owner) | Sorts owner questions from research, and records decisions |
 | `claim-sweep` | The old repository | [2.27](#227-weekly-claim-sweep) | Checks what the agent documents claim against the code |
 | `impeccable`, with its four agents | [pbakaus/impeccable](https://github.com/pbakaus/impeccable) | `ui` flow | Design guidance for UI work; the agents serve its new-work flow in sessions with the owner |
 | `ponytail`, `ponytail-audit`, `ponytail-debt`, `ponytail-help`, `ponytail-gain`, with ponytail's hooks | [DietrichGebert/ponytail](https://github.com/DietrichGebert/ponytail) | Every session | Always-on mode for the smallest complete change, a whole-repository audit, and the `shortcut:` debt ledger |
 | `research` | [mattpocock/skills](https://github.com/mattpocock/skills) | [Section 5](#5-maybe) | Writes research notes that cite primary sources |
 | `writing-for-agents` | [mattpocock/skills](https://github.com/mattpocock/skills) | [2.5](#25-instruction-layering-with-size-budgets) | Rules for editing `CLAUDE.md`, rule files and skills |
-| TanStack's skills for Start, Router and DB | Inside the TanStack npm packages ([TanStack Intent](https://tanstack.com/intent)) | [2.6](#26-strict-static-checks-from-the-first-commit), [2.10](#210-architecture-layers-enforced), [2.11](#211-ai-review-and-task-fit-judge-run-by-ci-on-the-subscription), [2.29](#229-one-write-path-with-live-updates) | TanStack's own rules: code runs on server and browser by default, server code is reached through `/api/v1` here, not the `createServerFn` the skills teach, types are inferred and never cast, and Next.js patterns are wrong here |
+| TanStack's skills for Start and Router | Inside the TanStack npm packages ([TanStack Intent](https://tanstack.com/intent)) | [2.6](#26-strict-static-checks-from-the-first-commit), [2.10](#210-architecture-layers-enforced), [2.11](#211-ai-review-and-task-fit-judge-run-by-ci-on-the-subscription), [2.29](#229-one-write-path-with-live-updates) | TanStack's own rules: code runs on server and browser by default, server code is reached through `/api/v1` here, not the `createServerFn` the skills teach, types are inferred and never cast, and Next.js patterns are wrong here |
 
 **`next-step`.** Given one Linear issue ID, from a routine or from `/next-step ABC-12`, it runs the issue until its PR merges. It never waits on the owner: a question goes to Linear ([2.22](#222-asking-the-owner)) and the routine moves on.
 
@@ -653,7 +654,7 @@ Each stage has a rough time budget, so the fast checks run early and nothing slo
 | Stage | Name | Time budget |
 |---|---|---|
 | 0 | Agent harness (Claude Code hooks) | Instant |
-| 1 | Pre-commit | About 10 seconds, staged files only |
+| 1 | Pre-commit | The repository checks, then format and lint on the staged files; time not measured |
 | 2 | Pre-push | About 2 minutes |
 | 3 | CI: `ci` and `policy` | No limit |
 | 4 | Merge queue | CI again, on top of the latest default branch |
@@ -799,8 +800,8 @@ These remain after everything above.
 - **Correct code that is the wrong call.** The owner answers the questions that reach Linear ([2.22](#222-asking-the-owner)), but an agent can still make a product decision without recognising it as one.
 - **The GitHub connection's rights.** If the account behind Claude's GitHub connection owns the organization ([2.14](#214-permissions-and-network-replace-stop-and-ask)), an agent, or text injected into an issue or PR, could turn off the ruleset or change repository settings and then merge without the checks, and the audit on every merge only notices afterwards. Connecting an account that is only a writer on the repository might close this; the owner accepted the risk rather than test it (2026-10-23).
 - **Deploy access.** Open, see IRM-116.
-- **Log retention runs outside the repository's checks.** Docker keeps container logs with no age limit, so a daily Dokploy schedule cuts the Assistant's and Traefik's logs to 14 days (IRM-115). Its script is `scripts/log-retention.sh`, but nothing checks that the schedule's copy matches it, and the other projects on the server keep their logs indefinitely. Traefik's access log is off. Turning it on would start logging every visitor's IP address, so it would need a retention period first. *Not checked:* the first scheduled run is on 2026-10-25; manual runs on 2026-10-24 cut the expected lines.
+- **Log retention runs outside the repository's checks.** Docker keeps container logs with no age limit, so a daily Dokploy schedule cuts the Assistant's and Traefik's logs to 14 days (IRM-115). Its script is `scripts/log-retention.sh`, but nothing checks that the schedule's copy matches it, and the other projects on the server keep their logs indefinitely. Traefik's access log is off. Turning it on would start logging every visitor's IP address, so it would need a retention period first. *Not checked:* the scheduled runs.
 - **The personal-identity-number HMAC key.** Open, see IRM-128.
 - **Backups.** Dokploy backs up PostgreSQL with `pg_dump`, so a restore loses everything since the last dump, and no free storage target for the dumps is chosen yet.
-- **Young dependencies.** TanStack DB is in beta, TanStack Intent in alpha and Nitro (`3.0.260610-beta`, which runs production) in beta. Both are pinned, and their upgrades pass the same gates as any change.
+- **Young dependencies.** Nitro (`3.0.260610-beta`, which runs production) is in beta. It is pinned, and their upgrades pass the same gates as any change.
 - **The platform's behaviour.** Several pieces rest on behaviour that is undocumented and was only seen in live tests, and Claude Code, routines and GitHub Actions can change without notice.
