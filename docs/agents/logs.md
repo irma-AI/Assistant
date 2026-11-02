@@ -2,7 +2,7 @@
 
 Production logs are in VictoriaLogs at `https://logs.petterannerwall.se/select/vmui/`. A session reaches it through its network proxy, which adds a read-only user. The log format and the events are in `docs/observability.md`.
 
-The app is `{service="assistant-u5wrvv"}`. Every request but the deploy's health check writes one `event:request` line with `request_id`, `method`, `route` (the pattern, never the path), `status`, `duration_ms`, `db_ms`, `outside_ms`, `calls`, `user_id`, `org_id` and `outcome`; the response carries the same id in `x-request-id`. Step and event lines share the `request_id`. The events are listed in `src/server/log.server.ts`. The `client` stream is planned (IRM-194). The app's `service` field is its `SERVICE_NAME`, which the deployment sets to the container name.
+The app is `{service="assistant-u5wrvv"}`. Every request but the deploy's health check writes one `event:request` line with `request_id`, `method`, `route` (the pattern, never the path), `status`, `duration_ms`, `db_ms`, `outside_ms`, `calls`, `user_id`, `org_id` and `outcome`; the response carries the same id in `x-request-id`. Step and event lines share the `request_id`. The events are listed in `src/server/log.server.ts`. Errors from the phone app and the browser arrive as `event:client_error` lines with `service:client`, through the client-errors endpoint (`src/routes/api/v1/client-errors.ts`). The app's `service` field is its `SERVICE_NAME`, which the deployment sets to the container name.
 
 ## Quote events, never lines
 

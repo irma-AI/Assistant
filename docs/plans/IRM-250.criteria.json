@@ -1,0 +1,1 @@
+[{"criterion": "Every claim has a mark and each stale or unverifiable one is fixed or has an issue", "passes": false}, {"criterion": "The PR description lists each changed claim with its evidence", "passes": false}]
