@@ -1,14 +1,26 @@
-import { createFileRoute } from '@tanstack/react-router'
-import { useCallback, useEffect, useState } from 'react'
+import { createFileRoute, useRouter } from '@tanstack/react-router'
+import { useState } from 'react'
 import type { ChangeEvent } from 'react'
 import type { z } from 'zod'
 import { kr } from '#/api/money'
 import { receiptList, receiptSettingsView, unmatchedList } from '#/api/schemas'
 import { swedishError } from '#/api/permissions'
-import { call, useList, usePermissions } from './-call'
+import { call, fetchList, fetchPermissions } from './-call'
 import { ReceiptItem } from './-Receipt'
+import { isOld } from '#/ui/loaded'
 
 export const Route = createFileRoute('/app/org/$orgId/kvitton')({
+  shouldReload: ({ location }) => isOld(location.pathname),
+  loader: async ({ params }) => {
+    const base = `/api/v1/orgs/${params.orgId}/receipts`
+    const [mine, receipts, payments, settings] = await Promise.all([
+      fetchPermissions(params.orgId),
+      fetchList(base, receiptList),
+      fetchList(`${base}/unmatched`, unmatchedList),
+      fetchSettings(`${base}/settings`),
+    ])
+    return { mine, receipts, payments, settings }
+  },
   component: Receipts,
 })
 
@@ -80,17 +92,11 @@ function Intake(p: {
 function Receipts() {
   const { orgId } = Route.useParams()
   const base = `/api/v1/orgs/${orgId}/receipts`
-  const mine = usePermissions(orgId)
-  const [receipts, loadReceipts] = useList(base, receiptList)
-  const [payments, loadPayments] = useList(`${base}/unmatched`, unmatchedList)
-  const [settings, loadSettings] = useSettings(`${base}/settings`)
+  const { mine, receipts, payments, settings } = Route.useLoaderData()
+  const router = useRouter()
   const [error, setError] = useState<string | null>(null)
-
-  if (mine === null || !receipts || !payments) return <p>Laddar…</p>
   const canManage = mine.includes('bookkeeping.manage')
-  const reload = async () => {
-    await Promise.all([loadReceipts(), loadPayments()])
-  }
+  const reload = () => router.invalidate()
 
   async function pick(event: ChangeEvent<HTMLInputElement>, source: string) {
     const file = event.target.files?.[0]
@@ -103,7 +109,7 @@ function Receipts() {
 
   async function toggle(on: boolean) {
     setError(await call(`${base}/settings`, 'PUT', { suggestions: on }))
-    await Promise.all([loadSettings(), reload()])
+    await reload()
   }
 
   return (
@@ -147,18 +153,10 @@ function Receipts() {
   )
 }
 
-function useSettings(url: string) {
-  const [settings, setSettings] =
-    useState<z.infer<typeof receiptSettingsView>>()
-  const load = useCallback(async () => {
-    const response = await fetch(url)
-    const parsed = receiptSettingsView.safeParse(
-      response.ok ? await response.json() : null,
-    )
-    setSettings(parsed.success ? parsed.data : undefined)
-  }, [url])
-  useEffect(() => {
-    void load()
-  }, [load])
-  return [settings, load] as const
+async function fetchSettings(url: string) {
+  const response = await fetch(url)
+  const parsed = receiptSettingsView.safeParse(
+    response.ok ? await response.json() : null,
+  )
+  return parsed.success ? parsed.data : undefined
 }

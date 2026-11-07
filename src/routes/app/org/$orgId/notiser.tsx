@@ -1,24 +1,27 @@
-import { createFileRoute } from '@tanstack/react-router'
+import { createFileRoute, useRouter } from '@tanstack/react-router'
 import { useState } from 'react'
 import { notices } from '#/api/schemas'
-import { call, useList } from './-call'
+import { call, fetchList } from './-call'
+import { isOld } from '#/ui/loaded'
 
 export const Route = createFileRoute('/app/org/$orgId/notiser')({
+  shouldReload: ({ location }) => isOld(location.pathname),
+  loader: ({ params }) =>
+    fetchList(`/api/v1/orgs/${params.orgId}/notifications`, notices),
   component: Notices,
 })
 
 function Notices() {
   const { orgId } = Route.useParams()
   const base = `/api/v1/orgs/${orgId}/notifications`
-  const [list, load] = useList(base, notices)
+  const list = Route.useLoaderData()
+  const router = useRouter()
   const [error, setError] = useState<string | null>(null)
-
-  if (list === undefined) return <p>Laddar…</p>
 
   async function markRead(id: string) {
     const failed = await call(`${base}/${id}/read`, 'POST')
     setError(failed)
-    if (!failed) await load()
+    if (!failed) await router.invalidate()
   }
 
   return (

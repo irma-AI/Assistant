@@ -1,11 +1,20 @@
-import { createFileRoute } from '@tanstack/react-router'
+import { createFileRoute, useRouter } from '@tanstack/react-router'
 import { useState } from 'react'
 import type { SyntheticEvent } from 'react'
 import { customerList } from '#/api/schemas'
 import { CsvImport } from './-CsvImport'
-import { call, useList, usePermissions } from './-call'
+import { call, fetchList, fetchPermissions } from './-call'
+import { isOld } from '#/ui/loaded'
 
 export const Route = createFileRoute('/app/org/$orgId/kunder')({
+  shouldReload: ({ location }) => isOld(location.pathname),
+  loader: async ({ params }) => {
+    const [mine, customers] = await Promise.all([
+      fetchPermissions(params.orgId),
+      fetchList(`/api/v1/orgs/${params.orgId}/customers`, customerList),
+    ])
+    return { mine, customers }
+  },
   component: Customers,
 })
 
@@ -28,14 +37,14 @@ const body = (f: Form) => ({
 function Customers() {
   const { orgId } = Route.useParams()
   const base = `/api/v1/orgs/${orgId}/customers`
-  const mine = usePermissions(orgId)
-  const [customers, load] = useList(base, customerList)
+  const { mine, customers } = Route.useLoaderData()
+  const router = useRouter()
+  const load = () => router.invalidate()
   // Id of the customer being edited, '' for a new one, null for none
   const [editing, setEditing] = useState<string | null>(null)
   const [form, setForm] = useState<Form>(empty)
   const [error, setError] = useState<string | null>(null)
 
-  if (mine === null || customers === undefined) return <p>Laddar…</p>
   const canManage = mine.includes('customers.manage')
 
   async function save(event: SyntheticEvent) {

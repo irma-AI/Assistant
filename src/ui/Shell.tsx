@@ -1,10 +1,9 @@
-import { Link, Outlet, useLocation, useNavigate } from '@tanstack/react-router'
-import { useCallback, useEffect, useState } from 'react'
-import { organisations } from '#/api/schemas'
+import { Link, Outlet, useLocation, useRouter } from '@tanstack/react-router'
+import { useState } from 'react'
 import { TabBar, tabOf } from './TabBar'
 import { ShellContext } from './shellContext'
 import type { ShellState } from './shellContext'
-import { recall, remember, rememberNext } from './storage'
+import { recall, remember } from './storage'
 
 const orgKey = 'redo.org'
 
@@ -22,27 +21,10 @@ export function isOutside(pathname: string) {
 
 const tabRoots = ['/app', '/app/organisation', '/app/konto']
 
-export function Shell() {
+export function Shell({ orgs }: { orgs: ShellState['orgs'] }) {
   const { pathname } = useLocation()
-  const navigate = useNavigate()
-  const [orgs, setOrgs] = useState<ShellState['orgs']>()
+  const router = useRouter()
   const [chosen, setChosen] = useState(recall(orgKey))
-
-  const reload = useCallback(async () => {
-    const response = await fetch('/api/v1/orgs')
-    if (response.ok) {
-      setOrgs(organisations.parse(await response.json()))
-      return
-    }
-    // Not logged in: go to login, and come back here afterwards.
-    rememberNext(location.pathname + location.search)
-    await navigate({ to: '/app/login' })
-  }, [navigate])
-  useEffect(() => {
-    void reload()
-  }, [reload])
-
-  if (!orgs) return <p role="status">Laddar…</p>
 
   const state: ShellState = {
     orgs,
@@ -51,7 +33,7 @@ export function Shell() {
       remember(orgKey, id)
       setChosen(id)
     },
-    reload,
+    reload: () => router.invalidate(),
   }
   const path = pathname.replace(/\/$/, '') || '/app'
   const below = !tabRoots.includes(path)

@@ -1,10 +1,30 @@
-import { createFileRoute } from '@tanstack/react-router'
-import { useEffect, useState } from 'react'
+import { createFileRoute, useRouter } from '@tanstack/react-router'
+import { useState } from 'react'
 import type { SyntheticEvent } from 'react'
 import { company } from '#/api/company'
-import { call, usePermissions } from './-call'
+import { call, fetchPermissions } from './-call'
+import { isOld } from '#/ui/loaded'
 
 export const Route = createFileRoute('/app/org/$orgId/uppgifter')({
+  shouldReload: ({ location }) => isOld(location.pathname),
+  loader: async ({ params }) => {
+    const [mine, response] = await Promise.all([
+      fetchPermissions(params.orgId),
+      fetch(`/api/v1/orgs/${params.orgId}/company`),
+    ])
+    // A failed read must not look like "nothing saved yet": saving that empty form would overwrite the details.
+    if (!response.ok) return { mine, loaded: undefined }
+    const data = company.parse(await response.json())
+    const form: Form = data
+      ? {
+          ...data,
+          swish: data.swish ?? '',
+          contact_email: data.contact_email ?? '',
+          contact_phone: data.contact_phone ?? '',
+        }
+      : empty
+    return { mine, loaded: { form, vat: data?.vat_number } }
+  },
   component: Company,
 })
 
@@ -63,43 +83,19 @@ const choices = [
 function Company() {
   const { orgId } = Route.useParams()
   const url = `/api/v1/orgs/${orgId}/company`
-  const mine = usePermissions(orgId)
-  const [form, setForm] = useState<Form>()
-  const [vat, setVat] = useState<string>()
+  const { mine, loaded } = Route.useLoaderData()
+  const router = useRouter()
+  // shortcut: the form starts from the data at mount and ignores a later refresh, upgrade when two people edit the same details
+  const [form, setForm] = useState(loaded?.form)
   const [error, setError] = useState<string | null>(null)
   const [saved, setSaved] = useState(false)
-  const [loadFailed, setLoadFailed] = useState(false)
 
-  useEffect(() => {
-    void (async () => {
-      const response = await fetch(url)
-      // A failed read must not look like "nothing saved yet": saving that empty form would overwrite the details.
-      if (!response.ok) {
-        setLoadFailed(true)
-        return
-      }
-      const data = company.parse(await response.json())
-      setVat(data?.vat_number)
-      setForm(
-        data
-          ? {
-              ...data,
-              swish: data.swish ?? '',
-              contact_email: data.contact_email ?? '',
-              contact_phone: data.contact_phone ?? '',
-            }
-          : empty,
-      )
-    })()
-  }, [url])
-
-  if (loadFailed)
+  if (!loaded || !form)
     return (
       <p role="alert">
         Företagsuppgifterna kunde inte hämtas. Ladda om sidan och försök igen.
       </p>
     )
-  if (mine === null || form === undefined) return <p>Laddar…</p>
   const canEdit = mine.includes('organisation.manage')
   const set = (patch: Partial<Form>) => {
     setForm({ ...form, ...patch })
@@ -118,12 +114,13 @@ function Company() {
     })
     setError(failed)
     setSaved(!failed)
+    if (!failed) await router.invalidate()
   }
 
   return (
     <main>
       <h1>Företagsuppgifter</h1>
-      {vat && <p>Momsregistreringsnummer: {vat}</p>}
+      {loaded.vat && <p>Momsregistreringsnummer: {loaded.vat}</p>}
       {error && <p role="alert">{error}</p>}
       {saved && <p role="status">Sparat.</p>}
       <form

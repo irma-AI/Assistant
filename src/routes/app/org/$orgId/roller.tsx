@@ -1,11 +1,20 @@
-import { createFileRoute } from '@tanstack/react-router'
+import { createFileRoute, useRouter } from '@tanstack/react-router'
 import { useState } from 'react'
 import type { SyntheticEvent } from 'react'
 import { permission, roleList } from '#/api/schemas'
 import { permissionText } from '#/api/permissions'
-import { call, useList, usePermissions } from './-call'
+import { call, fetchList, fetchPermissions } from './-call'
+import { isOld } from '#/ui/loaded'
 
 export const Route = createFileRoute('/app/org/$orgId/roller')({
+  shouldReload: ({ location }) => isOld(location.pathname),
+  loader: async ({ params }) => {
+    const [mine, roles] = await Promise.all([
+      fetchPermissions(params.orgId),
+      fetchList(`/api/v1/orgs/${params.orgId}/roles`, roleList),
+    ])
+    return { mine, roles }
+  },
   component: Roles,
 })
 
@@ -14,15 +23,14 @@ type Role = (typeof roleList)['_output'][number]
 function Roles() {
   const { orgId } = Route.useParams()
   const base = `/api/v1/orgs/${orgId}/roles`
-  const mine = usePermissions(orgId)
-  const [roles, load] = useList(base, roleList)
+  const { mine, roles } = Route.useLoaderData()
+  const router = useRouter()
   // Id of the role being edited, '' for a new one, null for none
   const [editing, setEditing] = useState<string | null>(null)
   const [name, setName] = useState('')
   const [chosen, setChosen] = useState<string[]>([])
   const [error, setError] = useState<string | null>(null)
 
-  if (mine === null || roles === undefined) return <p>Laddar…</p>
   const canManage = mine.includes('roles.manage')
 
   function open(role?: Role) {
@@ -41,13 +49,13 @@ function Roles() {
     setError(failed)
     if (failed) return
     setEditing(null)
-    await load()
+    await router.invalidate()
   }
 
   async function remove(id: string) {
     const failed = await call(`${base}/${id}`, 'DELETE')
     setError(failed)
-    if (!failed) await load()
+    if (!failed) await router.invalidate()
   }
 
   return (

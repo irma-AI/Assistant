@@ -1,4 +1,3 @@
-import { useCallback, useEffect, useState } from 'react'
 import type { z } from 'zod'
 import { errorBody } from '#/api/schemas'
 import { swedishError } from '#/api/permissions'
@@ -15,32 +14,27 @@ export async function call(url: string, method: string, body?: unknown) {
   return swedishError(parsed.success ? parsed.data.error : undefined)
 }
 
-// The signed-in member's permissions here; null until known.
-export function usePermissions(orgId: string) {
-  const [permissions, setPermissions] = useState<string[] | null>(null)
-  useEffect(() => {
-    void (async () => {
-      const response = await fetch(`/api/v1/orgs/${orgId}/me`)
-      const body: unknown = await response.json().catch(() => null)
-      const list =
-        response.ok && typeof body === 'object' && body && 'permissions' in body
-          ? body.permissions
-          : []
-      setPermissions(Array.isArray(list) ? list.map(String) : [])
-    })()
-  }, [orgId])
-  return permissions
+// The signed-in member's permissions here; empty when the request fails.
+export async function fetchPermissions(orgId: string) {
+  const response = await fetch(`/api/v1/orgs/${orgId}/me`)
+  const body: unknown = await response.json().catch(() => null)
+  const list =
+    response.ok && typeof body === 'object' && body && 'permissions' in body
+      ? body.permissions
+      : []
+  return Array.isArray(list) ? list.map(String) : []
 }
 
-// A list fetched from the API; undefined until loaded, empty when the request fails.
-export function useList<T extends z.ZodArray>(url: string, schema: T) {
-  const [list, setList] = useState<z.infer<T>>()
-  const load = useCallback(async () => {
-    const response = await fetch(url)
-    setList(schema.parse(response.ok ? await response.json() : []))
-  }, [url, schema])
-  useEffect(() => {
-    void load()
-  }, [load])
-  return [list, load] as const
+// A list fetched from the API; empty when the request fails.
+export async function fetchList<T extends z.ZodArray>(url: string, schema: T) {
+  const response = await fetch(url)
+  return schema.parse(response.ok ? await response.json() : [])
+}
+
+// JSON from the API for a screen that cannot show anything without it; a failure reaches the route's error screen.
+export async function fetchJson<T extends z.ZodType>(url: string, schema: T) {
+  const response = await fetch(url)
+  if (!response.ok)
+    throw new Error(`${url} answered ${String(response.status)}`)
+  return schema.parse(await response.json())
 }

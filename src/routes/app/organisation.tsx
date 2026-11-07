@@ -1,5 +1,5 @@
 import { Link, createFileRoute } from '@tanstack/react-router'
-import { useState } from 'react'
+import { Fragment, useState } from 'react'
 import type { SyntheticEvent } from 'react'
 import { Field } from '#/ui/Field'
 import { useShell } from '#/ui/shellContext'
@@ -9,19 +9,25 @@ export const Route = createFileRoute('/app/organisation')({
   component: Organisations,
 })
 
+const screens = [
+  ['/app/org/$orgId/medlemmar', 'Medlemmar'],
+  ['/app/org/$orgId/roller', 'Roller'],
+  ['/app/org/$orgId/kunder', 'Kunder'],
+  ['/app/org/$orgId/fakturor', 'Fakturor'],
+  ['/app/org/$orgId/kvitton', 'Kvitton'],
+  ['/app/org/$orgId/notiser', 'Aviseringar'],
+  ['/app/org/$orgId/uppgifter', 'Företagsuppgifter'],
+] as const
+
 const OrgLinks = ({ id }: { id: string }) => (
   <p>
-    <a href={`/app/org/${id}/medlemmar`}>Medlemmar</a>{' '}
-    <a href={`/app/org/${id}/roller`}>Roller</a>{' '}
-    <a href={`/app/org/${id}/kunder`}>Kunder</a>{' '}
-    <Link to="/app/org/$orgId/fakturor" params={{ orgId: id }}>
-      Fakturor
-    </Link>{' '}
-    <Link to="/app/org/$orgId/kvitton" params={{ orgId: id }}>
-      Kvitton
-    </Link>{' '}
-    <a href={`/app/org/${id}/notiser`}>Aviseringar</a>{' '}
-    <a href={`/app/org/${id}/uppgifter`}>Företagsuppgifter</a>
+    {screens.map(([to, label]) => (
+      <Fragment key={to}>
+        <Link to={to} params={{ orgId: id }}>
+          {label}
+        </Link>{' '}
+      </Fragment>
+    ))}
   </p>
 )
 

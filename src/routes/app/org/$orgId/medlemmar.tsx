@@ -1,29 +1,36 @@
-import { createFileRoute } from '@tanstack/react-router'
+import { createFileRoute, useRouter } from '@tanstack/react-router'
 import { useState } from 'react'
 import { memberList, roleList } from '#/api/schemas'
-import { call, useList, usePermissions } from './-call'
+import { call, fetchList, fetchPermissions } from './-call'
+import { isOld } from '#/ui/loaded'
 
 export const Route = createFileRoute('/app/org/$orgId/medlemmar')({
+  shouldReload: ({ location }) => isOld(location.pathname),
+  loader: async ({ params }) => {
+    const base = `/api/v1/orgs/${params.orgId}`
+    const [mine, members, roles] = await Promise.all([
+      fetchPermissions(params.orgId),
+      fetchList(`${base}/members`, memberList),
+      fetchList(`${base}/roles`, roleList),
+    ])
+    return { mine, members, roles }
+  },
   component: Members,
 })
 
 function Members() {
   const { orgId } = Route.useParams()
   const base = `/api/v1/orgs/${orgId}`
-  const mine = usePermissions(orgId)
-  const [members, loadMembers] = useList(`${base}/members`, memberList)
-  const [roles, loadRoles] = useList(`${base}/roles`, roleList)
+  const { mine, members, roles } = Route.useLoaderData()
+  const router = useRouter()
   const [error, setError] = useState<string | null>(null)
 
-  const load = () => Promise.all([loadMembers(), loadRoles()])
-
-  if (mine === null || members === undefined) return <p>Laddar…</p>
   const canManage = mine.includes('members.manage')
 
   async function act(run: Promise<string | null>) {
     const failed = await run
     setError(failed)
-    await load()
+    await router.invalidate()
   }
 
   return (
@@ -49,7 +56,7 @@ function Members() {
                       )
                     }
                   >
-                    {(roles ?? []).map((r) => (
+                    {roles.map((r) => (
                       <option key={r.id} value={r.id}>
                         {r.name}
                       </option>
