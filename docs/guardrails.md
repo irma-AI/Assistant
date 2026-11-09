@@ -469,7 +469,7 @@ Size limits here count characters or words, and are enforced.
 - A routine posts the question as a comment on the Linear issue, moves the issue to "Needs input" and picks up other work. An interactive cloud session asks with the Ask tool. *Not checked* from a routine yet.
 - The owner asks Claude which issues need input and answers through Claude, which posts the answer as a comment.
 - A daily workflow sets a Linear reminder for the owner on each issue that has waited in Needs input for 3 days without an update, so a question can't sit unseen. It is a reminder, not a comment, because the workflow's API key is the owner's, and Linear doesn't notify anyone of their own comments.
-- `CLAUDE.md` words its ask-first rules as "comment on the issue and move it to Needs input".
+- `CLAUDE.md` words its ask-first rule as "Comment an owner question on the issue, move it to Needs input, then pick up other work".
 - Typical questions: wording users will read, a new vendor, a product call, or an issue that can be read two ways.
 
 **Why.**
@@ -549,12 +549,12 @@ Size limits here count characters or words, and are enforced.
 - Every write is an `/api/v1` endpoint running Kysely in a transaction, so the constraints and triggers of [2.7](#27-invariants-in-the-database-tested-against-the-real-database) decide. It returns the transaction ID (`pg_current_xact_id()`) (*not built yet*: no endpoint returns it).
 - *Not built yet:* in the browser, [TanStack DB](https://tanstack.com/db) collections apply a write at once and call that endpoint through `src/api/`, debounced for autosave. A write the database refuses rolls back in the UI with an error.
 - *Not built yet:* a trigger sends `pg_notify` with the tenant, table and row of each change. Each Node instance holds one LISTEN connection and streams the events as server-sent events from a server route, with a 25-second keep-alive; Dokploy's Traefik doesn't cut idle streams, and the keep-alive is for other proxies and for clients to notice a dead connection. The client refetches the affected collection, and everything after a reconnect.
-- The two-context Playwright test in [2.8](#28-declared-test-seams-swept) proves both directions. A stream through Dokploy's Traefik stayed open for 5 minutes over HTTPS, and LISTEN reconnected by itself about 11 seconds after a database restart. *Not built yet:* no endpoint returns a transaction ID, and there is no NOTIFY trigger, SSE route, TanStack DB collection or two-context test; writes today are plain `/api/v1` endpoints.
+- A two-context Playwright test in [2.8](#28-declared-test-seams-swept) is to prove both directions. In a throwaway experiment outside the repository, a stream through Dokploy's Traefik stayed open for 5 minutes over HTTPS, and LISTEN reconnected by itself about 11 seconds after a database restart. *Not built yet:* no endpoint returns a transaction ID, and there is no NOTIFY trigger, SSE route, TanStack DB collection or two-context test; writes today are plain `/api/v1` endpoints.
 
 **Why.**
 
 - One endpoint per write keeps the database the authority ([2.7](#27-invariants-in-the-database-tested-against-the-real-database)) while the UI updates at once.
-- It needs nothing beyond Node and PostgreSQL. Moving to Electric later changes only the client collection, because every write already returns the transaction ID it waits for.
+- It needs nothing beyond Node and PostgreSQL. Moving to Electric later changes only the client collection, because every write will return the transaction ID it waits for (*not built yet*).
 - WebSockets inside TanStack Start are undocumented and reported broken in production builds, so a later feature that needs one, such as realtime voice, gets its own small Node service.
 - NOTIFY delivers only on commit, in order, with a payload under 8000 bytes, so it carries keys and the client fetches the rows.
 
