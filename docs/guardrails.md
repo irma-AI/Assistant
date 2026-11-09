@@ -135,7 +135,7 @@ Size limits here count characters or words, and are enforced.
 - **Guards run from the target branch**, inside `policy` ([2.12](#212-ci-as-the-authority)), so a PR cannot rewrite its own judge. They and their fixtures are protected paths, so a PR that changes them fails unless its issue carries `ci-change`, and an agent cannot quietly loosen a guard to turn a build green.
 - **The scanned count is honest.** The old guards printed the number of changed files plus one, so a guard with nothing to scan still passed.
 
-**Stack guards.** Three guards target the mistakes agents make most with this stack:
+**Stack guards.** Three guards and one test target the mistakes agents make most with this stack:
 
 - **Wrong framework.** It fails on `src/pages/`, `app/layout.tsx`, `"use server"`, `getServerSideProps`, imports from `next/`, `react-router-dom` or the non-existent `@tanstack/start`, and `createServerFn` imported from `@tanstack/react-router`. Its fixtures come from TanStack's own list of agent failure modes.
 - **No server functions.** It fails any `createServerFn` in `src/`, with a fix message pointing to `/api/v1`; the pinned TanStack skills still teach server functions, and this guard redirects agents without editing the upstream copies.
@@ -526,7 +526,7 @@ Size limits here count characters or words, and are enforced.
 
 ### 2.27 Weekly claim sweep
 
-**What it is.** A weekly routine follows [`claim-sweep`](#3-skills) to compare what the agent documents say with the code, and opens a PR that fixes stale claims. The PR merges through the same gates as everything else. *Not checked:* the routine hasn't run yet.
+**What it is.** A weekly routine follows [`claim-sweep`](#3-skills) to compare what the agent documents say with the code, and opens a PR that fixes stale claims. The PR merges through the same gates as everything else. It has run: PRs #126 (2026-10-26) and #163 (2026-11-02).
 
 **Why.**
 

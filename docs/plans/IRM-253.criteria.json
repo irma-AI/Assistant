@@ -1,0 +1,1 @@
+[{"criterion":"Every stale or unverifiable claim found is fixed in docs/guardrails.md","passes":true},{"criterion":"make check-repo guards pass","passes":false}]
