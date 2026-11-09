@@ -33,7 +33,7 @@ This learns from the scaffolding around that code: instructions for the agents (
 
 **Where the pieces come from.** Most come from the old repository, adapted where they relied on its maintainer. Conventional commits and semantic versions, the heavier use of commit hooks and the pieces from the research are new.
 
-**"Not checked".** A piece marked *not checked* has not been seen working on this platform yet, and doesn't count as a guard until it has held once. Everything else here was tested live on 2026-10-22 and 2026-10-23, in a scratch repository and then in this one. A piece marked *not built yet* waits for the first feature that needs it, such as login or the first table.
+**"Not checked".** A piece marked *not checked* has not been seen working on this platform yet, and doesn't count as a guard until it has held once. Everything else here was tested live on 2026-10-22 and 2026-10-23, in a scratch repository and then in this one. A piece marked *not built yet* waits for the first feature that needs it, such as login or the first table. The 2026-10-22 and 2026-10-23 tests are not recorded in the repository.
 
 ---
 
@@ -199,7 +199,7 @@ Size limits here count characters or words, and are enforced.
 
 **What it is.** Rules that must never break live in PostgreSQL itself, as constraints, triggers or permissions. Examples: a status can only take certain values, and a log row can only be deleted after its retention period.
 
-- Tests run against a real PostgreSQL, never a mock: a GitHub Actions service container in CI, and the PostgreSQL preinstalled in the cloud VM during a session. One major version runs everywhere: the VM's (16 today) is pinned in CI and on Dokploy. Each test tries the forbidden write and asserts that the database refuses it.
+- Tests run against a real PostgreSQL, never a mock: a GitHub Actions service container in CI, and the PostgreSQL preinstalled in the cloud VM during a session. One major version runs everywhere: the VM's (16 today) is pinned in CI and on Dokploy. Each test tries the forbidden write and asserts that the database refuses it. *Not checked:* the Dokploy pin is a setting outside the repository; CI's is `postgres:16.15` in `.github/workflows/ci.yml`.
 - Migrations are plain `.sql` files. Kysely's migrator runs them through one small provider that reads the files, all pending ones in a single transaction under an advisory lock, and that provider has its own test.
 - A guard requires a PR that adds a migration to change a test.
 - `guards/migration-order.sh` requires every migration a PR adds to be numbered above all on `origin/main`, with no two added sharing a number; `ci` runs it on PRs and in the merge queue.
@@ -304,7 +304,7 @@ Size limits here count characters or words, and are enforced.
 - **Secrets in a main-only environment.** Every secret lives in an environment named `checks` that only the default branch may deploy to, and none at repository level, because a branch's own workflows get every repository secret (seen in a live test). `policy` on `pull_request_target` runs as the default branch, so it gets them; a PR's own workflow does not.
 - **Audit on every merge.** On each push to the default branch, a workflow opens a Linear issue if the change touched a protected path without a `ci-change` label added before Ready (the same rule and code as `policy`), or if one API call shows the ruleset inactive or no longer requiring both checks. The ruleset check also runs daily, because a change in GitHub's settings would otherwise wait for the next merge to show; a drift that lasts gets one issue, "The main ruleset drifted", not one a day.
 - **Squash merges only**, one commit and message per PR, and **deploys only from green**, from a default branch that passed the queue.
-- **Pinned supply chain.** Actions pinned to commit hashes and images to digests, dependencies installed from the pnpm lockfile only, workflows linted for security problems, and every configuration that ships built in CI. `mise.lock` pins every tool's download URL and checksum. The cloud setup script installs them with mise, and the SessionStart hook puts them on `PATH`, starts PostgreSQL and installs the dependencies in each session, because the environment cache keeps files but nothing that was running.
+- **Pinned supply chain.** Actions pinned to commit hashes and images to digests, dependencies installed from the pnpm lockfile only, workflows linted for security problems, and every configuration that ships built in CI. `mise.lock` pins every tool's download URL and checksum. The cloud setup script installs them with mise, and the SessionStart hook puts them on `PATH`, starts PostgreSQL and installs the dependencies in each session, because the environment cache keeps files but nothing that was running. *Not checked:* the cloud setup script is a setting of the cloud environment, outside the repository.
 - **PR text through `env:`.** A PR title, body or branch name reaches a workflow through `env:`, never pasted into a shell command.
 - **Branch rules as code.** A repository file creates and restores the rulesets, one of which blocks direct pushes to the default branch.
 
@@ -345,8 +345,8 @@ Size limits here count characters or words, and are enforced.
 - Credentials are scoped per project and per purpose, and cannot change DNS, billing or organization settings, or publish anything outside the release job.
 - The Dokploy deploy key is meant to belong to a dedicated member user that can reach only this app, because Dokploy scopes a key by its user, not per key. *Not checked* until IRM-104's `user.get` check passes. It lives in the `checks` environment. Its remaining reach is an open risk ([section 7](#7-open-risks)).
 - One known exception is still open: Claude's GitHub connection acts with the connected account's full rights. If that account owns the organization, the agent's GitHub tools can do anything it can, including turning off the ruleset or changing repository settings. The owner chose not to test a writer-only account (2026-10-23), so this stays a known risk: the ruleset check in the audit on every merge ([2.12](#212-ci-as-the-authority)) is the only defence, and it catches a change afterwards.
-- Cloud environments use a Custom network allow-list no broader than the work needs, including Playwright's browser downloads (`cdn.playwright.dev`, `playwright.download.prss.microsoft.com`).
-- Secrets live only as network secrets, which the proxy adds to requests leaving the VM, so the agent never sees them. Environment variables hold none, because the agent can read them.
+- Cloud environments use a Custom network allow-list no broader than the work needs, including Playwright's browser downloads (`cdn.playwright.dev`, `playwright.download.prss.microsoft.com`). *Not checked:* the allow-list is a setting of the cloud environment, outside the repository.
+- Secrets live only as network secrets, which the proxy adds to requests leaving the VM, so the agent never sees them. Environment variables hold none, because the agent can read them. *Not checked:* the cloud environment's variables are a setting outside the repository.
 - gitleaks (over the whole history in `make check-repo`, and over the staged changes at pre-commit) and GitHub's secret scanning with push protection (free on public repositories) catch committed secrets, and a stack guard ([2.3](#23-guard-framework)) keeps secrets out of the browser bundle.
 
 **Why.**
@@ -359,14 +359,14 @@ Size limits here count characters or words, and are enforced.
 
 ### 2.15 Commit identity
 
-**What it is.** Every commit in a PR comes from Claude: the `commit-identity` guard requires the author `noreply@anthropic.com` and a committer that is Claude or GitHub. The squash commit on the default branch is authored by the account that turned on auto-merge, with Claude kept as a `Co-authored-by:` trailer, so the guard covers the PR's commits only. Locally, the git and `gh` credentials are pinned to the owner's personal account, never the company one; that is a setting on the owner's machine (`.claude/settings.local.json` and the checkout's git config), not something in the repository.
+**What it is.** Every commit in a PR comes from Claude: the `commit-identity` guard requires the author `noreply@anthropic.com` and a committer that is Claude or GitHub. The squash commit on the default branch is authored by the account that turned on auto-merge, with Claude kept as a `Co-authored-by:` trailer, so the guard covers the PR's commits only. Locally, the git and `gh` credentials are pinned to the owner's personal account, never the company one; that is a setting on the owner's machine (`.claude/settings.local.json` and the checkout's git config), not something in the repository. *Not checked:* `.claude/settings.local.json` and the git config are on the owner's machine, outside the repository.
 
 **Why.**
 
 - The owner never commits, so any other identity on a commit is a mistake or a leak.
 - The platform's own Stop hook is reported to steer commits toward `noreply@anthropic.com`, so that address avoids fighting the platform.
 - The old allow-list's first version forgot the squash committer and turned the default branch red ([2.3](#23-guard-framework)).
-- Cloud sessions get their commit identity from the platform, and the old identity leak came from a local session, so a CI check is enough.
+- Cloud sessions get their commit identity from the platform, and the old identity leak came from a local session, so a CI check is enough. *Not checked:* the platform's identity handling is outside the repository.
 - Session links stay out of commits and PRs (the owner's decision, 2026-10-23): the repository is public, and a session holds the whole conversation, so a link would be one sharing setting away from exposing it. The PR, its Linear issue and the release notes are the provenance record.
 
 ### 2.16 Decision records for memory, bounded
@@ -502,7 +502,7 @@ Size limits here count characters or words, and are enforced.
 
 ### 2.25 Linear quota keeper
 
-**What it is.** When a PR merges, a workflow archives its issue through Linear's API, together with every other issue already Done or Canceled, which keeps the count well under the Free plan's 250 unarchived issues. The issue's text is in the repository by then ([2.23](#223-issue-linkage-with-the-issue-copied-into-the-repository)). The team's auto-archive setting stays on as a backstop. The first run archived three Done issues.
+**What it is.** When a PR merges, a workflow archives its issue through Linear's API, together with every other issue already Done or Canceled, which keeps the count well under the Free plan's 250 unarchived issues. The issue's text is in the repository by then ([2.23](#223-issue-linkage-with-the-issue-copied-into-the-repository)). The team's auto-archive setting stays on as a backstop. The first run archived three Done issues. *Not checked:* the team's auto-archive setting and the first run's three archived issues are in Linear, outside the repository.
 
 **Why.**
 
@@ -565,7 +565,7 @@ Size limits here count characters or words, and are enforced.
 **Why.**
 
 - The owner's bar is full GDPR compliance before the first real user ([IRM-94](https://linear.app/petters/issue/IRM-94)). Art. 30 requires the record and Art. 6 a legal basis per purpose, and a row written after the fact is a row nobody checked.
-- Nothing in code can see a new processor, so the review is the check. It can be wrong, and the records are a draft until the owner approves them.
+- Nothing in code can see a new processor, so the review is the check. It can be wrong, and the records are a draft until the owner approves them. *Not checked:* the owner's approval is not recorded in the repository.
 
 - **Organisations' records.** The rule for who made an entry, and when a deleted account's name may stay, is in [`docs/privacy/records.md`](privacy/records.md) under "Account deletion and organisations' records". A feature that stores entries, corrections or completions reads it first and changes `deleteAccount` in `src/server/login.server.ts` to keep `users.id` and the name while records reference the user.
 
@@ -598,7 +598,7 @@ A skill is a Markdown file of instructions that Claude Code loads when it is cal
   - `.claude/hooks/impeccable-scope.sh` tells an impeccable task that DESIGN.md and impeccable's craft floor set design completeness, and that ponytail governs code structure only.
 
   `.claude/hooks/test.sh` runs each on sample events. *Not checked:* that cloud sessions have `node` on the path for ponytail's hooks, and that they can download impeccable's engine from GitHub.
-- A claude.ai plugin that duplicates a repository skill is turned off in the owner's claude.ai settings, so each skill and hook loads once. The owner removes them.
+- A claude.ai plugin that duplicates a repository skill is turned off in the owner's claude.ai settings, so each skill and hook loads once. The owner removes them. *Not checked:* the owner's claude.ai settings are outside the repository.
 
 | Skill | Source | Used in | Role |
 |---|---|---|---|
@@ -655,7 +655,7 @@ Each stage has a rough time budget, so the fast checks run early and nothing slo
 |---|---|---|
 | 0 | Agent harness (Claude Code hooks) | Instant |
 | 1 | Pre-commit | The repository checks, then format and lint on the staged files; time not measured |
-| 2 | Pre-push | About 2 minutes |
+| 2 | Pre-push | About 4 minutes (measured 2026-11-09) |
 | 3 | CI: `ci` and `policy` | Job timeouts, 2 to 30 minutes |
 | 4 | Merge queue | CI again, on top of the latest default branch |
 | 5 | After merge | Audit, deploy, verify, release, archive |
@@ -794,14 +794,14 @@ These remain after everything above.
 
 - **Accepted, as twenty accepts it: the agent can approve its own changes.** Nothing checks who created or readied a Linear issue or set `ci-change`, so a routine, or text injected into an issue, could start its own work or unlock the protected paths. A PR could also add its own workflow with a passing job named `policy`, because the required check pins only to GitHub Actions as a whole. The audit on every merge ([2.12](#212-ci-as-the-authority)) reports protected-path changes right after they land; nothing prevents them.
 - **A reviewer with the author's blind spots.** The AI review and the task-fit judge may share blind spots with the agent that wrote the code. Holdout scenarios were the answer and are scoped out. A different model for review is worth considering if the subscription offers one.
-- **The CI checks' token.** The AI checks run on a subscription token. It works with an individual-plan token, and other users have open 401 reports ([2.11](#211-ai-review-and-task-fit-judge-run-by-ci-on-the-subscription)). If it fails for long, PRs stall, and the fallback verdict is one the author could forge.
+- **The CI checks' token.** The AI checks run on a subscription token. It works with an individual-plan token, and other users have open 401 reports ([2.11](#211-ai-review-and-task-fit-judge-run-by-ci-on-the-subscription)). If it fails for long, PRs stall, and the fallback verdict is one the author could forge. *Not checked:* the fallback path is described, not built; `policy.yml` has none today.
 - **Usage windows.** Building, the AI checks and the weekly claim sweep all draw on the same subscription limits. When a window runs out everything pauses, including the checks that would let finished work merge.
 - **Unattended use of a consumer plan.** The consumer terms only clearly allow automated access through an API key. Routines look permitted, since they are sold on Pro and Max; the subscription token in CI is less clear.
 - **Correct code that is the wrong call.** The owner answers the questions that reach Linear ([2.22](#222-asking-the-owner)), but an agent can still make a product decision without recognising it as one.
 - **The GitHub connection's rights.** If the account behind Claude's GitHub connection owns the organization ([2.14](#214-permissions-and-network-replace-stop-and-ask)), an agent, or text injected into an issue or PR, could turn off the ruleset or change repository settings and then merge without the checks, and the audit on every merge only notices afterwards. Connecting an account that is only a writer on the repository might close this; the owner accepted the risk rather than test it (2026-10-23).
 - **Deploy access.** Open, see IRM-116.
-- **Log retention runs outside the repository's checks.** Docker keeps container logs with no age limit, so a daily Dokploy schedule cuts the Assistant's and Traefik's logs to 14 days (IRM-115). Its script is `scripts/log-retention.sh`, but nothing checks that the schedule's copy matches it, and the other projects on the server keep their logs indefinitely. Traefik's access log is off. Turning it on would start logging every visitor's IP address, so it would need a retention period first. *Not checked:* the scheduled runs.
+- **Log retention runs outside the repository's checks.** Docker keeps container logs with no age limit, so a daily Dokploy schedule cuts the Assistant's and Traefik's logs to 14 days (IRM-115). Its script is `scripts/log-retention.sh`, but nothing checks that the schedule's copy matches it, and the other projects on the server keep their logs indefinitely. Traefik's access log is off. Turning it on would start logging every visitor's IP address, so it would need a retention period first. *Not checked:* the scheduled runs. *Not checked:* the Dokploy schedule and Traefik's log setting are outside the repository.
 - **The personal-identity-number HMAC key.** Open, see IRM-128.
-- **Backups.** Dokploy backs up PostgreSQL with `pg_dump`, so a restore loses everything since the last dump, and no free storage target for the dumps is chosen yet.
+- **Backups.** Dokploy backs up PostgreSQL with `pg_dump`, so a restore loses everything since the last dump, and no free storage target for the dumps is chosen yet. *Not checked:* Dokploy's backup settings are outside the repository.
 - **Young dependencies.** Nitro (`3.0.260610-beta`, which runs production) is in beta. It is pinned, and their upgrades pass the same gates as any change.
 - **The platform's behaviour.** Several pieces rest on behaviour that is undocumented and was only seen in live tests, and Claude Code, routines and GitHub Actions can change without notice.
