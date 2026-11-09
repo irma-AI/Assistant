@@ -2,7 +2,7 @@ REPO ?= irma-AI/Assistant
 
 .PHONY: check check-repo check-app check-staged check-push fix e2e install dev image-check setup skills github
 
-# Everything CI runs.
+# The repository, app and browser checks; CI also runs the dependency audit, the image check and the mobile builds.
 check: check-repo check-app e2e
 
 # Guards, skills and repository rules.

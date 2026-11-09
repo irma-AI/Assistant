@@ -98,7 +98,7 @@ Size limits here count characters or words, and are enforced.
 
 **What it is.** Agents, git hooks, CI jobs and scheduled jobs call named task-runner targets, never the underlying command. The exceptions are setup and platform calls the workflows make themselves (`pnpm install`, mise, `gh attestation verify`), and the browser tests in ci's `e2e` job and the production smoke test, which run through `pnpm` because Playwright's image has no make; `make e2e` runs the same script.
 
-- Core targets: `check` (everything CI runs), `fix`, `generate`, `generate-check`, and `dev`, which boots the app so agents and the verification job ([2.13](#213-done-means-seen-working)) can exercise it. It migrates and runs `kysely seed run` first (the fake users and demo data in `seeds/`) ([2.8](#28-declared-test-seams-swept)).
+- Core targets: `check` (the repository, app and browser checks; CI also runs the dependency audit, the release image check and the Android and iOS builds), `fix`, `generate`, `generate-check`, and `dev`, which boots the app so agents and the verification job ([2.13](#213-done-means-seen-working)) can exercise it. It migrates and runs `kysely seed run` first (the fake users and demo data in `seeds/`) ([2.8](#28-declared-test-seams-swept)).
 - Hook targets such as `check-staged` (pre-commit) and `check-push` (pre-push).
 
 **Why.**
@@ -244,11 +244,11 @@ Size limits here count characters or words, and are enforced.
 **Why.**
 
 - In the old CI, generate-check caught a stale stylesheet and a model change with no migration.
-- Run as a pre-commit check, it catches the problem before the commit.
+- Run in `make check` at pre-push, it catches the problem before the code leaves the machine.
 
 ### 2.10 Architecture layers, enforced
 
-**What it is.** A dependency-cruiser config says which layers may import from which, and a guard in `policy` enforces it.
+**What it is.** A dependency-cruiser config says which layers may import from which, and `guards/layers.sh` enforces it in `make check-app`, so in the `ci` check.
 
 - Server-only code lives in `*.server.ts` files, such as `db.server.ts`, and only `src/server/`, `src/routes/api/`, `scripts/` and `src/start.ts` may import them.
 - Every UI (landing page, `/app`, `src/ui/`, `src/platform/`) reaches the server only through `/api/v1`, whose handlers sit in `src/routes/api/v1/` and call `src/server/`. Server functions are banned.
@@ -270,7 +270,7 @@ Size limits here count characters or words, and are enforced.
 **What it is.** Two AI checks run in the `policy` workflow ([2.12](#212-ci-as-the-authority)) on every PR, through [Claude Code's GitHub Action](https://github.com/anthropics/claude-code-action) and the one Claude subscription.
 
 - **The review** runs one pass on the commit under review and applies each lens in turn, looking for a concrete counterexample: an input or sequence of events that breaks the change. It reads the lenses from the default branch's skill files: [`skeptic-pass`](#3-skills) for correctness, regression and safety, [`ponytail-review`](#3-skills) for necessity (on UI changes, what the default branch's DESIGN.md or impeccable's craft floor requires counts as needed on the surfaces the issue touches, because hooks don't run in CI to say so; a PR's own DESIGN.md is judged, never the bar), and [`agentic-actions-auditor`](#3-skills) when a PR changes `.github/`. One pass per lens would triple the usage per PR; it can split if findings get shallow. A PR that touches a protected path is reviewed with Opus 5.5, because that's where a loosened check would hide; every other PR with Sonnet 5.5, to spare the subscription's usage windows, which the review shares with building. A Sonnet reviewer also differs from the Opus sessions that write most of the code.
-- **The task-fit judge**, built on the spec axis of [`code-review`](#3-skills), fails a diff that does work nobody asked for or leaves one of the Linear issue's acceptance criteria unmet.
+- **The task-fit judge**, the same idea as the spec axis of [`code-review`](#3-skills), fails a diff that does work nobody asked for or leaves one of the Linear issue's acceptance criteria unmet.
 - A required step the issue or `next-step` names that the PR skipped or replaced with a stand-in is a P1, whatever the description says; only an owner decision in the issue's comments (fetched into `review/issue.md`) excuses it. This closes the hole where `next-step` 3.6 let a session reword the description until the re-judging passed (PRs #158, #159). Linear comments carry no author distinction between owner and agent here, so the rule trusts the comments channel, not the description. A file-presence guard for the audit output was rejected after a skeptic pass (2026-10-26): it would not have fired on those docs-only PRs, a crash, a source scan and a real scan all write the same `[]`, it blocks non-visual fixes to UI files, and raw detector output can leak page text into the public repo.
 - Both run in agent mode with a `claude setup-token` token stored in the `checks` environment ([2.12](#212-ci-as-the-authority)) and only the built-in `GITHUB_TOKEN`, so they need no Claude GitHub App. Their tools are read-only (Read, Grep, Glob), with no shell and no web access. `--max-turns` and a job timeout are set, with headroom on the turns, because going over the limit fails the job.
 - Output follows a JSON schema, and a later step fails the job on any open P0 or P1 finding or on missing output. After three fix rounds (`policy` failed on four of the PR's commits), the `fix-rounds` job closes the PR, comments the reason on the issue and moves it to Needs input.
@@ -605,7 +605,7 @@ A skill is a Markdown file of instructions that Claude Code loads when it is cal
 | `next-step` | Rewritten from the old repository | [2.20](#220-intake-from-linear), [2.24](#224-restartable-execution-plans), [2.28](#228-routine-prompts-point-into-the-repository) | The build procedure for one issue (below) |
 | `grilling` | [mattpocock/skills](https://github.com/mattpocock/skills) | [2.20](#220-intake-from-linear) | Interviews the owner at intake until the issue is clear |
 | `to-tickets` | [mattpocock/skills](https://github.com/mattpocock/skills) | [2.20](#220-intake-from-linear) | Files the issues, each with a type label and acceptance criteria in the shape [2.24](#224-restartable-execution-plans) copies |
-| `skeptic-pass` | The old repository | [2.11](#211-ai-review-and-task-fit-judge-run-by-ci-on-the-subscription) | Correctness, regression and security lenses, each looking for a concrete counterexample |
+| `skeptic-pass` | The old repository | [2.11](#211-ai-review-and-task-fit-judge-run-by-ci-on-the-subscription) | Correctness, regression and safety lenses, each looking for a concrete counterexample |
 | `code-review` | [mattpocock/skills](https://github.com/mattpocock/skills) | [2.11](#211-ai-review-and-task-fit-judge-run-by-ci-on-the-subscription) | Standards and spec axes; `policy` compares the diff with the issue inline and does not load this skill |
 | `ponytail-review` | [DietrichGebert/ponytail](https://github.com/DietrichGebert/ponytail) | [2.11](#211-ai-review-and-task-fit-judge-run-by-ci-on-the-subscription) | A lens that asks whether every line is needed, against the review's habit of adding code |
 | `agentic-actions-auditor` | [trailofbits/skills](https://github.com/trailofbits/skills) | [2.11](#211-ai-review-and-task-fit-judge-run-by-ci-on-the-subscription) | A lens for PRs that change workflows, `pull_request_target` above all |
@@ -634,7 +634,7 @@ A skill is a Markdown file of instructions that Claude Code loads when it is cal
 
 - It names each skill by file path, so a routine follows the reviewed copy whether or not the skill loader picks it up ([2.28](#228-routine-prompts-point-into-the-repository)). Whatever the label, a change to an agent document follows [`writing-for-agents`](#3-skills), and an unchecked outside fact gets [`research`](#3-skills) notes in the plan folder.
 - An issue that an unfinished one blocks waits; intake skips it.
-- It ends with `make check`, a description written with `pr`, the PR opened with auto-merge on and watched until it is queued ([2.19](#219-merging-and-deploying-on-githubs-side)), and up to three rounds of CI fixes ([2.11](#211-ai-review-and-task-fit-judge-run-by-ci-on-the-subscription)).
+- It ends with the push, whose pre-push hook runs `make check`, a description written with `pr`, the PR opened with auto-merge on and watched until it is queued ([2.19](#219-merging-and-deploying-on-githubs-side)), and up to three rounds of CI fixes ([2.11](#211-ai-review-and-task-fit-judge-run-by-ci-on-the-subscription)).
 - It has a character budget like `CLAUDE.md`'s, and the docs-reference guard covers it ([2.5](#25-instruction-layering-with-size-budgets)).
 
 **Why.**
@@ -656,7 +656,7 @@ Each stage has a rough time budget, so the fast checks run early and nothing slo
 | 0 | Agent harness (Claude Code hooks) | Instant |
 | 1 | Pre-commit | The repository checks, then format and lint on the staged files; time not measured |
 | 2 | Pre-push | About 2 minutes |
-| 3 | CI: `ci` and `policy` | No limit |
+| 3 | CI: `ci` and `policy` | Job timeouts, 2 to 30 minutes |
 | 4 | Merge queue | CI again, on top of the latest default branch |
 | 5 | After merge | Audit, deploy, verify, release, archive |
 
